@@ -17,6 +17,8 @@ public final class SmartScanViewModel {
     public var summary: ScanSummary?
     public var activeModuleName: String = ""
     public var currentScannedPath: String = ""
+    var reviewSeedDestination: SidebarItem?
+    var reviewSeedID = UUID()
 
     private let scanPathUpdatedNotification = NSNotification.Name("ScanPathUpdated")
     private let minimumPathUpdateInterval = Duration.milliseconds(150)
@@ -25,6 +27,15 @@ public final class SmartScanViewModel {
     private var pathUpdateTask: Task<Void, Never>?
 
     public init() {}
+
+    func prepareReview(for destination: SidebarItem) {
+        reviewSeedDestination = destination
+        reviewSeedID = UUID()
+    }
+
+    func clearReviewSeed() {
+        reviewSeedDestination = nil
+    }
 
     public func startScan() async {
         guard phase != .scanning else { return }
@@ -76,6 +87,7 @@ public final class SmartScanViewModel {
         progress = 0
         results = []
         summary = nil
+        reviewSeedDestination = nil
         activeModuleName = "Preparing..."
         currentScannedPath = ""
     }

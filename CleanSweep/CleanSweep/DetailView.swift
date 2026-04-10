@@ -63,14 +63,20 @@ struct DetailView: View {
     @ViewBuilder
     private func moduleScanView(for item: SidebarItem) -> some View {
         if let descriptor = item.moduleScanDescriptor {
+            let seedsFromSmartScan = smartScanViewModel.reviewSeedDestination == item
             ModuleScanView(
                 scanner: descriptor.makeScanner(),
                 title: descriptor.title,
                 systemImage: descriptor.systemImage,
                 descriptionText: descriptor.descriptionText,
                 highlights: descriptor.highlights,
-                initialResults: smartScanSeedResults(for: item)
+                initialResults: seedsFromSmartScan ? smartScanSeedResults(for: item) : []
             )
+            .id(moduleViewIdentity(for: item, seedsFromSmartScan: seedsFromSmartScan))
+            .task(id: seedsFromSmartScan) {
+                guard seedsFromSmartScan else { return }
+                smartScanViewModel.clearReviewSeed()
+            }
         }
     }
 
@@ -79,6 +85,11 @@ struct DetailView: View {
         guard !categories.isEmpty else { return [] }
 
         return smartScanViewModel.results.filter { categories.contains($0.category) }
+    }
+
+    private func moduleViewIdentity(for item: SidebarItem, seedsFromSmartScan: Bool) -> String {
+        guard seedsFromSmartScan else { return item.rawValue }
+        return "\(item.rawValue)-\(smartScanViewModel.reviewSeedID.uuidString)"
     }
 }
 

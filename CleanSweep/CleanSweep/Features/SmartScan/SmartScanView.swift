@@ -194,6 +194,7 @@ struct SmartScanView: View {
 
             Button("Review & Clean") {
                 if let destination = destination(for: category) {
+                    viewModel.prepareReview(for: destination)
                     selection = destination
                 }
             }
