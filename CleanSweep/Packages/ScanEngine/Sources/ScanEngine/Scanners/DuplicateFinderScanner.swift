@@ -35,9 +35,12 @@ public actor DuplicateFinderScanner: ModuleScanner {
         var duplicates: [ScanResult] = []
 
         for (_, files) in potentialDuplicates {
+            try Task.checkCancellation()
+            
             var hashMap: [String: [ScanResult]] = [:]
 
             for file in files {
+                try Task.checkCancellation()
                 if let hash = await hashFile(url: file.url) {
                     hashMap[hash, default: []].append(file)
                 }
@@ -72,8 +75,15 @@ public actor DuplicateFinderScanner: ModuleScanner {
                 var hasher = SHA256()
                 let chunkSize = 1024 * 1024 // 1MB chunks
 
+                var chunks = 0
+
                 while let data = try fileHandle.read(upToCount: chunkSize), !data.isEmpty {
+                    guard !Task.isCancelled else { return nil }
                     hasher.update(data: data)
+                    chunks += 1
+                    if chunks % 10 == 0 {
+                        try await Task.sleep(nanoseconds: 10_000_000) // 10ms yield
+                    }
                 }
 
                 return hasher.finalize().map { String(format: "%02x", $0) }.joined()

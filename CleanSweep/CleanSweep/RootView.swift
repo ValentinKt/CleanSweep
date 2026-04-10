@@ -9,6 +9,14 @@ struct RootView: View {
     @State private var selection: SidebarItem? = .dashboard
     @State private var smartScanViewModel = SmartScanViewModel()
 
+    var statusText: String {
+        switch smartScanViewModel.phase {
+        case .idle: return "Ready to Scan"
+        case .scanning: return "Scanning: \(smartScanViewModel.activeModuleName)"
+        case .complete: return "Scan Complete"
+        }
+    }
+
     var body: some View {
         NavigationSplitView {
             SidebarView(selection: $selection)
@@ -25,12 +33,9 @@ struct RootView: View {
                 .buttonStyle(.glassProminent)           // accent-tinted glass (macOS 26+)
             }
             ToolbarItem(placement: .status) {
-                Text("Ready to Scan")
+                Text(statusText)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
-                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 8))
             }
             ToolbarItem(placement: .automatic) {
                 Button("Settings", systemImage: "gear") { }

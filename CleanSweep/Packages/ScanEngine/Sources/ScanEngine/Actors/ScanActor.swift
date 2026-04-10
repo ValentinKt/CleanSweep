@@ -5,7 +5,7 @@ public actor ScanActor {
 
     public init() {}
 
-    public func scanStream(at root: URL) -> AsyncStream<ScanResult> {
+    public func scanStream(at root: URL, onPath: (@Sendable (URL) -> Void)? = nil) -> AsyncStream<ScanResult> {
         AsyncStream { continuation in
             let task = Task.detached(priority: .utility) {
                 let keys: [URLResourceKey] = [
@@ -26,8 +26,19 @@ public actor ScanActor {
 
                 let localCategorizer = Categorizer()
 
+                var fileCount = 0
+
                 while let url = enumerator?.nextObject() as? URL {
                     guard !Task.isCancelled else { break }
+
+                    fileCount += 1
+                    if fileCount % 100 == 0 {
+                        // Throttle to keep CPU ghost-like
+                        try? await Task.sleep(nanoseconds: 5_000_000) // 5ms
+                        let path = url.path
+                        NotificationCenter.default.post(name: NSNotification.Name("ScanPathUpdated"), object: path)
+                        onPath?(url)
+                    }
 
                     do {
                         let values = try url.resourceValues(forKeys: Set(keys))
@@ -63,7 +74,7 @@ public actor ScanActor {
         }
     }
 
-    public func scanAllStream(at root: URL) -> AsyncStream<ScanResult> {
+    public func scanAllStream(at root: URL, onPath: (@Sendable (URL) -> Void)? = nil) -> AsyncStream<ScanResult> {
         AsyncStream { continuation in
             let task = Task.detached(priority: .utility) {
                 let keys: [URLResourceKey] = [
@@ -82,8 +93,19 @@ public actor ScanActor {
                     options: [.skipsHiddenFiles, .skipsPackageDescendants]
                 )
 
+                var fileCount = 0
+
                 while let url = enumerator?.nextObject() as? URL {
                     guard !Task.isCancelled else { break }
+
+                    fileCount += 1
+                    if fileCount % 100 == 0 {
+                        // Throttle to keep CPU ghost-like
+                        try? await Task.sleep(nanoseconds: 5_000_000) // 5ms
+                        let path = url.path
+                        NotificationCenter.default.post(name: NSNotification.Name("ScanPathUpdated"), object: path)
+                        onPath?(url)
+                    }
 
                     do {
                         let values = try url.resourceValues(forKeys: Set(keys))

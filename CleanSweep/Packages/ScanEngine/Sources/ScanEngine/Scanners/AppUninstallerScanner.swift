@@ -24,7 +24,7 @@ public actor AppUninstallerScanner: ModuleScanner {
                     let contents = try fileManager.contentsOfDirectory(at: dir, includingPropertiesForKeys: [.fileSizeKey, .contentModificationDateKey, .creationDateKey], options: [.skipsHiddenFiles])
                     for url in contents {
                         if url.pathExtension == "app" {
-                            let size = calculateSize(of: url)
+                            let size = await calculateSize(of: url)
                             let attributes = try? fileManager.attributesOfItem(atPath: url.path)
                             let lastModified = attributes?[.modificationDate] as? Date
                             let creationDate = attributes?[.creationDate] as? Date
@@ -50,17 +50,27 @@ public actor AppUninstallerScanner: ModuleScanner {
         return ModuleResult(moduleName: "App Uninstaller", results: apps)
     }
 
-    private func calculateSize(of url: URL) -> Int64 {
-        let fileManager = FileManager.default
-        var size: Int64 = 0
-        if let enumerator = fileManager.enumerator(at: url, includingPropertiesForKeys: [.fileSizeKey]) {
-            for case let fileURL as URL in enumerator {
-                if let resources = try? fileURL.resourceValues(forKeys: [.fileSizeKey]),
-                   let fileSize = resources.fileSize {
-                    size += Int64(fileSize)
+    private func calculateSize(of url: URL) async -> Int64 {
+        return await Task.detached(priority: .utility) {
+            let fileManager = FileManager.default
+            var size: Int64 = 0
+            if let enumerator = fileManager.enumerator(at: url, includingPropertiesForKeys: [.totalFileAllocatedSizeKey, .fileSizeKey]) {
+                var fileCount = 0
+                for case let fileURL as URL in enumerator {
+                    guard !Task.isCancelled else { break }
+                    
+                    fileCount += 1
+                    if fileCount % 1000 == 0 {
+                        try? await Task.sleep(nanoseconds: 5_000_000) // 5ms
+                        NotificationCenter.default.post(name: NSNotification.Name("ScanPathUpdated"), object: fileURL.path)
+                    }
+
+                    if let resources = try? fileURL.resourceValues(forKeys: [.totalFileAllocatedSizeKey, .fileSizeKey]) {
+                        size += Int64(resources.totalFileAllocatedSize ?? resources.fileSize ?? 0)
+                    }
                 }
             }
-        }
-        return size
+            return size
+        }.value
     }
 }

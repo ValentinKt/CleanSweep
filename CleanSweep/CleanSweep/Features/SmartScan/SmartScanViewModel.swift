@@ -17,16 +17,31 @@ public final class SmartScanViewModel {
     public var summary: ScanSummary?
     public var activeModuleName: String = ""
 
+    public var currentScannedPath: String = ""
+
     private let engine = SmartScanEngine()
     private var scanTask: Task<Void, Never>?
+    private var pathUpdateTask: Task<Void, Never>?
 
     public init() {}
 
     public func startScan() async {
         scanTask?.cancel()
+        pathUpdateTask?.cancel()
         
         phase = .scanning
         activeModuleName = "Preparing..."
+        currentScannedPath = ""
+
+        pathUpdateTask = Task {
+            let stream = NotificationCenter.default.notifications(named: NSNotification.Name("ScanPathUpdated"))
+            for await notification in stream {
+                guard !Task.isCancelled else { break }
+                if let path = notification.object as? String {
+                    self.currentScannedPath = path
+                }
+            }
+        }
 
         scanTask = Task {
             do {
@@ -49,12 +64,15 @@ public final class SmartScanViewModel {
             }
         }
         await scanTask?.value
+        pathUpdateTask?.cancel()
     }
     
     public func cancelScan() {
         scanTask?.cancel()
+        pathUpdateTask?.cancel()
         phase = .idle
         progress = 0
         activeModuleName = "Cancelled"
+        currentScannedPath = ""
     }
 }

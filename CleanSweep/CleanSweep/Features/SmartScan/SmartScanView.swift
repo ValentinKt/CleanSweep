@@ -77,6 +77,16 @@ public struct SmartScanView: View {
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
                         .contentTransition(.numericText())
+                    
+                    if !viewModel.currentScannedPath.isEmpty {
+                        Text(viewModel.currentScannedPath)
+                            .font(.caption)
+                            .foregroundStyle(.tertiary)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                            .padding(.top, 4)
+                            .frame(maxWidth: 300)
+                    }
                 }
             }
         }
