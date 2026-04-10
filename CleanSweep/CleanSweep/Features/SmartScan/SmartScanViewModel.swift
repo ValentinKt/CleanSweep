@@ -23,10 +23,15 @@ public final class SmartScanViewModel {
 
     public func startScan() async {
         phase = .scanning
-        activeModuleName = "System Junk" // In a real app, stream this from engine
+        activeModuleName = "Preparing..."
 
         do {
-            let scanSummary = try await engine.scanAllModules()
+            let scanSummary = try await engine.scanAllModules { [weak self] progress, moduleName in
+                Task { @MainActor in
+                    self?.progress = progress
+                    self?.activeModuleName = moduleName
+                }
+            }
             self.summary = scanSummary
             self.results = scanSummary.allResults
             self.progress = 1.0

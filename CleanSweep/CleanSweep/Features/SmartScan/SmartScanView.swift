@@ -74,6 +74,8 @@ public struct SmartScanView: View {
                     Text(viewModel.activeModuleName)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
                         .contentTransition(.numericText())
                 }
             }

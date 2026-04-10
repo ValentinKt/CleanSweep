@@ -26,6 +26,11 @@ struct RootView: View {
             }
             ToolbarItem(placement: .status) {
                 Text("Ready to Scan")
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 8))
             }
             ToolbarItem(placement: .automatic) {
                 Button("Settings", systemImage: "gear") { }

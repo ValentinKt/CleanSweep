@@ -19,6 +19,9 @@ struct DashboardView: View {
                 systemImage: "sparkles",
                 description: Text("Click Scan Now to find junk files and free up space.")
             )
+            .padding()
+            .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 12))
+            .padding(.horizontal, 20)
 
             Spacer()
         }
