@@ -6,6 +6,8 @@ public struct SmartScanView: View {
     @Bindable var viewModel: SmartScanViewModel
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Namespace private var glassSpace
+    @State private var scanStarted = false
+    @State private var cleanTriggered = false
 
     public init(viewModel: SmartScanViewModel) {
         self.viewModel = viewModel
@@ -24,10 +26,12 @@ public struct SmartScanView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .sensoryFeedback(.success, trigger: viewModel.phase == .complete)
     }
 
     private var idleView: some View {
         Button(action: {
+            scanStarted.toggle()
             Task { await viewModel.startScan() }
         }) {
             VStack(spacing: 12) {
@@ -41,6 +45,7 @@ public struct SmartScanView: View {
         .glassEffect(.regular.interactive(), in: Circle())
         .glassEffectID("scanRing", in: glassSpace)
         .buttonStyle(.plain)
+        .sensoryFeedback(.impact(flexibility: .solid, intensity: 1.0), trigger: scanStarted)
     }
 
     private var scanningView: some View {
@@ -101,11 +106,13 @@ public struct SmartScanView: View {
                 }
 
                 Button("Clean All") {
+                    cleanTriggered.toggle()
                     // TODO: Implement clean
                 }
                 .glassEffect(.regular.interactive(), in: Capsule())
                 .buttonStyle(.plain)
                 .padding(.top)
+                .sensoryFeedback(.impact(flexibility: .rigid, intensity: 1.0), trigger: cleanTriggered)
             }
         }
         .transition(.blurReplace)
