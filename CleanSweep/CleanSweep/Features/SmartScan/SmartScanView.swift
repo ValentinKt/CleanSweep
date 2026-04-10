@@ -114,6 +114,9 @@ public struct SmartScanView: View {
     private func categoryCard(category: FileCategory, size: Int64) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
+                Image(systemName: category.iconName)
+                    .foregroundStyle(Color.accentColor)
+                    .font(.title3)
                 Text(category.localizedName)
                     .font(.headline)
                 Spacer()
@@ -129,7 +132,7 @@ public struct SmartScanView: View {
             .controlSize(.small)
         }
         .padding()
-        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 16))
+        .glassEffect(.regular.interactive(), in: RoundedRectangle(cornerRadius: 16))
     }
 
     private func formatBytes(_ bytes: Int64) -> String {
