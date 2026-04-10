@@ -8,6 +8,7 @@ import ScanEngine
 
 struct DetailView: View {
     var selection: SidebarItem?
+    var smartScanViewModel: SmartScanViewModel
 
     var body: some View {
         contentView
@@ -22,7 +23,7 @@ struct DetailView: View {
                 DashboardView()
             case .smartScan:
                 if #available(macOS 26.0, *) {
-                    SmartScanView()
+                    SmartScanView(viewModel: smartScanViewModel)
                 } else {
                     Text("Smart Scan requires macOS 26.0")
                 }

@@ -3,11 +3,13 @@ import ScanEngine
 
 @available(macOS 26.0, *)
 public struct SmartScanView: View {
-    @State private var viewModel = SmartScanViewModel()
+    @Bindable var viewModel: SmartScanViewModel
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Namespace private var glassSpace
 
-    public init() {}
+    public init(viewModel: SmartScanViewModel) {
+        self.viewModel = viewModel
+    }
 
     public var body: some View {
         VStack {
@@ -140,6 +142,6 @@ public struct SmartScanView: View {
 
 #Preview {
     if #available(macOS 26.0, *) {
-        SmartScanView()
+        SmartScanView(viewModel: SmartScanViewModel())
     }
 }
