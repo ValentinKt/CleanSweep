@@ -11,28 +11,28 @@ struct SidebarView: View {
     var body: some View {
         List(selection: $selection) {
             Section("Overview") {
-                SidebarRow(item: .dashboard, symbol: "gauge.medium", label: "Dashboard")
-                SidebarRow(item: .smartScan, symbol: "sparkles.rectangle.stack", label: "Smart Scan")
+                SidebarRow(item: .dashboard)
+                SidebarRow(item: .smartScan)
             }
             Section("Clean") {
-                SidebarRow(item: .systemJunk, symbol: "trash.slash", label: "System Junk")
-                SidebarRow(item: .largeFiles, symbol: "archivebox", label: "Large & Old Files")
-                SidebarRow(item: .duplicates, symbol: "doc.on.doc", label: "Duplicates")
-                SidebarRow(item: .screenshots, symbol: "photo.on.rectangle", label: "Screenshots")
-                SidebarRow(item: .development, symbol: "hammer", label: "Developer Junk")
-                SidebarRow(item: .trash, symbol: "trash", label: "Trash")
-                SidebarRow(item: .mailAttachments, symbol: "paperclip", label: "Mail Attachments")
+                SidebarRow(item: .systemJunk)
+                SidebarRow(item: .largeFiles)
+                SidebarRow(item: .duplicates)
+                SidebarRow(item: .screenshots)
+                SidebarRow(item: .development)
+                SidebarRow(item: .trash)
+                SidebarRow(item: .mailAttachments)
             }
             Section("Protect") {
-                SidebarRow(item: .privacy, symbol: "hand.raised", label: "Privacy")
-                SidebarRow(item: .networkCache, symbol: "network", label: "Network Cache")
+                SidebarRow(item: .privacy)
+                SidebarRow(item: .networkCache)
             }
             Section("Manage") {
-                SidebarRow(item: .uninstaller, symbol: "app.badge.minus", label: "Uninstaller")
-                SidebarRow(item: .startup, symbol: "bolt.fill", label: "Startup Items")
-                SidebarRow(item: .memory, symbol: "memorychip", label: "Memory")
-                SidebarRow(item: .disk, symbol: "externaldrive", label: "Disk Analyzer")
-                SidebarRow(item: .fonts, symbol: "textformat", label: "Font Manager")
+                SidebarRow(item: .uninstaller)
+                SidebarRow(item: .startup)
+                SidebarRow(item: .memory)
+                SidebarRow(item: .disk)
+                SidebarRow(item: .fonts)
             }
         }
         .listStyle(.sidebar)
@@ -41,14 +41,12 @@ struct SidebarView: View {
 
 struct SidebarRow: View {
     let item: SidebarItem
-    let symbol: String
-    let label: String
     var badge: String?
 
     var body: some View {
         NavigationLink(value: item) {
             HStack {
-                Label(label, systemImage: symbol)
+                Label(item.localizedName, systemImage: item.iconName)
                 Spacer()
                 if let badge {
                     Text(badge)

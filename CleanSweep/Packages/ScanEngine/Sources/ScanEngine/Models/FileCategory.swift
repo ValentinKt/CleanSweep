@@ -48,4 +48,30 @@ public enum FileCategory: String, CaseIterable, Sendable {
         case .unknown: return "Unknown"
         }
     }
+
+    public var iconName: String {
+        switch self {
+        case .userCache: return "cylinder.split.1x2"
+        case .systemLog: return "doc.text"
+        case .tempFile: return "clock.arrow.circlepath"
+        case .languagePack: return "character.bubble"
+        case .xcodeDerivedData: return "hammer"
+        case .xcodeSimulator: return "iphone"
+        case .spmCache: return "shippingbox"
+        case .mailAttachment: return "paperclip"
+        case .browserCache: return "safari"
+        case .appSupportOrphan: return "questionmark.folder"
+        case .largeFile: return "externaldrive"
+        case .oldFile: return "calendar.badge.clock"
+        case .duplicate: return "doc.on.doc"
+        case .screenshot: return "camera.viewfinder"
+        case .screenRecording: return "video"
+        case .fontDuplicate: return "textformat"
+        case .trashItem: return "trash"
+        case .networkCache: return "network"
+        case .application: return "app.badge"
+        case .startupItem: return "macwindow"
+        case .unknown: return "doc"
+        }
+    }
 }
