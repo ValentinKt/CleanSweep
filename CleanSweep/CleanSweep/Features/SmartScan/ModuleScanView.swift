@@ -23,9 +23,16 @@ struct ModuleScanView: View {
         title: String,
         systemImage: String,
         descriptionText: String,
-        highlights: [ModuleScanHighlight]
+        highlights: [ModuleScanHighlight],
+        initialResults: [ScanResult] = []
     ) {
-        _viewModel = State(initialValue: ModuleScanViewModel(scanner: scanner, moduleName: title))
+        _viewModel = State(
+            initialValue: ModuleScanViewModel(
+                scanner: scanner,
+                moduleName: title,
+                initialResults: initialResults
+            )
+        )
         self.title = title
         self.systemImage = systemImage
         self.descriptionText = descriptionText

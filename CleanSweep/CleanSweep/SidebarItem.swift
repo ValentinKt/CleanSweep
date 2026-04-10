@@ -56,7 +56,7 @@ enum SidebarItem: String, CaseIterable, Hashable, Identifiable {
         case .screenshots: return "camera.viewfinder"
         case .development: return "hammer"
         case .privacy: return "hand.raised"
-        case .uninstaller: return "app.badge.minus"
+        case .uninstaller: return "app.badge"
         case .startup: return "macwindow"
         case .memory: return "memorychip"
         case .disk: return "chart.pie"

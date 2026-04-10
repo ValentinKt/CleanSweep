@@ -68,9 +68,17 @@ struct DetailView: View {
                 title: descriptor.title,
                 systemImage: descriptor.systemImage,
                 descriptionText: descriptor.descriptionText,
-                highlights: descriptor.highlights
+                highlights: descriptor.highlights,
+                initialResults: smartScanSeedResults(for: item)
             )
         }
+    }
+
+    private func smartScanSeedResults(for item: SidebarItem) -> [ScanResult] {
+        let categories = item.smartScanCategories
+        guard !categories.isEmpty else { return [] }
+
+        return smartScanViewModel.results.filter { categories.contains($0.category) }
     }
 }
 
@@ -252,6 +260,35 @@ private extension SidebarItem {
             )
         default:
             nil
+        }
+    }
+
+    var smartScanCategories: Set<FileCategory> {
+        switch self {
+        case .systemJunk:
+            [.userCache, .systemLog, .tempFile, .languagePack, .appSupportOrphan]
+        case .largeFiles:
+            [.largeFile, .oldFile]
+        case .duplicates:
+            [.duplicate]
+        case .screenshots:
+            [.screenshot, .screenRecording]
+        case .development:
+            [.xcodeDerivedData, .xcodeSimulator, .spmCache]
+        case .mailAttachments:
+            [.mailAttachment]
+        case .trash:
+            [.trashItem]
+        case .networkCache:
+            [.browserCache, .networkCache]
+        case .uninstaller:
+            [.application]
+        case .startup:
+            [.startupItem]
+        case .fonts:
+            [.fontDuplicate]
+        default:
+            []
         }
     }
 }

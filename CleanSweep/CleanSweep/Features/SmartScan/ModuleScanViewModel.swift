@@ -15,9 +15,18 @@ public final class ModuleScanViewModel {
     private let scanner: ModuleScanner
     private var scanTask: Task<Void, Never>?
 
-    public init(scanner: ModuleScanner, moduleName: String) {
+    public init(
+        scanner: ModuleScanner,
+        moduleName: String,
+        initialResults: [ScanResult] = []
+    ) {
         self.scanner = scanner
         self.moduleName = moduleName
+        if !initialResults.isEmpty {
+            self.results = sortedResults(from: initialResults)
+            self.progress = 1.0
+            self.phase = .complete
+        }
     }
 
     public func startScan() async {
