@@ -2,31 +2,17 @@
 //  CleanSweepApp.swift
 //  CleanSweep
 //
-//  Created by Valentin on 4/10/26.
-//
 
 import SwiftUI
-import SwiftData
 
 @main
 struct CleanSweepApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
-        }
-    }()
-
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView()
         }
-        .modelContainer(sharedModelContainer)
+        .windowStyle(.hiddenTitleBar)           // Liquid Glass toolbar extends edge-to-edge
+        .windowResizability(.contentSize)
+        .defaultSize(width: 960, height: 640)
     }
 }
