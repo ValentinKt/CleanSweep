@@ -4,7 +4,7 @@ import Combine
 @available(macOS 26.0, *)
 struct MemoryMonitorView: View {
     @State private var memoryPressure: Double = 0.0
-    @State private var timer: AnyCancellable?
+    @State private var monitorTask: Task<Void, Never>?
 
     var body: some View {
         GlassEffectContainer(spacing: 20) {
@@ -17,11 +17,7 @@ struct MemoryMonitorView: View {
                     Circle()
                         .stroke(Color.secondary.opacity(0.2), lineWidth: 20)
 
-                    Circle()
-                        .trim(from: 0.0, to: CGFloat(memoryPressure))
-                        .stroke(memoryPressure > 0.8 ? Color.red : (memoryPressure > 0.6 ? Color.yellow : Color.accentColor), style: StrokeStyle(lineWidth: 20, lineCap: .round))
-                        .rotationEffect(.degrees(-90))
-                        .animation(.spring(response: 0.5, dampingFraction: 0.8), value: memoryPressure)
+                    ProgressCircleView(progress: memoryPressure)
 
                     VStack {
                         Text("\(Int(memoryPressure * 100))%")
@@ -45,15 +41,29 @@ struct MemoryMonitorView: View {
             startMonitoring()
         }
         .onDisappear {
-            timer?.cancel()
+            monitorTask?.cancel()
         }
     }
 
     private func startMonitoring() {
-        timer = Timer.publish(every: 2.0, on: .main, in: .common).autoconnect().sink { _ in
-            updateMemoryPressure()
+        let stream = AsyncStream<Void> { continuation in
+            Task {
+                while !Task.isCancelled {
+                    try? await Task.sleep(for: .seconds(2))
+                    if Task.isCancelled { break }
+                    continuation.yield()
+                }
+                continuation.finish()
+            }
         }
-        updateMemoryPressure()
+        
+        monitorTask = Task { @MainActor in
+            updateMemoryPressure()
+            for await _ in stream {
+                if Task.isCancelled { break }
+                updateMemoryPressure()
+            }
+        }
     }
 
     private func updateMemoryPressure() {
@@ -65,8 +75,76 @@ struct MemoryMonitorView: View {
 
     private func purgeMemory() {
         // Dummy implementation
-        withAnimation {
-            memoryPressure = 0.1
+        memoryPressure = 0.1
+    }
+}
+
+@available(macOS 26.0, *)
+struct ProgressCircleView: NSViewRepresentable {
+    var progress: Double
+
+    func makeNSView(context: Context) -> ProgressCircleNSView {
+        ProgressCircleNSView()
+    }
+
+    func updateNSView(_ nsView: ProgressCircleNSView, context: Context) {
+        nsView.setProgress(CGFloat(progress))
+    }
+}
+
+class ProgressCircleNSView: NSView {
+    private let shapeLayer = CAShapeLayer()
+
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        setupLayer()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupLayer()
+    }
+
+    private func setupLayer() {
+        wantsLayer = true
+        layer?.addSublayer(shapeLayer)
+        
+        shapeLayer.fillColor = NSColor.clear.cgColor
+        shapeLayer.lineWidth = 20
+        shapeLayer.lineCap = .round
+        shapeLayer.strokeStart = 0
+        shapeLayer.strokeEnd = 0
+        shapeLayer.transform = CATransform3DMakeRotation(-.pi / 2, 0, 0, 1)
+    }
+
+    override func layout() {
+        super.layout()
+        shapeLayer.frame = bounds
+        let insetBounds = bounds.insetBy(dx: 10, dy: 10)
+        shapeLayer.path = CGPath(ellipseIn: insetBounds, transform: nil)
+        shapeLayer.position = CGPoint(x: bounds.midX, y: bounds.midY)
+        shapeLayer.bounds = bounds
+    }
+
+    func setProgress(_ progress: CGFloat) {
+        let color: NSColor
+        if progress > 0.8 {
+            color = .systemRed
+        } else if progress > 0.6 {
+            color = .systemYellow
+        } else {
+            color = .controlAccentColor
         }
+        
+        shapeLayer.strokeColor = color.cgColor
+        
+        let anim = CABasicAnimation(keyPath: "strokeEnd")
+        anim.fromValue = shapeLayer.presentation()?.strokeEnd ?? shapeLayer.strokeEnd
+        anim.toValue = progress
+        anim.duration = 0.5
+        anim.timingFunction = CAMediaTimingFunction(controlPoints: 0.5, 0, 0.5, 1.0) // Similar to spring response
+        
+        shapeLayer.strokeEnd = progress
+        shapeLayer.add(anim, forKey: "strokeEndAnim")
     }
 }

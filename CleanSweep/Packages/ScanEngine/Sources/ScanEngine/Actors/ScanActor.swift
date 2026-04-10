@@ -7,7 +7,7 @@ public actor ScanActor {
 
     public func scanStream(at root: URL) -> AsyncStream<ScanResult> {
         AsyncStream { continuation in
-            Task.detached(priority: .utility) {
+            let task = Task.detached(priority: .utility) {
                 let keys: [URLResourceKey] = [
                     .fileSizeKey,
                     .totalFileAllocatedSizeKey,
@@ -56,12 +56,16 @@ public actor ScanActor {
                 }
                 continuation.finish()
             }
+            
+            continuation.onTermination = { _ in
+                task.cancel()
+            }
         }
     }
 
     public func scanAllStream(at root: URL) -> AsyncStream<ScanResult> {
         AsyncStream { continuation in
-            Task.detached(priority: .utility) {
+            let task = Task.detached(priority: .utility) {
                 let keys: [URLResourceKey] = [
                     .fileSizeKey,
                     .totalFileAllocatedSizeKey,
@@ -104,6 +108,10 @@ public actor ScanActor {
                     }
                 }
                 continuation.finish()
+            }
+            
+            continuation.onTermination = { _ in
+                task.cancel()
             }
         }
     }
