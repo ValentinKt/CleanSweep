@@ -17,6 +17,7 @@
 		4563B6B622B06468CF6CF43C /* SidebarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ECE766483F11FE33C8C9FE4 /* SidebarItem.swift */; };
 		5320D4B97DA640DB6B823786 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8060B542C381FB1CB79DCA /* RootView.swift */; };
 		66551E3B60B64B48C0AD09B0 /* SmartScanViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B4BDE237F031C9AE85C9847 /* SmartScanViewModel.swift */; };
+		72992AFF63AC05013142F117 /* HealthDashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B25EAE40F6D0471C7EB024C /* HealthDashboardViewModel.swift */; };
 		7B717BD2B537E236EC14C4E8 /* SmartScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096B4F53B0867958EEA8D8E0 /* SmartScanView.swift */; };
 		892A0A2F6A56E368D6405B7A /* DiskAnalyzerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9229BF84CBC642F53971C8 /* DiskAnalyzerView.swift */; };
 		91E2155A2B0FF59F4B1B2D89 /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A09C1FB53E68B212130633C /* SidebarView.swift */; };
@@ -29,6 +30,7 @@
 		0B4BDE237F031C9AE85C9847 /* SmartScanViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartScanViewModel.swift; sourceTree = "<group>"; };
 		182852D20FA6601B170CD689 /* CleanSweepApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanSweepApp.swift; sourceTree = "<group>"; };
 		1B0DF8D9EB688362869185BB /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
+		3B25EAE40F6D0471C7EB024C /* HealthDashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthDashboardViewModel.swift; sourceTree = "<group>"; };
 		4516567E163F92E98A19E598 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5D8060B542C381FB1CB79DCA /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		64799F53539F617549D592E5 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
@@ -66,6 +68,7 @@
 			isa = PBXGroup;
 			children = (
 				9E9229BF84CBC642F53971C8 /* DiskAnalyzerView.swift */,
+				3B25EAE40F6D0471C7EB024C /* HealthDashboardViewModel.swift */,
 				AB569C8B0B69082F98B1C1E1 /* MemoryMonitorView.swift */,
 				4B82693FEEDDA94EB4743CD7 /* SmartScan */,
 			);
@@ -190,6 +193,7 @@
 				382ED880D8F64EAC697D4239 /* DashboardView.swift in Sources */,
 				2A529C349E0556B1FAFB4C5B /* DetailView.swift in Sources */,
 				892A0A2F6A56E368D6405B7A /* DiskAnalyzerView.swift in Sources */,
+				72992AFF63AC05013142F117 /* HealthDashboardViewModel.swift in Sources */,
 				F4110AC8785B49AFA4D69643 /* MemoryMonitorView.swift in Sources */,
 				00F3DA01B05790AC8FC3BD90 /* ModuleScanView.swift in Sources */,
 				3C98D6AFFCE42EC94C61376E /* ModuleScanViewModel.swift in Sources */,

@@ -6,9 +6,11 @@
 import SwiftUI
 
 struct DashboardView: View {
+    @State private var viewModel = HealthDashboardViewModel()
+
     var body: some View {
         VStack {
-            HealthDashboardRow()
+            HealthDashboardRow(viewModel: viewModel)
 
             Spacer()
 
@@ -20,16 +22,21 @@ struct DashboardView: View {
 
             Spacer()
         }
+        .onAppear {
+            viewModel.updateStats()
+        }
     }
 }
 
 struct HealthDashboardRow: View {
+    var viewModel: HealthDashboardViewModel
+
     var body: some View {
         GlassEffectContainer(spacing: 10) {
-            MetricCard(symbol: "internaldrive", label: "Storage", value: "245 GB", tint: .blue)
-            MetricCard(symbol: "memorychip", label: "Memory", value: "Normal", tint: .green)
-            MetricCard(symbol: "battery.100percent", label: "Battery", value: "100%", tint: .green)
-            MetricCard(symbol: "clock.arrow.circlepath", label: "Last Cleaned", value: "2 days ago", tint: .secondary)
+            MetricCard(symbol: "internaldrive", label: "Free Space", value: viewModel.freeSpace, tint: .blue)
+            MetricCard(symbol: "memorychip", label: "Memory", value: viewModel.memoryStatus, tint: .green)
+            MetricCard(symbol: "battery.100percent", label: "Battery", value: "Good", tint: .green)
+            MetricCard(symbol: "clock.arrow.circlepath", label: "Last Cleaned", value: viewModel.lastCleaned, tint: .secondary)
         }
         .padding(.horizontal, 20)
         .padding(.top, 16)
