@@ -9,15 +9,15 @@ struct DashboardView: View {
     var body: some View {
         VStack {
             HealthDashboardRow()
-            
+
             Spacer()
-            
+
             ContentUnavailableView(
                 "Ready to Scan",
                 systemImage: "sparkles",
                 description: Text("Click Scan Now to find junk files and free up space.")
             )
-            
+
             Spacer()
         }
     }

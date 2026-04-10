@@ -17,6 +17,6 @@ enum SidebarItem: String, CaseIterable, Hashable, Identifiable {
     case memory
     case disk
     case trash
-    
+
     var id: String { rawValue }
 }

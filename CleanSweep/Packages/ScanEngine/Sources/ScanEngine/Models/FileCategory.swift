@@ -20,7 +20,7 @@ public enum FileCategory: String, CaseIterable, Sendable {
     case trashItem
     case networkCache
     case unknown
-    
+
     public var localizedName: String {
         switch self {
         case .userCache: return "User Caches"

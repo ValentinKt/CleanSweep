@@ -1,0 +1,19 @@
+name: CleanSweep
+options:
+  bundleIdPrefix: com.cleansweep
+  deploymentTarget:
+    macOS: 26.0
+packages:
+  ScanEngine:
+    path: Packages/ScanEngine
+targets:
+  CleanSweep:
+    type: application
+    platform: macOS
+    sources: [CleanSweep]
+    settings:
+      GENERATE_INFOPLIST_FILE: YES
+      CURRENT_PROJECT_VERSION: 1
+      MARKETING_VERSION: 1.0
+    dependencies:
+      - package: ScanEngine

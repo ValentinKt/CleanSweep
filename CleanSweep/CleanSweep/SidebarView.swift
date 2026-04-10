@@ -38,8 +38,8 @@ struct SidebarRow: View {
     let item: SidebarItem
     let symbol: String
     let label: String
-    var badge: String? = nil
-    
+    var badge: String?
+
     var body: some View {
         NavigationLink(value: item) {
             HStack {

@@ -23,7 +23,7 @@ struct RootView: View {
                 .buttonStyle(.glassProminent)           // accent-tinted glass (macOS 26+)
             }
             ToolbarItem(placement: .status) {
-                Text("Ready to Scan")              
+                Text("Ready to Scan")
             }
             ToolbarItem(placement: .automatic) {
                 Button("Settings", systemImage: "gear") { }
