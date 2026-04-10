@@ -21,7 +21,7 @@ struct RootView: View {
         NavigationSplitView {
             SidebarView(selection: $selection)
         } detail: {
-            DetailView(selection: selection, smartScanViewModel: smartScanViewModel)
+            DetailView(selection: $selection, smartScanViewModel: smartScanViewModel)
                 .backgroundExtensionEffect()    // macOS 26: fills floating sidebar gap
         }
         .toolbar {
@@ -35,9 +35,11 @@ struct RootView: View {
             ToolbarItem(placement: .status) {
                 Text(statusText)
                     .lineLimit(1)
+                    .truncationMode(.tail)
                     .minimumScaleFactor(0.8)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
+                    .frame(maxWidth: 250)
                     .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 8))
             }
             ToolbarItem(placement: .automatic) {

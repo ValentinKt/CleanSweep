@@ -2,18 +2,20 @@ import SwiftUI
 import ScanEngine
 
 @available(macOS 26.0, *)
-public struct SmartScanView: View {
+struct SmartScanView: View {
     @Bindable var viewModel: SmartScanViewModel
+    @Binding var selection: SidebarItem?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Namespace private var glassSpace
     @State private var scanStarted = false
     @State private var cleanTriggered = false
 
-    public init(viewModel: SmartScanViewModel) {
+    init(viewModel: SmartScanViewModel, selection: Binding<SidebarItem?>) {
         self.viewModel = viewModel
+        self._selection = selection
     }
 
-    public var body: some View {
+    var body: some View {
         VStack {
             switch viewModel.phase {
             case .idle:
@@ -145,7 +147,32 @@ public struct SmartScanView: View {
             }
 
             Button("Review & Clean") {
-                // Route to detail (to be implemented)
+                switch category {
+                case .userCache, .systemLog, .tempFile, .languagePack, .appSupportOrphan:
+                    selection = .systemJunk
+                case .largeFile, .oldFile:
+                    selection = .largeFiles
+                case .duplicate:
+                    selection = .duplicates
+                case .screenshot, .screenRecording:
+                    selection = .screenshots
+                case .xcodeDerivedData, .xcodeSimulator, .spmCache:
+                    selection = .development
+                case .trashItem:
+                    selection = .trash
+                case .mailAttachment:
+                    selection = .mailAttachments
+                case .browserCache, .networkCache:
+                    selection = .networkCache
+                case .application:
+                    selection = .uninstaller
+                case .startupItem:
+                    selection = .startup
+                case .fontDuplicate:
+                    selection = .fonts
+                default:
+                    break
+                }
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.small)
@@ -164,6 +191,6 @@ public struct SmartScanView: View {
 
 #Preview {
     if #available(macOS 26.0, *) {
-        SmartScanView(viewModel: SmartScanViewModel())
+        SmartScanView(viewModel: SmartScanViewModel(), selection: .constant(.smartScan))
     }
 }
