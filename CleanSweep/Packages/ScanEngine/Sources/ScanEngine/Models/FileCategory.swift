@@ -19,6 +19,8 @@ public enum FileCategory: String, CaseIterable, Sendable {
     case fontDuplicate
     case trashItem
     case networkCache
+    case application
+    case startupItem
     case unknown
 
     public var localizedName: String {
@@ -41,6 +43,8 @@ public enum FileCategory: String, CaseIterable, Sendable {
         case .fontDuplicate: return "Font Duplicates"
         case .trashItem: return "Trash"
         case .networkCache: return "Network Caches"
+        case .application: return "Applications"
+        case .startupItem: return "Startup Items"
         case .unknown: return "Unknown"
         }
     }

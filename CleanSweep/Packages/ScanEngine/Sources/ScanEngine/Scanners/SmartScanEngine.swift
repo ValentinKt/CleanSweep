@@ -9,6 +9,12 @@ public actor SmartScanEngine {
             group.addTask { try await LargeFilesScanner().scan() }
             group.addTask { try await DevelopmentJunkScanner().scan() }
             group.addTask { try await ScreenshotScanner().scan() }
+            group.addTask { try await DuplicateFinderScanner().scan() }
+            group.addTask { try await MailAttachmentScanner().scan() }
+            group.addTask { try await TrashScanner().scan() }
+            group.addTask { try await PrivacyScanner().scan() }
+            group.addTask { try await AppUninstallerScanner().scan() }
+            group.addTask { try await StartupManagerScanner().scan() }
 
             var summary = ScanSummary()
             for try await result in group {

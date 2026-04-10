@@ -1,0 +1,85 @@
+import Foundation
+import CryptoKit
+
+public actor DuplicateFinderScanner: ModuleScanner {
+    private let scanActor = ScanActor()
+
+    public init() {}
+
+    public func scan() async throws -> ModuleResult {
+        let fileManager = FileManager.default
+        let homeDir = fileManager.homeDirectoryForCurrentUser
+
+        let targetDirs = [
+            homeDir.appendingPathComponent("Documents"),
+            homeDir.appendingPathComponent("Downloads"),
+            homeDir.appendingPathComponent("Desktop")
+        ]
+
+        var sizeMap: [Int64: [ScanResult]] = [:]
+
+        for dir in targetDirs {
+            var isDirectory: ObjCBool = false
+            if fileManager.fileExists(atPath: dir.path, isDirectory: &isDirectory), isDirectory.boolValue {
+                for await result in await scanActor.scanAllStream(at: dir) {
+                    if result.size > 0 {
+                        sizeMap[result.size, default: []].append(result)
+                    }
+                }
+            }
+        }
+
+        // Filter out unique sizes
+        let potentialDuplicates = sizeMap.filter { $0.value.count > 1 }
+
+        var duplicates: [ScanResult] = []
+
+        for (_, files) in potentialDuplicates {
+            var hashMap: [String: [ScanResult]] = [:]
+
+            for file in files {
+                if let hash = await hashFile(url: file.url) {
+                    hashMap[hash, default: []].append(file)
+                }
+            }
+
+            for (_, hashedFiles) in hashMap where hashedFiles.count > 1 {
+                // Add all to duplicates except the first one (we assume the first one is the original)
+                // Actually, let's just add all of them so the user can choose which to delete.
+                for file in hashedFiles {
+                    let duplicateResult = ScanResult(
+                        url: file.url,
+                        size: file.size,
+                        category: .duplicate,
+                        lastModified: file.lastModified,
+                        creationDate: file.creationDate,
+                        appName: file.appName
+                    )
+                    duplicates.append(duplicateResult)
+                }
+            }
+        }
+
+        return ModuleResult(moduleName: "Duplicates", results: duplicates)
+    }
+
+    private func hashFile(url: URL) async -> String? {
+        return await Task.detached(priority: .utility) {
+            do {
+                let fileHandle = try FileHandle(forReadingFrom: url)
+                defer { try? fileHandle.close() }
+
+                var hasher = SHA256()
+                let chunkSize = 1024 * 1024 // 1MB chunks
+
+                while let data = try fileHandle.read(upToCount: chunkSize), !data.isEmpty {
+                    hasher.update(data: data)
+                }
+
+                return hasher.finalize().map { String(format: "%02x", $0) }.joined()
+            } catch {
+                return nil
+            }
+        }.value
+    }
+}

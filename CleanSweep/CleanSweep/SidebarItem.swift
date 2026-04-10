@@ -19,6 +19,9 @@ enum SidebarItem: String, CaseIterable, Hashable, Identifiable {
     case memory
     case disk
     case trash
+    case networkCache
+    case fonts
+    case mailAttachments
 
     var id: String { rawValue }
 }

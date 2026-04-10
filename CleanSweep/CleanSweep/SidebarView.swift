@@ -21,15 +21,18 @@ struct SidebarView: View {
                 SidebarRow(item: .screenshots, symbol: "photo.on.rectangle", label: "Screenshots")
                 SidebarRow(item: .development, symbol: "hammer", label: "Developer Junk")
                 SidebarRow(item: .trash, symbol: "trash", label: "Trash")
+                SidebarRow(item: .mailAttachments, symbol: "paperclip", label: "Mail Attachments")
             }
             Section("Protect") {
                 SidebarRow(item: .privacy, symbol: "hand.raised", label: "Privacy")
+                SidebarRow(item: .networkCache, symbol: "network", label: "Network Cache")
             }
             Section("Manage") {
                 SidebarRow(item: .uninstaller, symbol: "app.badge.minus", label: "Uninstaller")
                 SidebarRow(item: .startup, symbol: "bolt.fill", label: "Startup Items")
                 SidebarRow(item: .memory, symbol: "memorychip", label: "Memory")
                 SidebarRow(item: .disk, symbol: "externaldrive", label: "Disk Analyzer")
+                SidebarRow(item: .fonts, symbol: "textformat", label: "Font Manager")
             }
         }
         .listStyle(.sidebar)
