@@ -58,4 +58,53 @@ public actor ScanActor {
             }
         }
     }
+
+    public func scanAllStream(at root: URL) -> AsyncStream<ScanResult> {
+        AsyncStream { continuation in
+            Task.detached(priority: .utility) {
+                let keys: [URLResourceKey] = [
+                    .fileSizeKey,
+                    .totalFileAllocatedSizeKey,
+                    .contentModificationDateKey,
+                    .contentAccessDateKey,
+                    .isDirectoryKey,
+                    .isSymbolicLinkKey,
+                    .isPackageKey
+                ]
+
+                let enumerator = FileManager.default.enumerator(
+                    at: root,
+                    includingPropertiesForKeys: keys,
+                    options: [.skipsHiddenFiles, .skipsPackageDescendants]
+                )
+
+                while let url = enumerator?.nextObject() as? URL {
+                    guard !Task.isCancelled else { break }
+
+                    do {
+                        let values = try url.resourceValues(forKeys: Set(keys))
+
+                        if let isDir = values.isDirectory, isDir { continue }
+                        if let isSym = values.isSymbolicLink, isSym { continue }
+
+                        let size = values.totalFileAllocatedSize ?? values.fileSize ?? 0
+                        guard size > 0 else { continue }
+
+                        let result = ScanResult(
+                            url: url,
+                            size: Int64(size),
+                            category: .unknown,
+                            lastModified: values.contentModificationDate,
+                            creationDate: nil,
+                            appName: nil
+                        )
+                        continuation.yield(result)
+                    } catch {
+                        continue
+                    }
+                }
+                continuation.finish()
+            }
+        }
+    }
 }

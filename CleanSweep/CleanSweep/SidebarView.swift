@@ -18,6 +18,8 @@ struct SidebarView: View {
                 SidebarRow(item: .systemJunk, symbol: "trash.slash", label: "System Junk")
                 SidebarRow(item: .largeFiles, symbol: "archivebox", label: "Large & Old Files")
                 SidebarRow(item: .duplicates, symbol: "doc.on.doc", label: "Duplicates")
+                SidebarRow(item: .screenshots, symbol: "photo.on.rectangle", label: "Screenshots")
+                SidebarRow(item: .development, symbol: "hammer", label: "Developer Junk")
                 SidebarRow(item: .trash, symbol: "trash", label: "Trash")
             }
             Section("Protect") {

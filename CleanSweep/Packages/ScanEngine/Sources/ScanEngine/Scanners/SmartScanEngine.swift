@@ -6,7 +6,9 @@ public actor SmartScanEngine {
     public func scanAllModules() async throws -> ScanSummary {
         try await withThrowingTaskGroup(of: ModuleResult.self) { group in
             group.addTask { try await SystemJunkScanner().scan() }
-            // More scanners can be added here
+            group.addTask { try await LargeFilesScanner().scan() }
+            group.addTask { try await DevelopmentJunkScanner().scan() }
+            group.addTask { try await ScreenshotScanner().scan() }
 
             var summary = ScanSummary()
             for try await result in group {

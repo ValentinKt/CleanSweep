@@ -11,6 +11,8 @@ enum SidebarItem: String, CaseIterable, Hashable, Identifiable {
     case systemJunk
     case largeFiles
     case duplicates
+    case screenshots
+    case development
     case privacy
     case uninstaller
     case startup
