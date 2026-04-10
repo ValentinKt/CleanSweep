@@ -32,9 +32,9 @@ public actor ScanActor {
                     guard !Task.isCancelled else { break }
 
                     fileCount += 1
-                    if fileCount % 100 == 0 {
+                    if fileCount % 1000 == 0 {
                         // Throttle to keep CPU ghost-like
-                        try? await Task.sleep(nanoseconds: 5_000_000) // 5ms
+                        await Task.yield()
                         let path = url.path
                         NotificationCenter.default.post(name: NSNotification.Name("ScanPathUpdated"), object: path)
                         onPath?(url)
@@ -99,9 +99,9 @@ public actor ScanActor {
                     guard !Task.isCancelled else { break }
 
                     fileCount += 1
-                    if fileCount % 100 == 0 {
+                    if fileCount % 1000 == 0 {
                         // Throttle to keep CPU ghost-like
-                        try? await Task.sleep(nanoseconds: 5_000_000) // 5ms
+                        await Task.yield()
                         let path = url.path
                         NotificationCenter.default.post(name: NSNotification.Name("ScanPathUpdated"), object: path)
                         onPath?(url)

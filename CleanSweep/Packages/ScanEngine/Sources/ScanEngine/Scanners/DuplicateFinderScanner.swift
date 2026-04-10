@@ -81,8 +81,8 @@ public actor DuplicateFinderScanner: ModuleScanner {
                     guard !Task.isCancelled else { return nil }
                     hasher.update(data: data)
                     chunks += 1
-                    if chunks % 10 == 0 {
-                        try await Task.sleep(nanoseconds: 10_000_000) // 10ms yield
+                    if chunks % 100 == 0 {
+                        await Task.yield()
                     }
                 }
 

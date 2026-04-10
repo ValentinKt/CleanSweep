@@ -61,7 +61,7 @@ public actor AppUninstallerScanner: ModuleScanner {
                     
                     fileCount += 1
                     if fileCount % 1000 == 0 {
-                        try? await Task.sleep(nanoseconds: 5_000_000) // 5ms
+                        await Task.yield()
                         NotificationCenter.default.post(name: NSNotification.Name("ScanPathUpdated"), object: fileURL.path)
                     }
 

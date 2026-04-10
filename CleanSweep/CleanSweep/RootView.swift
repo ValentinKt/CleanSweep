@@ -36,6 +36,9 @@ struct RootView: View {
                 Text(statusText)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 8))
             }
             ToolbarItem(placement: .automatic) {
                 Button("Settings", systemImage: "gear") { }

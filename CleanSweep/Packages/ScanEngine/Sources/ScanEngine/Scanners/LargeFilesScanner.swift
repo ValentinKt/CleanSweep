@@ -22,9 +22,11 @@ public actor LargeFilesScanner: ModuleScanner {
         let now = Date()
 
         for dir in targetDirs {
+            try Task.checkCancellation()
             var isDirectory: ObjCBool = false
             if fileManager.fileExists(atPath: dir.path, isDirectory: &isDirectory), isDirectory.boolValue {
                 for await result in await scanActor.scanAllStream(at: dir) {
+                    try Task.checkCancellation()
                     // Filter based on size or age
                     let isLarge = result.size >= sizeThreshold
                     let isOld = result.lastModified.map { now.timeIntervalSince($0) > ageThreshold } ?? false
