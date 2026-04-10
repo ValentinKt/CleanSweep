@@ -15,6 +15,8 @@ public actor SmartScanEngine {
             group.addTask { try await PrivacyScanner().scan() }
             group.addTask { try await AppUninstallerScanner().scan() }
             group.addTask { try await StartupManagerScanner().scan() }
+            group.addTask { try await NetworkCacheScanner().scan() }
+            group.addTask { try await FontManagerScanner().scan() }
 
             var summary = ScanSummary()
             for try await result in group {

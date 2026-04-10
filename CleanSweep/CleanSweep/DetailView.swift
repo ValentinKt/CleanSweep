@@ -62,6 +62,18 @@ struct DetailView: View {
                 } else {
                     Text("Mail Attachments requires macOS 26.0")
                 }
+            case .memory:
+                if #available(macOS 26.0, *) {
+                    MemoryMonitorView()
+                } else {
+                    Text("Memory Monitor requires macOS 26.0")
+                }
+            case .disk:
+                if #available(macOS 26.0, *) {
+                    DiskAnalyzerView()
+                } else {
+                    Text("Disk Analyzer requires macOS 26.0")
+                }
             case .trash:
                 if #available(macOS 26.0, *) {
                     ModuleScanView(scanner: TrashScanner(), title: "Trash")
@@ -85,6 +97,18 @@ struct DetailView: View {
                     ModuleScanView(scanner: StartupManagerScanner(), title: "Startup Items")
                 } else {
                     Text("Startup Manager requires macOS 26.0")
+                }
+            case .networkCache:
+                if #available(macOS 26.0, *) {
+                    ModuleScanView(scanner: NetworkCacheScanner(), title: "Network Cache")
+                } else {
+                    Text("Network Cache requires macOS 26.0")
+                }
+            case .fonts:
+                if #available(macOS 26.0, *) {
+                    ModuleScanView(scanner: FontManagerScanner(), title: "Font Manager")
+                } else {
+                    Text("Font Manager requires macOS 26.0")
                 }
             default:
                 ContentUnavailableView(
