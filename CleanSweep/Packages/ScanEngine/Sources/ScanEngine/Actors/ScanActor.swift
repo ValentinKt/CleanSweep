@@ -25,18 +25,25 @@ public actor ScanActor {
                 )
 
                 let localCategorizer = Categorizer()
+                let clock = ContinuousClock()
 
                 var fileCount = 0
+                var lastPathUpdate: ContinuousClock.Instant?
 
                 while let url = enumerator?.nextObject() as? URL {
                     guard !Task.isCancelled else { break }
 
                     fileCount += 1
-                    if fileCount % 1000 == 0 {
-                        // Throttle to keep CPU ghost-like
+                    if fileCount % 4096 == 0 {
                         await Task.yield()
-                        let path = url.path
-                        NotificationCenter.default.post(name: NSNotification.Name("ScanPathUpdated"), object: path)
+                        let now = clock.now
+
+                        if let lastPathUpdate, lastPathUpdate.duration(to: now) < .milliseconds(150) {
+                            continue
+                        }
+
+                        lastPathUpdate = now
+                        NotificationCenter.default.post(name: NSNotification.Name("ScanPathUpdated"), object: url.path)
                         onPath?(url)
                     }
 
@@ -61,13 +68,12 @@ public actor ScanActor {
                             continuation.yield(result)
                         }
                     } catch {
-                        // Log error internally if needed
                         continue
                     }
                 }
                 continuation.finish()
             }
-            
+
             continuation.onTermination = { _ in
                 task.cancel()
             }
@@ -93,17 +99,24 @@ public actor ScanActor {
                     options: [.skipsHiddenFiles, .skipsPackageDescendants]
                 )
 
+                let clock = ContinuousClock()
                 var fileCount = 0
+                var lastPathUpdate: ContinuousClock.Instant?
 
                 while let url = enumerator?.nextObject() as? URL {
                     guard !Task.isCancelled else { break }
 
                     fileCount += 1
-                    if fileCount % 1000 == 0 {
-                        // Throttle to keep CPU ghost-like
+                    if fileCount % 4096 == 0 {
                         await Task.yield()
-                        let path = url.path
-                        NotificationCenter.default.post(name: NSNotification.Name("ScanPathUpdated"), object: path)
+                        let now = clock.now
+
+                        if let lastPathUpdate, lastPathUpdate.duration(to: now) < .milliseconds(150) {
+                            continue
+                        }
+
+                        lastPathUpdate = now
+                        NotificationCenter.default.post(name: NSNotification.Name("ScanPathUpdated"), object: url.path)
                         onPath?(url)
                     }
 
@@ -131,7 +144,7 @@ public actor ScanActor {
                 }
                 continuation.finish()
             }
-            
+
             continuation.onTermination = { _ in
                 task.cancel()
             }

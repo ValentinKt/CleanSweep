@@ -26,11 +26,20 @@ struct RootView: View {
         }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Button("Scan Now", systemImage: "magnifyingglass") {
+                Button {
                     selection = .smartScan
-                    Task { await smartScanViewModel.startScan() }
+                    if smartScanViewModel.phase == .scanning {
+                        smartScanViewModel.cancelScan()
+                    } else {
+                        Task { await smartScanViewModel.startScan() }
+                    }
+                } label: {
+                    Label(
+                        smartScanViewModel.phase == .scanning ? "Cancel Scan" : "Scan Now",
+                        systemImage: smartScanViewModel.phase == .scanning ? "stop.circle.fill" : "magnifyingglass"
+                    )
                 }
-                .buttonStyle(.glassProminent)           // accent-tinted glass (macOS 26+)
+                .buttonStyle(.glassProminent)
             }
             ToolbarItem(placement: .status) {
                 Text(statusText)
@@ -40,10 +49,11 @@ struct RootView: View {
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
                     .frame(maxWidth: 250)
-                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 8))
+                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
             }
             ToolbarItem(placement: .automatic) {
                 Button("Settings", systemImage: "gear") { }
+                    .buttonStyle(.glass)
             }
         }
     }

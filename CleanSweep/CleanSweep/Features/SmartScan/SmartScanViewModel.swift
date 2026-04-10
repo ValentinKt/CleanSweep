@@ -1,6 +1,6 @@
 import SwiftUI
 import Observation
-import ScanEngine // Will need to link the package in Xcode
+import ScanEngine
 
 public enum ScanPhase: Sendable {
     case idle
@@ -16,9 +16,10 @@ public final class SmartScanViewModel {
     public var phase: ScanPhase = .idle
     public var summary: ScanSummary?
     public var activeModuleName: String = ""
-
     public var currentScannedPath: String = ""
 
+    private let scanPathUpdatedNotification = NSNotification.Name("ScanPathUpdated")
+    private let minimumPathUpdateInterval = Duration.milliseconds(150)
     private let engine = SmartScanEngine()
     private var scanTask: Task<Void, Never>?
     private var pathUpdateTask: Task<Void, Never>?
@@ -26,53 +27,95 @@ public final class SmartScanViewModel {
     public init() {}
 
     public func startScan() async {
+        guard phase != .scanning else { return }
+
         scanTask?.cancel()
         pathUpdateTask?.cancel()
-        
-        phase = .scanning
-        activeModuleName = "Preparing..."
-        currentScannedPath = ""
+        prepareForScan()
+        startPathUpdates()
 
-        pathUpdateTask = Task {
-            let stream = NotificationCenter.default.notifications(named: NSNotification.Name("ScanPathUpdated"))
-            for await notification in stream {
-                guard !Task.isCancelled else { break }
-                if let path = notification.object as? String {
-                    self.currentScannedPath = path
-                }
-            }
-        }
+        scanTask = Task { [weak self] in
+            guard let self else { return }
 
-        scanTask = Task {
             do {
                 let scanSummary = try await engine.scanAllModules { [weak self] progress, moduleName in
-                    Task { @MainActor in
-                        guard let self = self, !Task.isCancelled else { return }
-                        self.progress = progress
-                        self.activeModuleName = moduleName
-                    }
+                    guard let self, !Task.isCancelled else { return }
+                    self.progress = progress
+                    self.activeModuleName = moduleName
                 }
+
                 if Task.isCancelled { return }
-                self.summary = scanSummary
-                self.results = scanSummary.allResults
-                self.progress = 1.0
-                self.phase = .complete
+
+                self.finishScan(with: scanSummary)
             } catch {
                 if Task.isCancelled { return }
                 print("Scan failed: \(error)")
                 self.phase = .idle
             }
         }
+
         await scanTask?.value
+        scanTask = nil
         pathUpdateTask?.cancel()
+        pathUpdateTask = nil
     }
-    
+
     public func cancelScan() {
         scanTask?.cancel()
         pathUpdateTask?.cancel()
+        scanTask = nil
+        pathUpdateTask = nil
         phase = .idle
         progress = 0
         activeModuleName = "Cancelled"
         currentScannedPath = ""
+    }
+
+    private func prepareForScan() {
+        phase = .scanning
+        progress = 0
+        results = []
+        summary = nil
+        activeModuleName = "Preparing..."
+        currentScannedPath = ""
+    }
+
+    private func finishScan(with scanSummary: ScanSummary) {
+        summary = scanSummary
+        results = scanSummary.allResults
+        progress = 1.0
+        phase = .complete
+    }
+
+    private func startPathUpdates() {
+        let notificationName = scanPathUpdatedNotification
+        let updateInterval = minimumPathUpdateInterval
+
+        pathUpdateTask = Task.detached(priority: .utility) { [weak self] in
+            let stream = NotificationCenter.default.notifications(named: notificationName)
+            let clock = ContinuousClock()
+            var lastPathUpdate: ContinuousClock.Instant?
+            var lastPublishedPath = ""
+
+            for await notification in stream {
+                guard !Task.isCancelled else { break }
+
+                guard let path = notification.object as? String, path != lastPublishedPath else {
+                    continue
+                }
+
+                let now = clock.now
+                if let lastPathUpdate, lastPathUpdate.duration(to: now) < updateInterval {
+                    continue
+                }
+
+                lastPathUpdate = now
+                lastPublishedPath = path
+
+                await MainActor.run {
+                    self?.currentScannedPath = path
+                }
+            }
+        }
     }
 }

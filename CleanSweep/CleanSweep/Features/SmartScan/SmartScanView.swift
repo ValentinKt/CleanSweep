@@ -32,27 +32,55 @@ struct SmartScanView: View {
     }
 
     private var idleView: some View {
-        Button(action: {
-            scanStarted.toggle()
-            Task { await viewModel.startScan() }
-        }) {
-            VStack(spacing: 12) {
-                Image(systemName: "magnifyingglass")
-                    .font(.system(size: 48))
-                Text("Start Smart Scan")
-                    .font(.headline)
+        GlassEffectContainer(spacing: 18) {
+            VStack(spacing: 24) {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 42, weight: .semibold))
+                    .foregroundStyle(Color.accentColor)
+
+                VStack(spacing: 10) {
+                    Text("Smart Scan")
+                        .font(.largeTitle.bold())
+
+                    Text(
+                        "Run a balanced cleanup pass with live module routing and Tahoe glass surfaces."
+                    )
+                        .font(.title3)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: 520)
+                }
+
+                Button {
+                    scanStarted.toggle()
+                    Task { await viewModel.startScan() }
+                } label: {
+                    Label("Start Smart Scan", systemImage: "magnifyingglass")
+                        .font(.headline)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 16)
+                }
+                .glassEffect(.regular.interactive(), in: Capsule())
+                .glassEffectID("scanRing", in: glassSpace)
+                .buttonStyle(.plain)
+                .sensoryFeedback(.impact(flexibility: .solid, intensity: 1.0), trigger: scanStarted)
+
+                HStack(spacing: 12) {
+                    smartScanPill("Balanced Scan", systemImage: "dial.low")
+                    smartScanPill("Live Status", systemImage: "waveform.path.ecg")
+                    smartScanPill("Module Review", systemImage: "square.grid.2x2")
+                }
+                .frame(maxWidth: .infinity)
             }
-            .padding(40)
+            .padding(32)
+            .frame(maxWidth: 640)
+            .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 28, style: .continuous))
         }
-        .glassEffect(.regular.interactive(), in: Circle())
-        .glassEffectID("scanRing", in: glassSpace)
-        .buttonStyle(.plain)
-        .sensoryFeedback(.impact(flexibility: .solid, intensity: 1.0), trigger: scanStarted)
     }
 
     private var scanningView: some View {
         GlassEffectContainer(spacing: 20) {
-            VStack(spacing: 20) {
+            VStack(spacing: 24) {
                 ZStack {
                     Circle()
                         .stroke(Color.secondary.opacity(0.2), lineWidth: 12)
@@ -61,7 +89,10 @@ struct SmartScanView: View {
                         .trim(from: 0, to: viewModel.progress)
                         .stroke(Color.accentColor, style: StrokeStyle(lineWidth: 12, lineCap: .round))
                         .rotationEffect(.degrees(-90))
-                        .animation(reduceMotion ? nil : .spring(response: 0.5, dampingFraction: 0.8), value: viewModel.progress)
+                        .animation(
+                            reduceMotion ? nil : .spring(response: 0.5, dampingFraction: 0.8),
+                            value: viewModel.progress
+                        )
 
                     Text("\(Int(viewModel.progress * 100))%")
                         .font(.largeTitle.bold().monospacedDigit())
@@ -70,49 +101,66 @@ struct SmartScanView: View {
                 .glassEffect(.regular, in: Circle())
                 .glassEffectID("scanRing", in: glassSpace)
 
-                VStack(spacing: 8) {
-                    Text("Scanning...")
+                VStack(spacing: 16) {
+                    Text("Scanning")
                         .font(.headline)
+
                     Text(viewModel.activeModuleName)
-                        .font(.subheadline)
+                        .font(.title3.weight(.semibold))
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
-                        .minimumScaleFactor(0.8)
-                        .contentTransition(.numericText())
-                    
+                        .minimumScaleFactor(0.75)
+                        .truncationMode(.tail)
+                        .frame(maxWidth: 320)
+
                     if !viewModel.currentScannedPath.isEmpty {
                         Text(viewModel.currentScannedPath)
                             .font(.caption)
                             .foregroundStyle(.tertiary)
                             .lineLimit(1)
                             .truncationMode(.middle)
-                            .padding(.top, 4)
-                            .frame(maxWidth: 300)
+                            .frame(maxWidth: 360)
                     }
                 }
+                .padding(.horizontal, 24)
+                .padding(.vertical, 20)
+                .frame(maxWidth: 460)
+                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+
+                HStack(spacing: 12) {
+                    smartScanPill("Bounded CPU", systemImage: "cpu")
+                    smartScanPill("Live Path", systemImage: "folder")
+                    smartScanPill("Review Ready", systemImage: "arrow.right.circle")
+                }
+                .frame(maxWidth: .infinity)
             }
+            .padding(24)
         }
     }
 
     private var summaryView: some View {
         GlassEffectContainer(spacing: 16) {
             VStack(spacing: 24) {
-                Text("Scan Complete")
-                    .font(.largeTitle.bold())
-                    .glassEffect(.regular, in: Capsule())
-                    .glassEffectID("scanRing", in: glassSpace)
-
-                if let summary = viewModel.summary {
-                    Text("Found \(formatBytes(summary.totalSize)) to clean")
+                VStack(spacing: 10) {
+                    Text("Scan Complete")
+                        .font(.largeTitle.bold())
+                    Text(
+                        viewModel.summary.map { "Found \(formatBytes($0.totalSize)) to clean" } ??
+                            "Ready for review"
+                    )
                         .font(.title3)
                         .foregroundStyle(.secondary)
+                }
+                .padding(.horizontal, 24)
+                .padding(.vertical, 18)
+                .glassEffect(.regular, in: Capsule())
+                .glassEffectID("scanRing", in: glassSpace)
 
+                if let summary = viewModel.summary {
                     ScrollView {
                         LazyVGrid(columns: [GridItem(.adaptive(minimum: 250), spacing: 16)], spacing: 16) {
-                            ForEach(Array(summary.totalSizeByFileCategory.keys), id: \.self) { category in
-                                if let size = summary.totalSizeByFileCategory[category], size > 0 {
-                                    categoryCard(category: category, size: size)
-                                }
+                            ForEach(sortedCategories(for: summary), id: \.category) { item in
+                                categoryCard(category: item.category, size: item.size)
                             }
                         }
                         .padding(.horizontal)
@@ -121,10 +169,8 @@ struct SmartScanView: View {
 
                 Button("Clean All") {
                     cleanTriggered.toggle()
-                    // TODO: Implement clean
                 }
-                .glassEffect(.regular.interactive(), in: Capsule())
-                .buttonStyle(.plain)
+                .buttonStyle(.glassProminent)
                 .padding(.top)
                 .sensoryFeedback(.impact(flexibility: .rigid, intensity: 1.0), trigger: cleanTriggered)
             }
@@ -147,38 +193,15 @@ struct SmartScanView: View {
             }
 
             Button("Review & Clean") {
-                switch category {
-                case .userCache, .systemLog, .tempFile, .languagePack, .appSupportOrphan:
-                    selection = .systemJunk
-                case .largeFile, .oldFile:
-                    selection = .largeFiles
-                case .duplicate:
-                    selection = .duplicates
-                case .screenshot, .screenRecording:
-                    selection = .screenshots
-                case .xcodeDerivedData, .xcodeSimulator, .spmCache:
-                    selection = .development
-                case .trashItem:
-                    selection = .trash
-                case .mailAttachment:
-                    selection = .mailAttachments
-                case .browserCache, .networkCache:
-                    selection = .networkCache
-                case .application:
-                    selection = .uninstaller
-                case .startupItem:
-                    selection = .startup
-                case .fontDuplicate:
-                    selection = .fonts
-                default:
-                    break
+                if let destination = destination(for: category) {
+                    selection = destination
                 }
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.glassProminent)
             .controlSize(.small)
         }
         .padding()
-        .glassEffect(.regular.interactive(), in: RoundedRectangle(cornerRadius: 16))
+        .glassEffect(.regular.interactive(), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
     }
 
     private func formatBytes(_ bytes: Int64) -> String {
@@ -187,6 +210,57 @@ struct SmartScanView: View {
         formatter.countStyle = .file
         return formatter.string(fromByteCount: bytes)
     }
+
+    private func sortedCategories(for summary: ScanSummary) -> [(category: FileCategory, size: Int64)] {
+        summary.totalSizeByFileCategory
+            .compactMap { category, size in
+                guard size > 0 else { return nil }
+                return (category, size)
+            }
+            .sorted { lhs, rhs in
+                if lhs.size == rhs.size {
+                    return lhs.category.localizedName < rhs.category.localizedName
+                }
+
+                return lhs.size > rhs.size
+            }
+    }
+
+    private func destination(for category: FileCategory) -> SidebarItem? {
+        Self.categoryDestinations[category]
+    }
+
+    private func smartScanPill(_ title: String, systemImage: String) -> some View {
+        Label(title, systemImage: systemImage)
+            .font(.subheadline.weight(.medium))
+            .lineLimit(1)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .glassEffect(.regular, in: Capsule())
+    }
+
+    private static let categoryDestinations: [FileCategory: SidebarItem] = [
+        .userCache: .systemJunk,
+        .systemLog: .systemJunk,
+        .tempFile: .systemJunk,
+        .languagePack: .systemJunk,
+        .appSupportOrphan: .systemJunk,
+        .largeFile: .largeFiles,
+        .oldFile: .largeFiles,
+        .duplicate: .duplicates,
+        .screenshot: .screenshots,
+        .screenRecording: .screenshots,
+        .xcodeDerivedData: .development,
+        .xcodeSimulator: .development,
+        .spmCache: .development,
+        .trashItem: .trash,
+        .mailAttachment: .mailAttachments,
+        .browserCache: .networkCache,
+        .networkCache: .networkCache,
+        .application: .uninstaller,
+        .startupItem: .startup,
+        .fontDuplicate: .fonts
+    ]
 }
 
 #Preview {

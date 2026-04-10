@@ -1,8 +1,6 @@
 import Foundation
 
 public actor AppUninstallerScanner: ModuleScanner {
-    private let scanActor = ScanActor()
-
     public init() {}
 
     public func scan() async throws -> ModuleResult {
@@ -19,30 +17,31 @@ public actor AppUninstallerScanner: ModuleScanner {
         for dir in targetDirs {
             var isDirectory: ObjCBool = false
             if fileManager.fileExists(atPath: dir.path, isDirectory: &isDirectory), isDirectory.boolValue {
-                // Read contents of Applications directory
                 do {
-                    let contents = try fileManager.contentsOfDirectory(at: dir, includingPropertiesForKeys: [.fileSizeKey, .contentModificationDateKey, .creationDateKey], options: [.skipsHiddenFiles])
-                    for url in contents {
-                        if url.pathExtension == "app" {
-                            let size = await calculateSize(of: url)
-                            let attributes = try? fileManager.attributesOfItem(atPath: url.path)
-                            let lastModified = attributes?[.modificationDate] as? Date
-                            let creationDate = attributes?[.creationDate] as? Date
-                            let appName = url.deletingPathExtension().lastPathComponent
+                    let contents = try fileManager.contentsOfDirectory(
+                        at: dir,
+                        includingPropertiesForKeys: [.fileSizeKey, .contentModificationDateKey, .creationDateKey],
+                        options: [.skipsHiddenFiles]
+                    )
 
-                            let result = ScanResult(
-                                url: url,
-                                size: size,
-                                category: .application,
-                                lastModified: lastModified,
-                                creationDate: creationDate,
-                                appName: appName
-                            )
-                            apps.append(result)
-                        }
+                    for url in contents where url.pathExtension == "app" {
+                        let size = await calculateSize(of: url)
+                        let attributes = try? fileManager.attributesOfItem(atPath: url.path)
+                        let lastModified = attributes?[.modificationDate] as? Date
+                        let creationDate = attributes?[.creationDate] as? Date
+                        let appName = url.deletingPathExtension().lastPathComponent
+
+                        let result = ScanResult(
+                            url: url,
+                            size: size,
+                            category: .application,
+                            lastModified: lastModified,
+                            creationDate: creationDate,
+                            appName: appName
+                        )
+                        apps.append(result)
                     }
                 } catch {
-                    // Ignore errors for unreadable directories
                 }
             }
         }
@@ -53,16 +52,31 @@ public actor AppUninstallerScanner: ModuleScanner {
     private func calculateSize(of url: URL) async -> Int64 {
         return await Task.detached(priority: .utility) {
             let fileManager = FileManager.default
+            let clock = ContinuousClock()
             var size: Int64 = 0
-            if let enumerator = fileManager.enumerator(at: url, includingPropertiesForKeys: [.totalFileAllocatedSizeKey, .fileSizeKey]) {
+            var lastPathUpdate: ContinuousClock.Instant?
+            if let enumerator = fileManager.enumerator(
+                at: url,
+                includingPropertiesForKeys: [.totalFileAllocatedSizeKey, .fileSizeKey]
+            ) {
                 var fileCount = 0
                 for case let fileURL as URL in enumerator {
                     guard !Task.isCancelled else { break }
-                    
+
                     fileCount += 1
-                    if fileCount % 1000 == 0 {
+                    if fileCount % 4096 == 0 {
                         await Task.yield()
-                        NotificationCenter.default.post(name: NSNotification.Name("ScanPathUpdated"), object: fileURL.path)
+                        let now = clock.now
+
+                        if let lastPathUpdate, lastPathUpdate.duration(to: now) < .milliseconds(150) {
+                            continue
+                        }
+
+                        lastPathUpdate = now
+                        NotificationCenter.default.post(
+                            name: NSNotification.Name("ScanPathUpdated"),
+                            object: fileURL.path
+                        )
                     }
 
                     if let resources = try? fileURL.resourceValues(forKeys: [.totalFileAllocatedSizeKey, .fileSizeKey]) {
