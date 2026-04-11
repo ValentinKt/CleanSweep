@@ -10,7 +10,11 @@ public actor NetworkCacheScanner: ModuleScanner {
         let homeDir = fileManager.homeDirectoryForCurrentUser
 
         let targetDirs = [
-            homeDir.appendingPathComponent("Library/Caches/com.apple.nsurlsessiond")
+            homeDir.appendingPathComponent("Library/Caches/com.apple.nsurlsessiond"),
+            homeDir.appendingPathComponent("Library/Containers/com.apple.Safari/Data/Library/Caches"),
+            homeDir.appendingPathComponent("Library/Caches/com.apple.Safari"),
+            homeDir.appendingPathComponent("Library/Caches/Google/Chrome/Default/Cache"),
+            homeDir.appendingPathComponent("Library/Caches/Firefox/Profiles")
         ]
 
         var allResults: [ScanResult] = []

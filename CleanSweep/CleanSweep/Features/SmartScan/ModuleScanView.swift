@@ -232,10 +232,18 @@ struct ModuleScanView: View {
                             Text(formatBytes(result.size))
                                 .font(.callout.monospacedDigit())
                                 .foregroundStyle(.secondary)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 4)
+                                .glassEffect(.regular, in: Capsule())
                         }
                         .padding(.vertical, 4)
                         .tag(result.id)
                         .listRowBackground(Color.clear)
+                        .contextMenu {
+                            Button("Reveal in Finder") {
+                                NSWorkspace.shared.activateFileViewerSelecting([result.url])
+                            }
+                        }
                     }
                 }
                 .listStyle(.inset)
