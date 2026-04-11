@@ -94,40 +94,18 @@ struct SidebarView: View {
     private var sidebarHeader: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 14) {
-                CleanSweepHeroIcon(systemImage: "point.3.connected.trianglepath.dotted", size: 42)
+                CleanSweepHeroIcon(systemImage: "bubbles.and.sparkles", size: 42)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("CleanSweep")
                         .font(.headline.weight(.bold))
                         .foregroundStyle(.primary)
-                    Text("Mac Health Suite • Tahoe Ready • Premium Shell")
+                    Text("Mac Health Suite")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
-                }
-
-                Spacer(minLength: 0)
-
-                Image(systemName: "chevron.right")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(.secondary)
-                    .padding(10)
-                    .background {
-                        Circle()
-                            .fill(Color.white.opacity(0.08))
-                    }
-            }
-
-            HStack(spacing: 8) {
-                statusPill(
-                    title: "Tahoe Ready",
-                    tint: CleanSweepPalette.accentBlue
-                )
-                statusPill(
-                    title: "Premium Shell",
-                    tint: CleanSweepPalette.accentTeal
-                )
+                }     
             }
         }
         .padding(18)
