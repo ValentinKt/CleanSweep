@@ -47,7 +47,7 @@ enum CleanSweepPalette {
     // Keep legacy names mapped to new colors to prevent breaking views
     static let accentTeal = accentPurple
     static let accentMint = accentPink
-    
+
     static let success = Color(hex: 0x32D74B)
     static let warning = Color(hex: 0xFF9F0A)
     static let critical = Color(hex: 0xFF453A)

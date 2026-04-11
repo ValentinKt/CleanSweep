@@ -25,6 +25,8 @@ public final class SmartScanViewModel {
     private let engine = SmartScanEngine()
     private var scanTask: Task<Void, Never>?
     private var pathUpdateTask: Task<Void, Never>?
+    private var progressAnimationTask: Task<Void, Never>?
+    private var targetProgress: Double = 0
 
     public init() {}
 
@@ -42,8 +44,10 @@ public final class SmartScanViewModel {
 
         scanTask?.cancel()
         pathUpdateTask?.cancel()
+        progressAnimationTask?.cancel()
         prepareForScan()
         startPathUpdates()
+        startProgressAnimation()
 
         scanTask = Task { [weak self] in
             guard let self else { return }
@@ -51,7 +55,7 @@ public final class SmartScanViewModel {
             do {
                 let scanSummary = try await engine.scanAllModules { [weak self] progress, moduleName in
                     guard let self, !Task.isCancelled else { return }
-                    self.progress = progress
+                    self.targetProgress = progress
                     self.activeModuleName = moduleName
                 }
 
@@ -69,15 +73,20 @@ public final class SmartScanViewModel {
         scanTask = nil
         pathUpdateTask?.cancel()
         pathUpdateTask = nil
+        progressAnimationTask?.cancel()
+        progressAnimationTask = nil
     }
 
     public func cancelScan() {
         scanTask?.cancel()
         pathUpdateTask?.cancel()
+        progressAnimationTask?.cancel()
         scanTask = nil
         pathUpdateTask = nil
+        progressAnimationTask = nil
         phase = .idle
         progress = 0
+        targetProgress = 0
         activeModuleName = "Cancelled"
         currentScannedPath = ""
     }
@@ -85,11 +94,32 @@ public final class SmartScanViewModel {
     private func prepareForScan() {
         phase = .scanning
         progress = 0
+        targetProgress = 0
         results = []
         summary = nil
         reviewSeedDestination = nil
         activeModuleName = "Preparing..."
         currentScannedPath = ""
+    }
+
+    private func startProgressAnimation() {
+        progressAnimationTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .milliseconds(50))
+                guard let self else { break }
+
+                // Gradually approach the target progress, and smoothly increment slightly even if waiting
+                if self.progress < self.targetProgress {
+                    self.progress += (self.targetProgress - self.progress) * 0.05 + 0.001
+                    if self.progress > self.targetProgress {
+                        self.progress = self.targetProgress
+                    }
+                } else if self.progress < 0.99 {
+                    // Slowly increment while waiting for the next module to complete
+                    self.progress += 0.0002
+                }
+            }
+        }
     }
 
     private func finishScan(with scanSummary: ScanSummary) {

@@ -22,6 +22,7 @@ enum SidebarItem: String, CaseIterable, Hashable, Identifiable {
     case networkCache
     case fonts
     case mailAttachments
+    case leftovers
 
     var id: String { rawValue }
 
@@ -43,6 +44,7 @@ enum SidebarItem: String, CaseIterable, Hashable, Identifiable {
         case .networkCache: return "Network Cache"
         case .fonts: return "Font Manager"
         case .mailAttachments: return "Mail Attachments"
+        case .leftovers: return "Leftovers"
         }
     }
 
@@ -64,6 +66,7 @@ enum SidebarItem: String, CaseIterable, Hashable, Identifiable {
         case .networkCache: return "network"
         case .fonts: return "textformat"
         case .mailAttachments: return "paperclip"
+        case .leftovers: return "puzzlepiece.extension"
         }
     }
 }

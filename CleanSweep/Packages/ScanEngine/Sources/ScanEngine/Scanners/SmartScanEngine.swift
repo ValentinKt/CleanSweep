@@ -1,25 +1,25 @@
 import Foundation
 
 public actor SmartScanEngine {
-    private let maxConcurrentModules = 2
+    private let maxConcurrentModules = 1
 
     public init() {}
 
     public func scanAllModules(onProgress: (@MainActor @Sendable (Double, String) -> Void)? = nil) async throws -> ScanSummary {
-        let scanJobs: [@Sendable () async throws -> ModuleResult] = [
-            { try await TrashScanner().scan() },
-            { try await MailAttachmentScanner().scan() },
-            { try await PrivacyScanner().scan() },
-            { try await StartupManagerScanner().scan() },
-            { try await FontManagerScanner().scan() },
-            { try await NetworkCacheScanner().scan() },
-            { try await ScreenshotScanner().scan() },
-            { try await SystemJunkScanner().scan() },
-            { try await DevelopmentJunkScanner().scan() },
-            { try await LargeFilesScanner().scan() },
-            { try await AppUninstallerScanner().scan() },
-            { try await LeftoversScanner().scan() },
-            { try await DuplicateFinderScanner().scan() }
+        let scanJobs: [(String, @Sendable () async throws -> ModuleResult)] = [
+            ("Trash", { try await TrashScanner().scan() }),
+            ("Mail Attachments", { try await MailAttachmentScanner().scan() }),
+            ("Privacy", { try await PrivacyScanner().scan() }),
+            ("Startup Items", { try await StartupManagerScanner().scan() }),
+            ("Fonts", { try await FontManagerScanner().scan() }),
+            ("Network Cache", { try await NetworkCacheScanner().scan() }),
+            ("Screenshots", { try await ScreenshotScanner().scan() }),
+            ("System Junk", { try await SystemJunkScanner().scan() }),
+            ("Developer Junk", { try await DevelopmentJunkScanner().scan() }),
+            ("Large & Old Files", { try await LargeFilesScanner().scan() }),
+            ("App Uninstaller", { try await AppUninstallerScanner().scan() }),
+            ("Leftovers", { try await LeftoversScanner().scan() }),
+            ("Duplicates", { try await DuplicateFinderScanner().scan() })
         ]
 
         return try await withThrowingTaskGroup(of: ModuleResult.self) { group in
@@ -28,29 +28,33 @@ public actor SmartScanEngine {
             var completedModules = 0
             var nextJobIndex = 0
 
-            func enqueueNextJob() {
+            func enqueueNextJob() async {
                 guard nextJobIndex < scanJobs.count else { return }
                 let job = scanJobs[nextJobIndex]
                 nextJobIndex += 1
+
+                if let onProgress {
+                    let progress = Double(completedModules) / Double(totalModules)
+                    await onProgress(progress, job.0)
+                }
+
                 group.addTask {
-                    try await job()
+                    try await job.1()
                 }
             }
 
             for _ in 0..<min(maxConcurrentModules, scanJobs.count) {
-                enqueueNextJob()
+                await enqueueNextJob()
             }
 
             while let result = try await group.next() {
                 summary.merge(result)
                 completedModules += 1
-                let progress = Double(completedModules) / Double(totalModules)
+                await enqueueNextJob()
+            }
 
-                if let onProgress {
-                    await onProgress(progress, result.moduleName)
-                }
-
-                enqueueNextJob()
+            if let onProgress {
+                await onProgress(1.0, "Complete")
             }
 
             return summary

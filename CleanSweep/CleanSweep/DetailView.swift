@@ -43,7 +43,7 @@ struct DetailView: View {
                 }
             case .systemJunk, .development, .largeFiles, .screenshots, .duplicates,
                     .mailAttachments, .trash, .privacy, .uninstaller, .startup,
-                    .networkCache, .fonts:
+                    .networkCache, .fonts, .leftovers:
                 if #available(macOS 26.0, *) {
                     moduleScanView(for: selection)
                 } else {
@@ -245,6 +245,18 @@ private extension SidebarItem {
                     ModuleScanHighlight(title: "Size Ranked", systemImage: "arrow.down.circle")
                 ],
                 makeScanner: { AppUninstallerScanner() }
+            )
+        case .leftovers:
+            ModuleScanDescriptor(
+                title: "Leftovers",
+                systemImage: iconName,
+                descriptionText: "Clean up files left behind by uninstalled applications.",
+                highlights: [
+                    ModuleScanHighlight(title: "App Leftovers", systemImage: "puzzlepiece.extension"),
+                    ModuleScanHighlight(title: "Reclaim Space", systemImage: "arrow.down.circle"),
+                    ModuleScanHighlight(title: "Select to Clean", systemImage: "checklist")
+                ],
+                makeScanner: { LeftoversScanner() }
             )
         case .startup:
             ModuleScanDescriptor(

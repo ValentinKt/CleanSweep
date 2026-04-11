@@ -51,7 +51,7 @@ struct SidebarView: View {
                 )
                 sidebarSection(
                     title: "Manage",
-                    items: [.uninstaller, .startup, .memory, .disk, .fonts]
+                    items: [.uninstaller, .leftovers, .startup, .memory, .disk, .fonts]
                 )
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -105,7 +105,7 @@ struct SidebarView: View {
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
-                }     
+                }
             }
         }
         .padding(18)
