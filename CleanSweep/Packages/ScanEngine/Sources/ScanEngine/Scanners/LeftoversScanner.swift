@@ -136,13 +136,23 @@ public actor LeftoversScanner: ModuleScanner {
         let lastModified = attributes?[.modificationDate] as? Date
         let creationDate = attributes?[.creationDate] as? Date
 
+        let severity: Severity
+        if size > 100 * 1024 * 1024 { // > 100MB
+            severity = .high
+        } else if size > 10 * 1024 * 1024 { // > 10MB
+            severity = .medium
+        } else {
+            severity = .low
+        }
+
         return ScanResult(
             url: url,
             size: size,
             category: .application,
             lastModified: lastModified,
             creationDate: creationDate,
-            appName: name
+            appName: name,
+            severity: severity
         )
     }
 

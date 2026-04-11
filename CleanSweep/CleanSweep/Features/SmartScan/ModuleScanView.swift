@@ -7,6 +7,89 @@ struct ModuleScanHighlight: Hashable {
 }
 
 @available(macOS 26.0, *)
+private struct ScanResultRowView: View {
+    let result: ScanResult
+    @Bindable var viewModel: ModuleScanViewModel
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(
+                systemName: viewModel.selectedResultIDs.contains(result.id)
+                    ? "checkmark.circle.fill"
+                    : "circle"
+            )
+            .font(.title3)
+            .foregroundStyle(
+                viewModel.selectedResultIDs.contains(result.id)
+                    ? CleanSweepPalette.accentBlue
+                    : .secondary
+            )
+
+            ZStack {
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(CleanSweepPalette.iconBg.opacity(0.12))
+                Image(systemName: result.category.iconName)
+                    .foregroundStyle(CleanSweepPalette.iconBg)
+                    .frame(width: 18)
+            }
+            .frame(width: 30, height: 30)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(result.url.lastPathComponent)
+                    .font(.body.weight(.medium))
+                Text(result.category.localizedName)
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+                Text(result.url.path)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .truncationMode(.middle)
+                    .lineLimit(1)
+            }
+
+            Spacer()
+
+            if let severity = result.severity {
+                Text(severity.localizedName)
+                    .font(.caption2.weight(.bold).uppercaseSmallCaps())
+                    .foregroundStyle(severityColor(for: severity))
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(severityColor(for: severity).opacity(0.15), in: Capsule())
+                    .padding(.trailing, 4)
+            }
+
+            Text(moduleFormatBytes(result.size))
+                .font(.callout.monospacedDigit())
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+                .glassEffect(.regular, in: Capsule())
+        }
+        .padding(.vertical, 4)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            viewModel.toggleSelection(for: result.id)
+        }
+        .tag(result.id)
+        .listRowBackground(Color.clear)
+        .contextMenu {
+            Button("Reveal in Finder") {
+                NSWorkspace.shared.activateFileViewerSelecting([result.url])
+            }
+        }
+    }
+    
+    private func severityColor(for severity: Severity) -> Color {
+        switch severity {
+        case .high: return CleanSweepPalette.error
+        case .medium: return CleanSweepPalette.warning
+        case .low: return CleanSweepPalette.success
+        }
+    }
+}
+
+@available(macOS 26.0, *)
 struct ModuleScanView: View {
     @Bindable var viewModel: ModuleScanViewModel
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -193,65 +276,42 @@ struct ModuleScanView: View {
                         .opacity(0.5)
 
                     List {
-                        ForEach(viewModel.results) { result in
-                        HStack(spacing: 12) {
-                            Image(
-                                systemName: viewModel.selectedResultIDs.contains(result.id)
-                                    ? "checkmark.circle.fill"
-                                    : "circle"
-                            )
-                            .font(.title3)
-                            .foregroundStyle(
-                                viewModel.selectedResultIDs.contains(result.id)
-                                    ? CleanSweepPalette.accentBlue
-                                    : .secondary
-                            )
-
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                    .fill(CleanSweepPalette.iconBg.opacity(0.12))
-                                Image(systemName: result.category.iconName)
-                                    .foregroundStyle(CleanSweepPalette.iconBg)
-                                    .frame(width: 18)
-                            }
-                            .frame(width: 30, height: 30)
-
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(result.url.lastPathComponent)
-                                    .font(.body.weight(.medium))
-                                Text(result.category.localizedName)
-                                    .font(.caption)
-                                    .foregroundStyle(.tertiary)
-                                Text(result.url.path)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                    .truncationMode(.middle)
-                                    .lineLimit(1)
-                            }
-
-                            Spacer()
-
-                            Text(formatBytes(result.size))
-                                .font(.callout.monospacedDigit())
-                                .foregroundStyle(.secondary)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 4)
-                                .glassEffect(.regular, in: Capsule())
-                        }
-                        .padding(.vertical, 4)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            viewModel.toggleSelection(for: result.id)
-                        }
-                        .tag(result.id)
-                        .listRowBackground(Color.clear)
-                        .contextMenu {
-                            Button("Reveal in Finder") {
-                                NSWorkspace.shared.activateFileViewerSelecting([result.url])
-                            }
-                        }
+                        let hasSeverity = viewModel.results.contains { $0.severity != nil }
+                        if hasSeverity {
+                            let grouped = Dictionary(grouping: viewModel.results, by: { $0.severity })
+                            let sortedSeverities: [Severity] = [.high, .medium, .low].filter { grouped.keys.contains($0) }
+                            
+                            ForEach(sortedSeverities, id: \.self) { severity in
+                                Section {
+                                    ForEach(grouped[severity] ?? []) { result in
+                                        ScanResultRowView(result: result, viewModel: viewModel)
+                                     }
+                                 } header: {
+                                     Text("\(severity.localizedName) Severity")
+                                         .font(.headline)
+                                         .foregroundStyle(severityColor(for: severity))
+                                         .padding(.vertical, 4)
+                                 }
+                             }
+                             
+                             if let uncategorized = grouped[nil], !uncategorized.isEmpty {
+                                 Section {
+                                     ForEach(uncategorized) { result in
+                                        ScanResultRowView(result: result, viewModel: viewModel)
+                                     }
+                                 } header: {
+                                     Text("Other")
+                                         .font(.headline)
+                                         .foregroundStyle(.secondary)
+                                         .padding(.vertical, 4)
+                                 }
+                             }
+                         } else {
+                             ForEach(viewModel.results) { result in
+                                ScanResultRowView(result: result, viewModel: viewModel)
+                             }
+                         }
                     }
-                }
                 .listStyle(.inset)
                 .frame(minHeight: 320)
                 .scrollContentBackground(.hidden)
@@ -317,6 +377,14 @@ struct ModuleScanView: View {
 
     private func formatBytes(_ bytes: Int64) -> String {
         moduleFormatBytes(bytes)
+    }
+
+    private func severityColor(for severity: Severity) -> Color {
+        switch severity {
+        case .high: return CleanSweepPalette.error
+        case .medium: return CleanSweepPalette.warning
+        case .low: return CleanSweepPalette.success
+        }
     }
 
     private func moduleHero(eyebrow: String, title: String, description: String) -> some View {
