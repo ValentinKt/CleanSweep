@@ -20,23 +20,23 @@ struct RootView: View {
     }
 
     var body: some View {
-        GlassEffectContainer {
-            NavigationSplitView {
-                SidebarView(selection: $selection)
-            } detail: {
-                DetailView(
-                    selection: $selection,
-                    smartScanViewModel: smartScanViewModel,
-                    moduleSessionStore: moduleSessionStore
-                )
-                    .backgroundExtensionEffect()
-            }
-            .navigationSplitViewStyle(.balanced)
-            .background {
-                CleanSweepWindowBackground()
-            }
-            .tint(CleanSweepPalette.accentBlue)
-            .toolbar {
+        NavigationSplitView {
+            SidebarView(selection: $selection)
+                .navigationSplitViewColumnWidth(min: 280, ideal: 300, max: 340)
+        } detail: {
+            DetailView(
+                selection: $selection,
+                smartScanViewModel: smartScanViewModel,
+                moduleSessionStore: moduleSessionStore
+            )
+                .backgroundExtensionEffect()
+        }
+        .navigationSplitViewStyle(.balanced)
+        .background {
+            CleanSweepWindowBackground()
+        }
+        .tint(CleanSweepPalette.accentBlue)
+        .toolbar {
                 ToolbarItem(placement: .navigation) {
                     HStack(spacing: 12) {
                         CleanSweepHeroIcon(systemImage: "bubbles.and.sparkles", size: 34)
@@ -82,7 +82,6 @@ struct RootView: View {
                         .buttonStyle(CleanSweepSecondaryButtonStyle())
                 }
             }
-        }
     }
 }
 

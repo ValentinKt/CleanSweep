@@ -237,8 +237,12 @@ struct CleanSweepSidebarPanel<Content: View>: View {
             .fill(
                 LinearGradient(
                     colors: [
-                        Color.white.opacity(colorScheme == .dark ? 0.10 : 0.78),
-                        Color.white.opacity(colorScheme == .dark ? 0.04 : 0.32)
+                        colorScheme == .dark
+                            ? Color(hex: 0x172235, opacity: 0.84)
+                            : Color.white.opacity(0.82),
+                        colorScheme == .dark
+                            ? Color(hex: 0x0F1828, opacity: 0.92)
+                            : Color.white.opacity(0.34)
                     ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
@@ -249,13 +253,33 @@ struct CleanSweepSidebarPanel<Content: View>: View {
                     .fill(
                         LinearGradient(
                             colors: [
-                                Color.white.opacity(colorScheme == .dark ? 0.18 : 0.30),
+                                colorScheme == .dark
+                                    ? CleanSweepPalette.accentBlue.opacity(0.16)
+                                    : Color.white.opacity(0.30),
+                                colorScheme == .dark
+                                    ? Color.white.opacity(0.05)
+                                    : Color.clear,
                                 Color.clear
                             ],
                             startPoint: .top,
                             endPoint: .bottom
                         )
                     )
+            }
+            .overlay(alignment: .leading) {
+                RoundedRectangle(cornerRadius: 30, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                CleanSweepPalette.accentBlue.opacity(colorScheme == .dark ? 0.20 : 0.08),
+                                Color.clear
+                            ],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .frame(width: 46)
+                    .blur(radius: 18)
             }
 
         if reduceTransparency {
@@ -266,7 +290,9 @@ struct CleanSweepSidebarPanel<Content: View>: View {
             baseBackground
                 .glassEffect(
                     .regular.tint(
-                        Color.white.opacity(colorScheme == .dark ? 0.08 : 0.14)
+                        colorScheme == .dark
+                            ? Color(hex: 0x0B1A2D, opacity: 0.26)
+                            : Color.white.opacity(0.14)
                     ),
                     in: shape
                 )
