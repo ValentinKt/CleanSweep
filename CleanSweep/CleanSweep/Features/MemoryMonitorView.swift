@@ -5,79 +5,139 @@ struct MemoryMonitorView: View {
     @State private var memoryPressure: Double = 0.0
     @State private var monitorTask: Task<Void, Never>?
     @State private var purgeTriggered = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        GlassEffectContainer(spacing: 20) {
+        ScrollView {
             VStack(spacing: 24) {
-                VStack(spacing: 10) {
-                    Text("Memory Monitor")
-                        .font(.largeTitle.bold())
-
-                    Text("Track live pressure and free inactive memory with the same Smart Scan style glass layout.")
-                        .font(.title3)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: 560)
-                }
-                .padding(.horizontal, 24)
-                .padding(.vertical, 18)
-                .glassEffect(.regular, in: Capsule())
-
-                ZStack {
-                    Circle()
-                        .stroke(Color.secondary.opacity(0.2), lineWidth: 20)
-
-                    ProgressCircleView(progress: memoryPressure)
-
-                    VStack {
-                        Text("\(Int(memoryPressure * 100))%")
-                            .font(.system(size: 40, weight: .bold, design: .monospaced))
-                        Text("Pressure")
-                            .font(.caption.weight(.medium))
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .frame(width: 200, height: 200)
-                .glassEffect(.regular, in: Circle())
-
+                heroSection
+                pressureSection
                 HStack(spacing: 16) {
                     metricCard(
                         title: "Current Pressure",
                         value: "\(Int(memoryPressure * 100))%",
-                        systemImage: "memorychip"
+                        systemImage: "memorychip.fill",
+                        accent: CleanSweepPalette.accentBlue
                     )
                     metricCard(
                         title: pressureLabel,
                         value: pressureState,
-                        systemImage: pressureSymbol
+                        systemImage: pressureSymbol,
+                        accent: pressureAccent
+                    )
+                    metricCard(
+                        title: "Recommended",
+                        value: recommendationTitle,
+                        systemImage: "sparkles",
+                        accent: CleanSweepPalette.accentTeal
                     )
                 }
 
-                HStack(spacing: 12) {
-                    featurePill("Live Updates", systemImage: "waveform.path.ecg")
-                    featurePill("Pressure Gauge", systemImage: "gauge.with.needle")
-                    featurePill("Purge Ready", systemImage: "bolt")
+                CleanSweepSurface(cornerRadius: 22, padding: 20) {
+                    HStack(spacing: 12) {
+                        CleanSweepTag(title: "Live Updates", systemImage: "waveform.path.ecg")
+                        CleanSweepTag(title: "Pressure Gauge", systemImage: "gauge.with.needle")
+                        CleanSweepTag(title: "Purge Ready", systemImage: "bolt.fill")
+                        Spacer(minLength: 0)
+                    }
                 }
-                .frame(maxWidth: .infinity)
-
-                Button("Purge Memory") {
-                    purgeTriggered.toggle()
-                    purgeMemory()
-                }
-                .buttonStyle(.glassProminent)
-                .sensoryFeedback(
-                    .impact(flexibility: .rigid, intensity: 1.0),
-                    trigger: purgeTriggered
-                )
             }
-            .padding(32)
-            .frame(maxWidth: 680)
+            .padding(28)
+        }
+        .background {
+            CleanSweepWindowBackground()
         }
         .onAppear {
             startMonitoring()
         }
         .onDisappear {
             monitorTask?.cancel()
+        }
+    }
+
+    private var heroSection: some View {
+        CleanSweepSurface(cornerRadius: 26, padding: 28) {
+            HStack(spacing: 24) {
+                CleanSweepHeroIcon(systemImage: "memorychip.fill", size: 104)
+
+                VStack(alignment: .leading, spacing: 14) {
+                    CleanSweepSectionEyebrow(title: "Memory")
+                    Text("Keep memory pressure calm and responsive.")
+                        .font(.system(size: 34, weight: .bold))
+                    Text(
+                        "Track live pressure and free inactive memory with a polished, premium " +
+                            "monitor designed to feel native on macOS."
+                    )
+                        .font(.title3)
+                        .foregroundStyle(.secondary)
+
+                    Button("Purge Memory") {
+                        purgeTriggered.toggle()
+                        purgeMemory()
+                    }
+                    .buttonStyle(CleanSweepPrimaryButtonStyle())
+                    .sensoryFeedback(
+                        .impact(flexibility: .rigid, intensity: 1.0),
+                        trigger: purgeTriggered
+                    )
+                }
+
+                Spacer(minLength: 0)
+            }
+        }
+    }
+
+    private var pressureSection: some View {
+        CleanSweepSurface(cornerRadius: 26, padding: 28) {
+            HStack(spacing: 28) {
+                ZStack {
+                    Circle()
+                        .fill(Color.white.opacity(0.55))
+                        .overlay(Circle().stroke(Color.primary.opacity(0.05), lineWidth: 1))
+
+                    CleanSweepProgressRing(
+                        progress: memoryPressure,
+                        palette: progressPalette,
+                        animated: !reduceMotion
+                    )
+
+                    VStack(spacing: 6) {
+                        Text("\(Int(memoryPressure * 100))%")
+                            .font(.system(size: 38, weight: .bold))
+                            .monospacedDigit()
+                        Text("Pressure")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .frame(width: 220, height: 220)
+
+                VStack(alignment: .leading, spacing: 16) {
+                    CleanSweepSectionEyebrow(title: "Live Memory Pressure")
+                    Text(pressureHeadline)
+                        .font(.system(size: 30, weight: .bold))
+                    Text(
+                        "Use the pressure ring to spot load spikes quickly, then purge inactive " +
+                            "memory for immediate relief."
+                    )
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+
+                    CleanSweepSurface(cornerRadius: 18, padding: 16) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Label("Current Guidance", systemImage: pressureSymbol)
+                                .font(.headline)
+                                .foregroundStyle(pressureAccent)
+                            Text(recommendationBody)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+
+                Spacer(minLength: 0)
+            }
         }
     }
 
@@ -147,102 +207,80 @@ struct MemoryMonitorView: View {
         return "checkmark.circle.fill"
     }
 
-    private func metricCard(title: String, value: String, systemImage: String) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Image(systemName: systemImage)
-                    .foregroundStyle(Color.accentColor)
-                    .font(.title3)
-                Spacer()
+    private var pressureHeadline: String {
+        switch pressureState {
+        case "High":
+            "Memory needs attention"
+        case "Elevated":
+            "Memory load is rising"
+        default:
+            "Memory looks healthy"
+        }
+    }
+
+    private var recommendationTitle: String {
+        switch pressureState {
+        case "High":
+            "Purge Now"
+        case "Elevated":
+            "Monitor"
+        default:
+            "All Good"
+        }
+    }
+
+    private var recommendationBody: String {
+        switch pressureState {
+        case "High":
+            "Purge memory soon to quickly reclaim inactive pages and restore responsiveness."
+        case "Elevated":
+            "The system remains stable, but a purge can help if apps start to feel heavy."
+        default:
+            "No action is necessary. Your current memory pressure is comfortably in the healthy range."
+        }
+    }
+
+    private var pressureAccent: Color {
+        switch pressureState {
+        case "High":
+            CleanSweepPalette.critical
+        case "Elevated":
+            CleanSweepPalette.warning
+        default:
+            CleanSweepPalette.success
+        }
+    }
+
+    private var progressPalette: CleanSweepProgressPalette {
+        switch pressureState {
+        case "High":
+            .critical
+        case "Elevated":
+            .warning
+        default:
+            .scan
+        }
+    }
+
+    private func metricCard(title: String, value: String, systemImage: String, accent: Color) -> some View {
+        CleanSweepSurface(cornerRadius: 20, padding: 18) {
+            VStack(alignment: .leading, spacing: 12) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .fill(accent.opacity(0.14))
+                    Image(systemName: systemImage)
+                        .foregroundStyle(accent)
+                        .font(.title3)
+                }
+                .frame(width: 42, height: 42)
+
+                Text(value)
+                    .font(.title2.bold().monospacedDigit())
+                Text(title)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
-
-            Text(value)
-                .font(.title2.bold().monospacedDigit())
-            Text(title)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
-        .glassEffect(.regular.interactive(), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-    }
-
-    private func featurePill(_ title: String, systemImage: String) -> some View {
-        Label(title, systemImage: systemImage)
-            .font(.subheadline.weight(.medium))
-            .lineLimit(1)
-            .padding(.horizontal, 14)
-            .padding(.vertical, 10)
-            .glassEffect(.regular, in: Capsule())
-    }
-}
-
-@available(macOS 26.0, *)
-struct ProgressCircleView: NSViewRepresentable {
-    var progress: Double
-
-    func makeNSView(context: Context) -> ProgressCircleNSView {
-        ProgressCircleNSView()
-    }
-
-    func updateNSView(_ nsView: ProgressCircleNSView, context: Context) {
-        nsView.setProgress(CGFloat(progress))
-    }
-}
-
-class ProgressCircleNSView: NSView {
-    private let shapeLayer = CAShapeLayer()
-
-    override init(frame frameRect: NSRect) {
-        super.init(frame: frameRect)
-        setupLayer()
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupLayer()
-    }
-
-    private func setupLayer() {
-        wantsLayer = true
-        layer?.addSublayer(shapeLayer)
-
-        shapeLayer.fillColor = NSColor.clear.cgColor
-        shapeLayer.lineWidth = 20
-        shapeLayer.lineCap = .round
-        shapeLayer.strokeStart = 0
-        shapeLayer.strokeEnd = 0
-        shapeLayer.transform = CATransform3DMakeRotation(-.pi / 2, 0, 0, 1)
-    }
-
-    override func layout() {
-        super.layout()
-        shapeLayer.frame = bounds
-        let insetBounds = bounds.insetBy(dx: 10, dy: 10)
-        shapeLayer.path = CGPath(ellipseIn: insetBounds, transform: nil)
-        shapeLayer.position = CGPoint(x: bounds.midX, y: bounds.midY)
-        shapeLayer.bounds = bounds
-    }
-
-    func setProgress(_ progress: CGFloat) {
-        let color: NSColor
-        if progress > 0.8 {
-            color = .systemRed
-        } else if progress > 0.6 {
-            color = .systemYellow
-        } else {
-            color = .controlAccentColor
-        }
-
-        shapeLayer.strokeColor = color.cgColor
-
-        let anim = CABasicAnimation(keyPath: "strokeEnd")
-        anim.fromValue = shapeLayer.presentation()?.strokeEnd ?? shapeLayer.strokeEnd
-        anim.toValue = progress
-        anim.duration = 0.5
-        anim.timingFunction = CAMediaTimingFunction(controlPoints: 0.5, 0, 0.5, 1.0)
-
-        shapeLayer.strokeEnd = progress
-        shapeLayer.add(anim, forKey: "strokeEndAnim")
     }
 }

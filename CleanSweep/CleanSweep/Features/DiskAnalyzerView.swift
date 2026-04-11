@@ -4,129 +4,189 @@ import Charts
 @available(macOS 26.0, *)
 struct DiskAnalyzerView: View {
     @State private var diskUsage: [DiskUsageCategory] = [
-        DiskUsageCategory(name: "System", size: 40_000_000_000, color: .gray),
-        DiskUsageCategory(name: "Apps", size: 80_000_000_000, color: .blue),
-        DiskUsageCategory(name: "Documents", size: 150_000_000_000, color: .orange),
-        DiskUsageCategory(name: "Media", size: 100_000_000_000, color: .purple),
-        DiskUsageCategory(name: "Other", size: 30_000_000_000, color: .green),
+        DiskUsageCategory(name: "System", size: 40_000_000_000, color: Color(hex: UInt32(0x8E8E93))),
+        DiskUsageCategory(name: "Apps", size: 80_000_000_000, color: CleanSweepPalette.accentBlue),
+        DiskUsageCategory(name: "Documents", size: 150_000_000_000, color: Color(hex: UInt32(0xFF9F0A))),
+        DiskUsageCategory(name: "Media", size: 100_000_000_000, color: Color(hex: UInt32(0xBF5AF2))),
+        DiskUsageCategory(name: "Other", size: 30_000_000_000, color: CleanSweepPalette.accentTeal),
         DiskUsageCategory(name: "Free", size: 200_000_000_000, color: .clear)
     ]
 
     var body: some View {
-        GlassEffectContainer(spacing: 20) {
+        ScrollView {
             VStack(spacing: 24) {
-                VStack(spacing: 10) {
-                    Text("Disk Analyzer")
-                        .font(.largeTitle.bold())
-
-                    Text("Review storage distribution inside the same Smart Scan inspired glass shell.")
-                        .font(.title3)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: 560)
-                }
-                .padding(.horizontal, 24)
-                .padding(.vertical, 18)
-                .glassEffect(.regular, in: Capsule())
-
-                Chart(diskUsage) { item in
-                    SectorMark(
-                        angle: .value("Size", item.size),
-                        innerRadius: .ratio(0.6),
-                        angularInset: 1.5
-                    )
-                    .cornerRadius(5)
-                    .foregroundStyle(item.color)
-                }
-                .frame(height: 300)
-                .padding()
-                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+                heroSection
 
                 HStack(spacing: 16) {
                     metricCard(
                         title: "Used Space",
                         value: formattedBytes(usedSpace),
-                        systemImage: "externaldrive.fill"
+                        systemImage: "externaldrive.fill",
+                        accent: CleanSweepPalette.accentBlue
                     )
                     metricCard(
                         title: "Largest Category",
                         value: largestCategory.name,
-                        systemImage: "chart.pie.fill"
+                        systemImage: "chart.pie.fill",
+                        accent: largestCategory.color
+                    )
+                    metricCard(
+                        title: "Available",
+                        value: formattedBytes(freeSpace),
+                        systemImage: "internaldrive.fill.badge.checkmark",
+                        accent: CleanSweepPalette.success
                     )
                 }
 
-                HStack(spacing: 12) {
-                    featurePill("Usage Breakdown", systemImage: "chart.pie")
-                    featurePill("Largest Areas", systemImage: "arrow.up.forward.circle")
-                    featurePill("Space Review", systemImage: "internaldrive")
-                }
-                .frame(maxWidth: .infinity)
+                chartSection
+                legendSection
+            }
+            .padding(28)
+        }
+        .background {
+            CleanSweepWindowBackground()
+        }
+    }
 
-                VStack(alignment: .leading, spacing: 10) {
-                    ForEach(diskUsage.filter { $0.name != "Free" }) { item in
-                        HStack {
-                            Circle()
-                                .fill(item.color)
-                                .frame(width: 10, height: 10)
-                            Text(item.name)
-                            Spacer()
-                            Text(formattedBytes(item.size))
-                                .font(.body.monospacedDigit())
-                        }
+    private var heroSection: some View {
+        CleanSweepSurface(cornerRadius: 26, padding: 28) {
+            HStack(spacing: 24) {
+                CleanSweepHeroIcon(systemImage: "internaldrive.fill", size: 104)
+
+                VStack(alignment: .leading, spacing: 14) {
+                    CleanSweepSectionEyebrow(title: "Disk")
+                    Text("See exactly where your storage goes.")
+                        .font(.system(size: 34, weight: .bold))
+                    Text(
+                        "Review storage distribution with a premium, card-based analyzer " +
+                            "that mirrors the confidence of the best Mac maintenance tools."
+                    )
+                        .font(.title3)
+                        .foregroundStyle(.secondary)
+
+                    HStack(spacing: 12) {
+                        CleanSweepTag(title: "Usage Breakdown", systemImage: "chart.pie.fill")
+                        CleanSweepTag(title: "Largest Areas", systemImage: "arrow.up.forward.circle.fill")
+                        CleanSweepTag(title: "Space Review", systemImage: "sparkles")
                     }
                 }
-                .padding()
-                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+
+                Spacer(minLength: 0)
             }
-            .padding(32)
-            .frame(maxWidth: 760)
+        }
+    }
+
+    private var chartSection: some View {
+        CleanSweepSurface(cornerRadius: 26, padding: 24) {
+            HStack(spacing: 24) {
+                Chart(diskUsage) { item in
+                    SectorMark(
+                        angle: .value("Size", item.size),
+                        innerRadius: .ratio(0.62),
+                        angularInset: 2
+                    )
+                    .cornerRadius(6)
+                    .foregroundStyle(item.color)
+                }
+                .frame(width: 320, height: 320)
+
+                VStack(alignment: .leading, spacing: 16) {
+                    CleanSweepSectionEyebrow(title: "Storage Map")
+                    Text("Largest storage footprint: \(largestCategory.name)")
+                        .font(.title2.weight(.bold))
+                    Text(
+                        "Use the donut chart to compare major categories at a glance " +
+                            "before jumping into more focused cleanup areas."
+                    )
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+
+                    CleanSweepSurface(cornerRadius: 18, padding: 16) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Label("Free Space", systemImage: "internaldrive.fill.badge.checkmark")
+                                .font(.headline)
+                                .foregroundStyle(CleanSweepPalette.success)
+                            Text(formattedBytes(freeSpace))
+                                .font(.title3.weight(.bold))
+                                .monospacedDigit()
+                            Text(
+                                "Healthy free space helps macOS stay responsive during scans, " +
+                                    "installs, and cache cleanup."
+                            )
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+
+                Spacer(minLength: 0)
+            }
+        }
+    }
+
+    private var legendSection: some View {
+        CleanSweepSurface(cornerRadius: 24, padding: 22) {
+            VStack(alignment: .leading, spacing: 14) {
+                CleanSweepSectionEyebrow(title: "Categories")
+                ForEach(nonFreeCategories) { item in
+                    HStack(spacing: 12) {
+                        RoundedRectangle(cornerRadius: 5, style: .continuous)
+                            .fill(item.color)
+                            .frame(width: 12, height: 12)
+                        Text(item.name)
+                            .font(.headline)
+                        Spacer()
+                        Text(formattedBytes(item.size))
+                            .font(.body.monospacedDigit())
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 
     private var usedSpace: Int64 {
-        diskUsage
-            .filter { $0.name != "Free" }
-            .map(\.size)
-            .reduce(0, +)
+        nonFreeCategories.map(\.size).reduce(0, +)
+    }
+
+    private var freeSpace: Int64 {
+        diskUsage.first(where: { $0.name == "Free" })?.size ?? 0
     }
 
     private var largestCategory: DiskUsageCategory {
-        diskUsage
-            .filter { $0.name != "Free" }
-            .max(by: { $0.size < $1.size }) ?? diskUsage[0]
+        nonFreeCategories.max(by: { $0.size < $1.size }) ?? diskUsage[0]
+    }
+
+    private var nonFreeCategories: [DiskUsageCategory] {
+        diskUsage.filter { $0.name != "Free" }
     }
 
     private func formattedBytes(_ size: Int64) -> String {
         ByteCountFormatter.string(fromByteCount: size, countStyle: .file)
     }
 
-    private func metricCard(title: String, value: String, systemImage: String) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Image(systemName: systemImage)
-                    .foregroundStyle(Color.accentColor)
-                    .font(.title3)
-                Spacer()
+    private func metricCard(title: String, value: String, systemImage: String, accent: Color) -> some View {
+        CleanSweepSurface(cornerRadius: 20, padding: 18) {
+            VStack(alignment: .leading, spacing: 12) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .fill(accent.opacity(0.14))
+                    Image(systemName: systemImage)
+                        .foregroundStyle(accent)
+                        .font(.title3)
+                }
+                .frame(width: 42, height: 42)
+
+                Text(value)
+                    .font(.title2.bold().monospacedDigit())
+                Text(title)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
-
-            Text(value)
-                .font(.title2.bold().monospacedDigit())
-            Text(title)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
-        .glassEffect(.regular.interactive(), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-    }
-
-    private func featurePill(_ title: String, systemImage: String) -> some View {
-        Label(title, systemImage: systemImage)
-            .font(.subheadline.weight(.medium))
-            .lineLimit(1)
-            .padding(.horizontal, 14)
-            .padding(.vertical, 10)
-            .glassEffect(.regular, in: Capsule())
     }
 }
 

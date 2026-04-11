@@ -6,9 +6,7 @@ struct SmartScanView: View {
     @Bindable var viewModel: SmartScanViewModel
     @Binding var selection: SidebarItem?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Namespace private var glassSpace
     @State private var scanStarted = false
-    @State private var cleanTriggered = false
 
     init(viewModel: SmartScanViewModel, selection: Binding<SidebarItem?>) {
         self.viewModel = viewModel
@@ -16,7 +14,7 @@ struct SmartScanView: View {
     }
 
     var body: some View {
-        VStack {
+        ScrollView {
             switch viewModel.phase {
             case .idle:
                 idleView
@@ -26,183 +24,201 @@ struct SmartScanView: View {
                 summaryView
             }
         }
-        .padding()
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background {
+            CleanSweepWindowBackground()
+        }
         .sensoryFeedback(.success, trigger: viewModel.phase == .complete)
     }
 
     private var idleView: some View {
-        GlassEffectContainer(spacing: 18) {
-            VStack(spacing: 24) {
-                Image(systemName: "sparkles")
-                    .font(.system(size: 42, weight: .semibold))
-                    .foregroundStyle(Color.accentColor)
+        VStack(spacing: 24) {
+            heroSection(
+                eyebrow: "Smart Care",
+                title: "Scan your Mac with the same calm, premium flow users expect from top-tier cleanup apps.",
+                description: "Review junk, duplicates, attachments, privacy traces, and startup clutter " +
+                    "with one polished pass."
+            )
 
-                VStack(spacing: 10) {
-                    Text("Smart Scan")
-                        .font(.largeTitle.bold())
-
-                    Text(
-                        "Run a balanced cleanup pass with live module routing and Tahoe glass surfaces."
-                    )
-                        .font(.title3)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: 520)
-                }
-
-                Button {
-                    scanStarted.toggle()
-                    Task { await viewModel.startScan() }
-                } label: {
-                    Label("Start Smart Scan", systemImage: "magnifyingglass")
-                        .font(.headline)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 16)
-                }
-                .glassEffect(.regular.interactive(), in: Capsule())
-                .glassEffectID("scanRing", in: glassSpace)
-                .buttonStyle(.plain)
-                .sensoryFeedback(.impact(flexibility: .solid, intensity: 1.0), trigger: scanStarted)
-
-                HStack(spacing: 12) {
-                    smartScanPill("Balanced Scan", systemImage: "dial.low")
-                    smartScanPill("Live Status", systemImage: "waveform.path.ecg")
-                    smartScanPill("Module Review", systemImage: "square.grid.2x2")
-                }
-                .frame(maxWidth: .infinity)
+            HStack(spacing: 16) {
+                CleanSweepMetricTile(
+                    title: "Coverage",
+                    value: "12 Modules",
+                    systemImage: "square.grid.2x2.fill",
+                    accent: CleanSweepPalette.accentBlue
+                )
+                CleanSweepMetricTile(
+                    title: "Live Status",
+                    value: "Real-Time",
+                    systemImage: "waveform.path.ecg",
+                    accent: CleanSweepPalette.accentTeal
+                )
+                CleanSweepMetricTile(
+                    title: "Safety",
+                    value: "Review First",
+                    systemImage: "checkmark.shield.fill",
+                    accent: CleanSweepPalette.success
+                )
             }
-            .padding(32)
-            .frame(maxWidth: 640)
-            .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 28, style: .continuous))
+
+            CleanSweepSurface(cornerRadius: 24, padding: 22) {
+                HStack(spacing: 12) {
+                    CleanSweepTag(title: "Balanced Scan", systemImage: "sparkles")
+                    CleanSweepTag(title: "Live Paths", systemImage: "folder")
+                    CleanSweepTag(
+                        title: "Review & Route",
+                        systemImage: "arrowshape.turn.up.right.fill"
+                    )
+                    Spacer()
+                }
+            }
         }
+        .padding(28)
     }
 
     private var scanningView: some View {
-        GlassEffectContainer(spacing: 20) {
-            VStack(spacing: 24) {
-                ZStack {
-                    Circle()
-                        .stroke(Color.secondary.opacity(0.2), lineWidth: 12)
-
-                    Circle()
-                        .trim(from: 0, to: viewModel.progress)
-                        .stroke(Color.accentColor, style: StrokeStyle(lineWidth: 12, lineCap: .round))
-                        .rotationEffect(.degrees(-90))
-                        .animation(
-                            reduceMotion ? nil : .spring(response: 0.5, dampingFraction: 0.8),
-                            value: viewModel.progress
-                        )
-
-                    Text("\(Int(viewModel.progress * 100))%")
-                        .font(.largeTitle.bold().monospacedDigit())
-                }
-                .frame(width: 200, height: 200)
-                .glassEffect(.regular, in: Circle())
-                .glassEffectID("scanRing", in: glassSpace)
-
-                VStack(spacing: 16) {
-                    Text("Scanning")
-                        .font(.headline)
-
-                    Text(viewModel.activeModuleName)
-                        .font(.title3.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.75)
-                        .truncationMode(.tail)
-                        .frame(maxWidth: 320)
-
-                    if !viewModel.currentScannedPath.isEmpty {
-                        Text(viewModel.currentScannedPath)
-                            .font(.caption)
-                            .foregroundStyle(.tertiary)
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-                            .frame(maxWidth: 360)
+        VStack(spacing: 24) {
+            CleanSweepSurface(cornerRadius: 26, padding: 28) {
+                HStack(spacing: 28) {
+                    ZStack {
+                        Circle()
+                            .fill(Color.white.opacity(0.55))
+                            .overlay(Circle().stroke(Color.primary.opacity(0.05), lineWidth: 1))
+                        CleanSweepProgressRing(progress: viewModel.progress, animated: !reduceMotion)
+                        VStack(spacing: 6) {
+                            Text("\(Int(viewModel.progress * 100))%")
+                                .font(.system(size: 38, weight: .bold))
+                                .monospacedDigit()
+                            Text("Complete")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                        }
                     }
-                }
-                .padding(.horizontal, 24)
-                .padding(.vertical, 20)
-                .frame(maxWidth: 460)
-                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+                    .frame(width: 220, height: 220)
 
-                HStack(spacing: 12) {
-                    smartScanPill("Bounded CPU", systemImage: "cpu")
-                    smartScanPill("Live Path", systemImage: "folder")
-                    smartScanPill("Review Ready", systemImage: "arrow.right.circle")
+                    VStack(alignment: .leading, spacing: 14) {
+                        CleanSweepSectionEyebrow(title: "Scanning")
+                        Text("Smart Scan is reviewing your Mac")
+                            .font(.system(size: 30, weight: .bold))
+                        Text(activeModuleTitle)
+                            .font(.title3.weight(.semibold))
+                            .foregroundStyle(CleanSweepPalette.accentBlue)
+                            .lineLimit(1)
+                        Text(
+                            "Smooth progress, live module updates, and path feedback stay visible throughout the scan."
+                        )
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+
+                        CleanSweepSurface(cornerRadius: 18, padding: 16) {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Label("Currently Inspecting", systemImage: "folder.fill")
+                                    .font(.headline)
+                                Text(
+                                    viewModel.currentScannedPath.isEmpty
+                                        ? "Preparing scan…"
+                                        : viewModel.currentScannedPath
+                                )
+                                    .font(.subheadline.monospaced())
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(1)
+                                    .truncationMode(.middle)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                    }
+
+                    Spacer(minLength: 0)
                 }
-                .frame(maxWidth: .infinity)
             }
-            .padding(24)
+
+            HStack(spacing: 12) {
+                CleanSweepTag(title: "Bounded CPU", systemImage: "cpu")
+                CleanSweepTag(title: "Live Path", systemImage: "folder")
+                CleanSweepTag(title: "Progress Memory", systemImage: "circle.hexagongrid.fill")
+                Spacer()
+            }
+            .padding(.horizontal, 28)
         }
+        .padding(.vertical, 28)
     }
 
     private var summaryView: some View {
-        GlassEffectContainer(spacing: 16) {
-            VStack(spacing: 24) {
-                VStack(spacing: 10) {
-                    Text("Scan Complete")
-                        .font(.largeTitle.bold())
-                    Text(
-                        viewModel.summary.map { "Found \(formatBytes($0.totalSize)) to clean" } ??
-                            "Ready for review"
-                    )
-                        .font(.title3)
-                        .foregroundStyle(.secondary)
-                }
-                .padding(.horizontal, 24)
-                .padding(.vertical, 18)
-                .glassEffect(.regular, in: Capsule())
-                .glassEffectID("scanRing", in: glassSpace)
+        VStack(spacing: 24) {
+            heroSection(
+                eyebrow: "Completed",
+                title: "Your Mac scan is ready for review.",
+                description: summaryDescription
+            )
 
-                if let summary = viewModel.summary {
-                    ScrollView {
-                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 250), spacing: 16)], spacing: 16) {
-                            ForEach(sortedCategories(for: summary), id: \.category) { item in
-                                categoryCard(category: item.category, size: item.size)
-                            }
-                        }
-                        .padding(.horizontal)
+            if let summary = viewModel.summary {
+                HStack(spacing: 16) {
+                    CleanSweepMetricTile(
+                        title: "Potential Cleanup",
+                        value: formatBytes(summary.totalSize),
+                        systemImage: "externaldrive.fill.badge.minus",
+                        accent: CleanSweepPalette.accentBlue
+                    )
+                    CleanSweepMetricTile(
+                        title: "Items Found",
+                        value: "\(summary.allResults.count)",
+                        systemImage: "doc.text.magnifyingglass",
+                        accent: CleanSweepPalette.accentTeal
+                    )
+                    CleanSweepMetricTile(
+                        title: "Categories",
+                        value: "\(sortedCategories(for: summary).count)",
+                        systemImage: "square.grid.3x2.fill",
+                        accent: CleanSweepPalette.success
+                    )
+                }
+
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 280), spacing: 18)], spacing: 18) {
+                    ForEach(sortedCategories(for: summary), id: \.category) { item in
+                        categoryCard(category: item.category, size: item.size)
                     }
                 }
-
-                Button("Clean All") {
-                    cleanTriggered.toggle()
-                }
-                .buttonStyle(.glassProminent)
-                .padding(.top)
-                .sensoryFeedback(.impact(flexibility: .rigid, intensity: 1.0), trigger: cleanTriggered)
             }
         }
-        .transition(.blurReplace)
+        .padding(28)
     }
 
     private func categoryCard(category: FileCategory, size: Int64) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Image(systemName: category.iconName)
-                    .foregroundStyle(Color.accentColor)
-                    .font(.title3)
-                Text(category.localizedName)
-                    .font(.headline)
-                Spacer()
-                Text(formatBytes(size))
-                    .font(.subheadline.monospacedDigit())
-                    .foregroundStyle(.secondary)
-            }
+        CleanSweepSurface(cornerRadius: 22, padding: 22) {
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(alignment: .top) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .fill(CleanSweepPalette.accentBlue.opacity(0.12))
+                        Image(systemName: category.iconName)
+                            .font(.title3.weight(.semibold))
+                            .foregroundStyle(CleanSweepPalette.accentBlue)
+                    }
+                    .frame(width: 42, height: 42)
 
-            Button("Review & Clean") {
-                if let destination = destination(for: category) {
-                    viewModel.prepareReview(for: destination)
-                    selection = destination
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(category.localizedName)
+                            .font(.headline)
+                        Text(formatBytes(size))
+                            .font(.title3.weight(.bold))
+                            .monospacedDigit()
+                    }
+
+                    Spacer()
                 }
+
+                Text("Open this category to review matching files with the same premium cleanup workflow.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+
+                Button("Review & Clean") {
+                    if let destination = destination(for: category) {
+                        viewModel.prepareReview(for: destination)
+                        selection = destination
+                    }
+                }
+                .buttonStyle(CleanSweepPrimaryButtonStyle())
             }
-            .buttonStyle(.glassProminent)
-            .controlSize(.small)
         }
-        .padding()
-        .glassEffect(.regular.interactive(), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
     }
 
     private func formatBytes(_ bytes: Int64) -> String {
@@ -231,13 +247,47 @@ struct SmartScanView: View {
         Self.categoryDestinations[category]
     }
 
-    private func smartScanPill(_ title: String, systemImage: String) -> some View {
-        Label(title, systemImage: systemImage)
-            .font(.subheadline.weight(.medium))
-            .lineLimit(1)
-            .padding(.horizontal, 14)
-            .padding(.vertical, 10)
-            .glassEffect(.regular, in: Capsule())
+    private var activeModuleTitle: String {
+        viewModel.activeModuleName.isEmpty ? "Preparing…" : viewModel.activeModuleName
+    }
+
+    private var summaryDescription: String {
+        if let summary = viewModel.summary {
+            let categoryCount = sortedCategories(for: summary).count
+            return "Found \(summary.allResults.count) items across \(categoryCount) categories."
+        }
+
+        return "Ready for review."
+    }
+
+    private func heroSection(eyebrow: String, title: String, description: String) -> some View {
+        CleanSweepSurface(cornerRadius: 26, padding: 28) {
+            HStack(spacing: 24) {
+                CleanSweepHeroIcon(systemImage: "wand.and.stars.inverse", size: 112)
+
+                VStack(alignment: .leading, spacing: 14) {
+                    CleanSweepSectionEyebrow(title: eyebrow)
+                    Text(title)
+                        .font(.system(size: 34, weight: .bold))
+                    Text(description)
+                        .font(.title3)
+                        .foregroundStyle(.secondary)
+
+                    if viewModel.phase == .idle {
+                        Button {
+                            scanStarted.toggle()
+                            Task { await viewModel.startScan() }
+                        } label: {
+                            Label("Start Smart Scan", systemImage: "magnifyingglass")
+                        }
+                        .buttonStyle(CleanSweepPrimaryButtonStyle())
+                        .sensoryFeedback(.impact(flexibility: .solid, intensity: 1.0), trigger: scanStarted)
+                    }
+                }
+
+                Spacer(minLength: 0)
+            }
+        }
     }
 
     private static let categoryDestinations: [FileCategory: SidebarItem] = [

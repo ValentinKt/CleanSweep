@@ -17,6 +17,7 @@
 		4563B6B622B06468CF6CF43C /* SidebarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ECE766483F11FE33C8C9FE4 /* SidebarItem.swift */; };
 		5320D4B97DA640DB6B823786 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8060B542C381FB1CB79DCA /* RootView.swift */; };
 		66551E3B60B64B48C0AD09B0 /* SmartScanViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B4BDE237F031C9AE85C9847 /* SmartScanViewModel.swift */; };
+		703CE4429CFA3B09FA70A55B /* CleanSweepDesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD291ECC2A8EEF63A5E8CC03 /* CleanSweepDesignSystem.swift */; };
 		72992AFF63AC05013142F117 /* HealthDashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B25EAE40F6D0471C7EB024C /* HealthDashboardViewModel.swift */; };
 		7B717BD2B537E236EC14C4E8 /* SmartScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096B4F53B0867958EEA8D8E0 /* SmartScanView.swift */; };
 		892A0A2F6A56E368D6405B7A /* DiskAnalyzerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9229BF84CBC642F53971C8 /* DiskAnalyzerView.swift */; };
@@ -39,6 +40,7 @@
 		9E9229BF84CBC642F53971C8 /* DiskAnalyzerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskAnalyzerView.swift; sourceTree = "<group>"; };
 		AB569C8B0B69082F98B1C1E1 /* MemoryMonitorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryMonitorView.swift; sourceTree = "<group>"; };
 		C49C8835A3A15492A6613351 /* ScanEngine */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ScanEngine; path = Packages/ScanEngine; sourceTree = SOURCE_ROOT; };
+		DD291ECC2A8EEF63A5E8CC03 /* CleanSweepDesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanSweepDesignSystem.swift; sourceTree = "<group>"; };
 		E3968EA842C4BFC770853FAB /* ModuleScanViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModuleScanViewModel.swift; sourceTree = "<group>"; };
 		F964AD144F0D08697B700243 /* ModuleScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModuleScanView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -80,6 +82,7 @@
 			children = (
 				4516567E163F92E98A19E598 /* Assets.xcassets */,
 				182852D20FA6601B170CD689 /* CleanSweepApp.swift */,
+				DD291ECC2A8EEF63A5E8CC03 /* CleanSweepDesignSystem.swift */,
 				64799F53539F617549D592E5 /* DashboardView.swift */,
 				1B0DF8D9EB688362869185BB /* DetailView.swift */,
 				5D8060B542C381FB1CB79DCA /* RootView.swift */,
@@ -190,6 +193,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				128677662FCE185CF71AA5F4 /* CleanSweepApp.swift in Sources */,
+				703CE4429CFA3B09FA70A55B /* CleanSweepDesignSystem.swift in Sources */,
 				382ED880D8F64EAC697D4239 /* DashboardView.swift in Sources */,
 				2A529C349E0556B1FAFB4C5B /* DetailView.swift in Sources */,
 				892A0A2F6A56E368D6405B7A /* DiskAnalyzerView.swift in Sources */,

@@ -2,6 +2,8 @@ import Foundation
 
 public actor ScanActor {
     private let categorizer = Categorizer()
+    private static let minimumPathUpdateInterval = Duration.milliseconds(150)
+    private static let pathUpdateStride = 128
 
     public init() {}
 
@@ -34,16 +36,13 @@ public actor ScanActor {
                     guard !Task.isCancelled else { break }
 
                     fileCount += 1
-                    if fileCount % 4096 == 0 {
-                        await Task.yield()
-                        let now = clock.now
-
-                        if let lastPathUpdate, lastPathUpdate.duration(to: now) < .milliseconds(150) {
-                            continue
-                        }
-
-                        lastPathUpdate = now
-                        NotificationCenter.default.post(name: NSNotification.Name("ScanPathUpdated"), object: url.path)
+                    if Self.shouldPublishPathUpdate(
+                        fileCount: fileCount,
+                        clock: clock,
+                        lastPathUpdate: lastPathUpdate
+                    ) {
+                        lastPathUpdate = clock.now
+                        Self.publishPathUpdate(for: url)
                         onPath?(url)
                     }
 
@@ -107,16 +106,13 @@ public actor ScanActor {
                     guard !Task.isCancelled else { break }
 
                     fileCount += 1
-                    if fileCount % 4096 == 0 {
-                        await Task.yield()
-                        let now = clock.now
-
-                        if let lastPathUpdate, lastPathUpdate.duration(to: now) < .milliseconds(150) {
-                            continue
-                        }
-
-                        lastPathUpdate = now
-                        NotificationCenter.default.post(name: NSNotification.Name("ScanPathUpdated"), object: url.path)
+                    if Self.shouldPublishPathUpdate(
+                        fileCount: fileCount,
+                        clock: clock,
+                        lastPathUpdate: lastPathUpdate
+                    ) {
+                        lastPathUpdate = clock.now
+                        Self.publishPathUpdate(for: url)
                         onPath?(url)
                     }
 
@@ -149,5 +145,29 @@ public actor ScanActor {
                 task.cancel()
             }
         }
+    }
+
+    private nonisolated static func shouldPublishPathUpdate(
+        fileCount: Int,
+        clock: ContinuousClock,
+        lastPathUpdate: ContinuousClock.Instant?
+    ) -> Bool {
+        guard fileCount == 1 || fileCount % pathUpdateStride == 0 else {
+            return false
+        }
+
+        let now = clock.now
+        guard let lastPathUpdate else {
+            return true
+        }
+
+        return lastPathUpdate.duration(to: now) >= minimumPathUpdateInterval
+    }
+
+    private nonisolated static func publishPathUpdate(for url: URL) {
+        NotificationCenter.default.post(
+            name: NSNotification.Name("ScanPathUpdated"),
+            object: url.path
+        )
     }
 }

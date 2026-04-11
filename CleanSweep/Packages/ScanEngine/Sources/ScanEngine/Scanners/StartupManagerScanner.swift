@@ -18,10 +18,20 @@ public actor StartupManagerScanner: ModuleScanner {
         for dir in targetDirs {
             var isDirectory: ObjCBool = false
             if fileManager.fileExists(atPath: dir.path, isDirectory: &isDirectory), isDirectory.boolValue {
+                publishScanPath(dir.path)
                 do {
-                    let contents = try fileManager.contentsOfDirectory(at: dir, includingPropertiesForKeys: [.fileSizeKey, .contentModificationDateKey, .creationDateKey], options: [.skipsHiddenFiles])
+                    let contents = try fileManager.contentsOfDirectory(
+                        at: dir,
+                        includingPropertiesForKeys: [
+                            .fileSizeKey,
+                            .contentModificationDateKey,
+                            .creationDateKey
+                        ],
+                        options: [.skipsHiddenFiles]
+                    )
                     for url in contents {
                         if url.pathExtension == "plist" {
+                            publishScanPath(url.path)
                             let attributes = try? fileManager.attributesOfItem(atPath: url.path)
                             let size = (attributes?[.size] as? NSNumber)?.int64Value ?? 0
                             let lastModified = attributes?[.modificationDate] as? Date

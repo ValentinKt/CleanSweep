@@ -60,7 +60,7 @@ public actor AppUninstallerScanner: ModuleScanner {
                 includingPropertiesForKeys: [.totalFileAllocatedSizeKey, .fileSizeKey]
             ) {
                 var fileCount = 0
-                for case let fileURL as URL in enumerator {
+                while let fileURL = enumerator.nextObject() as? URL {
                     guard !Task.isCancelled else { break }
 
                     fileCount += 1
@@ -79,7 +79,9 @@ public actor AppUninstallerScanner: ModuleScanner {
                         )
                     }
 
-                    if let resources = try? fileURL.resourceValues(forKeys: [.totalFileAllocatedSizeKey, .fileSizeKey]) {
+                    if let resources = try? fileURL.resourceValues(
+                        forKeys: [.totalFileAllocatedSizeKey, .fileSizeKey]
+                    ) {
                         size += Int64(resources.totalFileAllocatedSize ?? resources.fileSize ?? 0)
                     }
                 }

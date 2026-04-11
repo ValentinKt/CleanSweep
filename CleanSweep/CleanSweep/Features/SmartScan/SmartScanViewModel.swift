@@ -104,6 +104,7 @@ public final class SmartScanViewModel {
         let updateInterval = minimumPathUpdateInterval
 
         pathUpdateTask = Task.detached(priority: .utility) { [weak self] in
+            guard let self else { return }
             let stream = NotificationCenter.default.notifications(named: notificationName)
             let clock = ContinuousClock()
             var lastPathUpdate: ContinuousClock.Instant?
@@ -124,10 +125,12 @@ public final class SmartScanViewModel {
                 lastPathUpdate = now
                 lastPublishedPath = path
 
-                await MainActor.run {
-                    self?.currentScannedPath = path
-                }
+                await self.updateCurrentScannedPath(path)
             }
         }
+    }
+
+    private func updateCurrentScannedPath(_ path: String) {
+        currentScannedPath = path
     }
 }

@@ -9,10 +9,17 @@ import ScanEngine
 struct DetailView: View {
     @Binding var selection: SidebarItem?
     var smartScanViewModel: SmartScanViewModel
+    var moduleSessionStore: ModuleScanSessionStore
 
     var body: some View {
         contentView
             .navigationTitle(selection?.rawValue.capitalized ?? "CleanSweep")
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .background {
+                if #available(macOS 26.0, *) {
+                    CleanSweepWindowBackground()
+                }
+            }
     }
 
     @ViewBuilder
@@ -20,7 +27,14 @@ struct DetailView: View {
         if let selection {
             switch selection {
             case .dashboard:
-                DashboardView()
+                if #available(macOS 26.0, *) {
+                    DashboardView {
+                        self.selection = .smartScan
+                        Task { await smartScanViewModel.startScan() }
+                    }
+                } else {
+                    Text("Dashboard requires macOS 26.0")
+                }
             case .smartScan:
                 if #available(macOS 26.0, *) {
                     SmartScanView(viewModel: smartScanViewModel, selection: $selection)
@@ -47,12 +61,6 @@ struct DetailView: View {
                 } else {
                     Text("Disk Analyzer requires macOS 26.0")
                 }
-            default:
-                ContentUnavailableView(
-                    "\(selection.rawValue.capitalized)",
-                    systemImage: "hammer.fill",
-                    description: Text("This feature is under construction.")
-                )
             }
         } else {
             ContentUnavailableView("Select an item", systemImage: "sidebar.left")
@@ -65,14 +73,14 @@ struct DetailView: View {
         if let descriptor = item.moduleScanDescriptor {
             let seedsFromSmartScan = smartScanViewModel.reviewSeedDestination == item
             ModuleScanView(
-                scanner: descriptor.makeScanner(),
+                viewModel: moduleSessionStore.viewModel(for: item, descriptor: descriptor),
                 title: descriptor.title,
                 systemImage: descriptor.systemImage,
                 descriptionText: descriptor.descriptionText,
                 highlights: descriptor.highlights,
-                initialResults: seedsFromSmartScan ? smartScanSeedResults(for: item) : []
+                initialResults: seedsFromSmartScan ? smartScanSeedResults(for: item) : [],
+                initialResultsSeedID: seedsFromSmartScan ? smartScanViewModel.reviewSeedID : nil
             )
-            .id(moduleViewIdentity(for: item, seedsFromSmartScan: seedsFromSmartScan))
             .task(id: seedsFromSmartScan) {
                 guard seedsFromSmartScan else { return }
                 smartScanViewModel.clearReviewSeed()
@@ -86,10 +94,24 @@ struct DetailView: View {
 
         return smartScanViewModel.results.filter { categories.contains($0.category) }
     }
+}
 
-    private func moduleViewIdentity(for item: SidebarItem, seedsFromSmartScan: Bool) -> String {
-        guard seedsFromSmartScan else { return item.rawValue }
-        return "\(item.rawValue)-\(smartScanViewModel.reviewSeedID.uuidString)"
+@MainActor
+@Observable
+final class ModuleScanSessionStore {
+    private var viewModels: [SidebarItem: ModuleScanViewModel] = [:]
+
+    fileprivate func viewModel(for item: SidebarItem, descriptor: ModuleScanDescriptor) -> ModuleScanViewModel {
+        if let existing = viewModels[item] {
+            return existing
+        }
+
+        let viewModel = ModuleScanViewModel(
+            scanner: descriptor.makeScanner(),
+            moduleName: descriptor.title
+        )
+        viewModels[item] = viewModel
+        return viewModel
     }
 }
 

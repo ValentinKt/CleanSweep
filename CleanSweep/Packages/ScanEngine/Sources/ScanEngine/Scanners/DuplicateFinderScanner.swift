@@ -36,11 +36,12 @@ public actor DuplicateFinderScanner: ModuleScanner {
 
         for (_, files) in potentialDuplicates {
             try Task.checkCancellation()
-            
+
             var hashMap: [String: [ScanResult]] = [:]
 
             for file in files {
                 try Task.checkCancellation()
+                publishScanPath(file.url.path)
                 if let hash = await hashFile(url: file.url) {
                     hashMap[hash, default: []].append(file)
                 }

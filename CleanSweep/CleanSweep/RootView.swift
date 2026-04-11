@@ -5,9 +5,11 @@
 
 import SwiftUI
 
+@available(macOS 26.0, *)
 struct RootView: View {
     @State private var selection: SidebarItem? = .dashboard
     @State private var smartScanViewModel = SmartScanViewModel()
+    @State private var moduleSessionStore = ModuleScanSessionStore()
 
     var statusText: String {
         switch smartScanViewModel.phase {
@@ -18,47 +20,74 @@ struct RootView: View {
     }
 
     var body: some View {
-        NavigationSplitView {
-            SidebarView(selection: $selection)
-        } detail: {
-            DetailView(selection: $selection, smartScanViewModel: smartScanViewModel)
-                .backgroundExtensionEffect()    // macOS 26: fills floating sidebar gap
-        }
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button {
-                    selection = .smartScan
-                    if smartScanViewModel.phase == .scanning {
-                        smartScanViewModel.cancelScan()
-                    } else {
-                        Task { await smartScanViewModel.startScan() }
+        GlassEffectContainer {
+            NavigationSplitView {
+                SidebarView(selection: $selection)
+            } detail: {
+                DetailView(
+                    selection: $selection,
+                    smartScanViewModel: smartScanViewModel,
+                    moduleSessionStore: moduleSessionStore
+                )
+                    .backgroundExtensionEffect()
+            }
+            .navigationSplitViewStyle(.balanced)
+            .background {
+                CleanSweepWindowBackground()
+            }
+            .tint(CleanSweepPalette.accentBlue)
+            .toolbar {
+                ToolbarItem(placement: .navigation) {
+                    HStack(spacing: 12) {
+                        CleanSweepHeroIcon(systemImage: "bubbles.and.sparkles", size: 34)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("CleanSweep")
+                                .font(.headline.weight(.semibold))
+                            Text("Mac Health Suite")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
                     }
-                } label: {
-                    Label(
-                        smartScanViewModel.phase == .scanning ? "Cancel Scan" : "Scan Now",
-                        systemImage: smartScanViewModel.phase == .scanning ? "stop.circle.fill" : "magnifyingglass"
-                    )
                 }
-                .buttonStyle(.glassProminent)
-            }
-            ToolbarItem(placement: .status) {
-                Text(statusText)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-                    .minimumScaleFactor(0.8)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .frame(maxWidth: 250)
-                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-            }
-            ToolbarItem(placement: .automatic) {
-                Button("Settings", systemImage: "gear") { }
-                    .buttonStyle(.glass)
+                ToolbarItemGroup(placement: .primaryAction) {
+                    Button {
+                        selection = .smartScan
+                        if smartScanViewModel.phase == .scanning {
+                            smartScanViewModel.cancelScan()
+                        } else {
+                            Task { await smartScanViewModel.startScan() }
+                        }
+                    } label: {
+                        Label(
+                            smartScanViewModel.phase == .scanning ? "Cancel Scan" : "Scan Now",
+                            systemImage: smartScanViewModel.phase == .scanning ? "stop.circle.fill" : "magnifyingglass"
+                        )
+                    }
+                    .buttonStyle(CleanSweepPrimaryButtonStyle())
+
+                    Text(statusText)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .minimumScaleFactor(0.8)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .background(.white.opacity(0.001))
+                        .clipShape(Capsule())
+                        .overlay {
+                            Capsule()
+                                .stroke(Color.primary.opacity(0.08), lineWidth: 1)
+                        }
+
+                    Button("Settings", systemImage: "gearshape.fill") { }
+                        .buttonStyle(CleanSweepSecondaryButtonStyle())
+                }
             }
         }
     }
 }
 
 #Preview {
-    RootView()
+    if #available(macOS 26.0, *) {
+        RootView()
+    }
 }
