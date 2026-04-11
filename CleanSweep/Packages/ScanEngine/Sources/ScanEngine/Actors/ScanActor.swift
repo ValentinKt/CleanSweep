@@ -36,7 +36,7 @@ public actor ScanActor {
                     guard !Task.isCancelled else { break }
 
                     fileCount += 1
-                    
+
                     // Throttling: yield every 256 files to keep CPU usage low
                     if fileCount % 256 == 0 {
                         await Task.yield()
@@ -122,7 +122,7 @@ public actor ScanActor {
                     guard !Task.isCancelled else { break }
 
                     fileCount += 1
-                    
+
                     // Throttling: yield every 256 files to keep CPU usage low
                     if fileCount % 256 == 0 {
                         await Task.yield()

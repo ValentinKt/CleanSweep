@@ -40,7 +40,7 @@ public actor AppUninstallerScanner: ModuleScanner {
                             creationDate: creationDate,
                             appName: appName
                         )
-                        
+
                         let result = ScanResult(
                             url: baseResult.url,
                             size: baseResult.size,
@@ -75,7 +75,7 @@ public actor AppUninstallerScanner: ModuleScanner {
                     guard !Task.isCancelled else { break }
 
                     fileCount += 1
-                    
+
                     // Throttling: yield every 256 files to keep CPU usage low
                     if fileCount % 256 == 0 {
                         await Task.yield()

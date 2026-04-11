@@ -79,7 +79,7 @@ private struct ScanResultRowView: View {
             }
         }
     }
-    
+
     private func severityColor(for severity: Severity) -> Color {
         switch severity {
         case .high: return CleanSweepPalette.error
@@ -280,7 +280,7 @@ struct ModuleScanView: View {
                         if hasSeverity {
                             let grouped = Dictionary(grouping: viewModel.results, by: { $0.severity })
                             let sortedSeverities: [Severity] = [.high, .medium, .low].filter { grouped.keys.contains($0) }
-                            
+
                             ForEach(sortedSeverities, id: \.self) { severity in
                                 Section {
                                     ForEach(grouped[severity] ?? []) { result in
@@ -293,7 +293,7 @@ struct ModuleScanView: View {
                                          .padding(.vertical, 4)
                                  }
                              }
-                             
+
                              if let uncategorized = grouped[nil], !uncategorized.isEmpty {
                                  Section {
                                      ForEach(uncategorized) { result in

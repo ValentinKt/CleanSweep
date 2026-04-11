@@ -28,7 +28,7 @@ public actor SmartScanEngine {
                 let progress = Double(index) / Double(totalModules)
                 await onProgress(progress, job.0)
             }
-            
+
             let result = try await job.1()
             summary.merge(result)
         }
