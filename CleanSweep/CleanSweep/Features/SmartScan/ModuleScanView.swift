@@ -185,8 +185,15 @@ struct ModuleScanView: View {
             }
 
             CleanSweepSurface(cornerRadius: 26, padding: 12) {
-                List {
-                    ForEach(viewModel.results) { result in
+                VStack(spacing: 0) {
+                    listHeader
+
+                    Divider()
+                        .padding(.horizontal, 16)
+                        .opacity(0.5)
+
+                    List {
+                        ForEach(viewModel.results) { result in
                         HStack(spacing: 12) {
                             Image(
                                 systemName: viewModel.selectedResultIDs.contains(result.id)
@@ -248,6 +255,7 @@ struct ModuleScanView: View {
                 .listStyle(.inset)
                 .frame(minHeight: 320)
                 .scrollContentBackground(.hidden)
+                }
             }
 
             if viewModel.failedCleanupCount > 0 {
@@ -273,6 +281,38 @@ struct ModuleScanView: View {
     private var cleanButtonTitle: String {
         let selectedCount = viewModel.selectedResultIDs.count
         return selectedCount == 1 ? "Clean Selected Item" : "Clean Selected (\(selectedCount))"
+    }
+
+    private var listHeader: some View {
+        HStack {
+            Button {
+                viewModel.toggleSelectAll()
+            } label: {
+                HStack(spacing: 8) {
+                    Image(
+                        systemName: viewModel.isAllSelected
+                            ? "checkmark.circle.fill"
+                            : "circle"
+                    )
+                    .font(.title3)
+                    .foregroundStyle(
+                        viewModel.isAllSelected
+                            ? CleanSweepPalette.accentBlue
+                            : .secondary
+                    )
+                    Text(viewModel.isAllSelected ? "Deselect All" : "Select All")
+                        .font(.body.weight(.medium))
+                }
+            }
+            .buttonStyle(.plain)
+            Spacer()
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            viewModel.toggleSelectAll()
+        }
     }
 
     private func formatBytes(_ bytes: Int64) -> String {

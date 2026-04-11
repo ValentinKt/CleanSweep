@@ -94,15 +94,17 @@ struct SidebarView: View {
     private var sidebarHeader: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 14) {
-                CleanSweepHeroIcon(systemImage: "sparkles.rectangle.stack.fill", size: 42)
+                CleanSweepHeroIcon(systemImage: "point.3.connected.trianglepath.dotted", size: 42)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("CleanSweep")
                         .font(.headline.weight(.bold))
                         .foregroundStyle(.primary)
-                    Text("Calm cleanup for your Mac")
+                    Text("Mac Health Suite • Tahoe Ready • Premium Shell")
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
                 }
 
                 Spacer(minLength: 0)

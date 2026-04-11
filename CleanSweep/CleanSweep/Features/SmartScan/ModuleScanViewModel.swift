@@ -115,6 +115,18 @@ public final class ModuleScanViewModel {
         }
     }
 
+    public var isAllSelected: Bool {
+        !results.isEmpty && selectedResultIDs.count == results.count
+    }
+
+    public func toggleSelectAll() {
+        if isAllSelected {
+            selectedResultIDs.removeAll()
+        } else {
+            selectedResultIDs = Set(results.map(\.id))
+        }
+    }
+
     public func toggleSelection(for resultID: ScanResult.ID) {
         if selectedResultIDs.contains(resultID) {
             selectedResultIDs.remove(resultID)
