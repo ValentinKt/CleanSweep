@@ -185,25 +185,20 @@ struct ModuleScanView: View {
             }
 
             CleanSweepSurface(cornerRadius: 26, padding: 12) {
-                List(selection: $viewModel.selectedResultIDs) {
+                List {
                     ForEach(viewModel.results) { result in
                         HStack(spacing: 12) {
-                            Button {
-                                viewModel.toggleSelection(for: result.id)
-                            } label: {
-                                Image(
-                                    systemName: viewModel.selectedResultIDs.contains(result.id)
-                                        ? "checkmark.circle.fill"
-                                        : "circle"
-                                )
-                                .font(.title3)
-                                .foregroundStyle(
-                                    viewModel.selectedResultIDs.contains(result.id)
-                                        ? CleanSweepPalette.accentBlue
-                                        : .secondary
-                                )
-                            }
-                            .buttonStyle(.plain)
+                            Image(
+                                systemName: viewModel.selectedResultIDs.contains(result.id)
+                                    ? "checkmark.circle.fill"
+                                    : "circle"
+                            )
+                            .font(.title3)
+                            .foregroundStyle(
+                                viewModel.selectedResultIDs.contains(result.id)
+                                    ? CleanSweepPalette.accentBlue
+                                    : .secondary
+                            )
 
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous)
@@ -237,6 +232,10 @@ struct ModuleScanView: View {
                                 .glassEffect(.regular, in: Capsule())
                         }
                         .padding(.vertical, 4)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            viewModel.toggleSelection(for: result.id)
+                        }
                         .tag(result.id)
                         .listRowBackground(Color.clear)
                         .contextMenu {

@@ -13,8 +13,15 @@ public actor NetworkCacheScanner: ModuleScanner {
             homeDir.appendingPathComponent("Library/Caches/com.apple.nsurlsessiond"),
             homeDir.appendingPathComponent("Library/Containers/com.apple.Safari/Data/Library/Caches"),
             homeDir.appendingPathComponent("Library/Caches/com.apple.Safari"),
-            homeDir.appendingPathComponent("Library/Caches/Google/Chrome/Default/Cache"),
-            homeDir.appendingPathComponent("Library/Caches/Firefox/Profiles")
+            homeDir.appendingPathComponent("Library/Caches/Google/Chrome"),
+            homeDir.appendingPathComponent("Library/Caches/Firefox/Profiles"),
+            homeDir.appendingPathComponent("Library/Caches/BraveSoftware"),
+            homeDir.appendingPathComponent("Library/Caches/com.duckduckgo.macos.browser"),
+            homeDir.appendingPathComponent("Library/Containers/com.duckduckgo.macos.browser/Data/Library/Caches"),
+            homeDir.appendingPathComponent("Library/Caches/com.operasoftware.Opera"),
+            homeDir.appendingPathComponent("Library/Caches/com.microsoft.edgemac"),
+            homeDir.appendingPathComponent("Library/Caches/company.thebrowser.Browser"), // Arc
+            homeDir.appendingPathComponent("Library/Caches/com.vivaldi.Vivaldi")
         ]
 
         var allResults: [ScanResult] = []

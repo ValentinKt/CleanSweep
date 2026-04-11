@@ -5,17 +5,26 @@ public actor PrivacyScanner: ModuleScanner {
 
     public init() {}
 
+    private func getTargetPaths(homeDir: URL) -> [URL] {
+        return [
+            homeDir.appendingPathComponent("Library/Safari/History.db"),
+            homeDir.appendingPathComponent("Library/Cookies/Cookies.binarycookies"),
+            homeDir.appendingPathComponent("Library/Application Support/Google/Chrome"),
+            homeDir.appendingPathComponent("Library/Application Support/Firefox/Profiles"),
+            homeDir.appendingPathComponent("Library/Application Support/com.apple.sharedfilelist"),
+            homeDir.appendingPathComponent("Library/Application Support/BraveSoftware"),
+            homeDir.appendingPathComponent("Library/Application Support/com.operasoftware.Opera"),
+            homeDir.appendingPathComponent("Library/Application Support/Microsoft Edge"),
+            homeDir.appendingPathComponent("Library/Application Support/Arc"),
+            homeDir.appendingPathComponent("Library/Application Support/Vivaldi")
+        ]
+    }
+
     public func scan() async throws -> ModuleResult {
         let fileManager = FileManager.default
         let homeDir = fileManager.homeDirectoryForCurrentUser
 
-        let targetPaths = [
-            homeDir.appendingPathComponent("Library/Safari/History.db"),
-            homeDir.appendingPathComponent("Library/Cookies/Cookies.binarycookies"),
-            homeDir.appendingPathComponent("Library/Application Support/Google/Chrome/Default/History"),
-            homeDir.appendingPathComponent("Library/Application Support/Firefox/Profiles"),
-            homeDir.appendingPathComponent("Library/Application Support/com.apple.sharedfilelist")
-        ]
+        let targetPaths = getTargetPaths(homeDir: homeDir)
 
         var allResults: [ScanResult] = []
 
