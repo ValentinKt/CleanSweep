@@ -81,8 +81,8 @@ struct SidebarView: View {
     private func sectionHeader(_ title: String) -> some View {
         HStack(spacing: 8) {
             Capsule(style: .continuous)
-                .fill(CleanSweepPalette.accentBlue.opacity(0.75))
-                .frame(width: 18, height: 3)
+                .fill(CleanSweepPalette.iconBg.opacity(0.75))
+                .frame(width: 4, height: 12)
 
             Text(title.uppercased())
                 .font(.caption.weight(.bold))
@@ -195,8 +195,8 @@ struct SidebarRow: View {
                             Capsule()
                                 .fill(
                                     isSelected
-                                        ? Color.white.opacity(0.18)
-                                        : CleanSweepPalette.accentBlue.opacity(0.16)
+                                        ? Color.white.opacity(0.9)
+                                        : CleanSweepPalette.iconBg.opacity(0.16)
                                 )
                         )
                 }
@@ -213,7 +213,7 @@ struct SidebarRow: View {
                             colors: isSelected
                                 ? [
                                     Color.white.opacity(colorScheme == .dark ? 0.34 : 0.72),
-                                    CleanSweepPalette.accentTeal.opacity(0.24)
+                                    CleanSweepPalette.iconBg.opacity(0.24)
                                 ]
                                 : isHovered
                                     ? [
@@ -229,7 +229,7 @@ struct SidebarRow: View {
             }
             .shadow(
                 color: isSelected
-                    ? CleanSweepPalette.accentBlue.opacity(colorScheme == .dark ? 0.34 : 0.18)
+                    ? CleanSweepPalette.iconBg.opacity(colorScheme == .dark ? 0.34 : 0.18)
                     : .clear,
                 radius: 20,
                 y: 10
@@ -255,8 +255,8 @@ struct SidebarRow: View {
                     isSelected
                         ? LinearGradient(
                             colors: [
-                                CleanSweepPalette.accentTeal.opacity(0.92),
-                                CleanSweepPalette.accentBlue
+                                CleanSweepPalette.iconBg,
+                                CleanSweepPalette.iconBg.opacity(0.8)
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
@@ -294,8 +294,8 @@ struct SidebarRow: View {
                 LinearGradient(
                     colors: isSelected
                         ? [
-                            CleanSweepPalette.accentBlue.opacity(colorScheme == .dark ? 0.48 : 0.20),
-                            CleanSweepPalette.accentTeal.opacity(colorScheme == .dark ? 0.30 : 0.12)
+                            CleanSweepPalette.iconBg.opacity(colorScheme == .dark ? 0.48 : 0.20),
+                            CleanSweepPalette.iconBg.opacity(colorScheme == .dark ? 0.30 : 0.12)
                         ]
                         : isHovered
                             ? [

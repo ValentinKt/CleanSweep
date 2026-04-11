@@ -209,9 +209,9 @@ struct ModuleScanView: View {
 
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                    .fill(CleanSweepPalette.accentBlue.opacity(0.12))
+                                    .fill(CleanSweepPalette.iconBg.opacity(0.12))
                                 Image(systemName: result.category.iconName)
-                                    .foregroundStyle(CleanSweepPalette.accentBlue)
+                                    .foregroundStyle(CleanSweepPalette.iconBg)
                                     .frame(width: 18)
                             }
                             .frame(width: 30, height: 30)

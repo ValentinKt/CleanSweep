@@ -35,7 +35,7 @@ struct RootView: View {
         .background {
             CleanSweepWindowBackground()
         }
-        .tint(CleanSweepPalette.accentBlue)
+        .tint(CleanSweepPalette.iconBg)
     }
 }
 

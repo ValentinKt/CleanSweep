@@ -38,9 +38,16 @@ extension Color {
 }
 
 enum CleanSweepPalette {
-    static let accentBlue = Color(hex: 0x0A84FF)
-    static let accentTeal = Color(hex: 0x40C8E0)
-    static let accentMint = Color(hex: 0x64D2FF)
+    static let accentBlue   = Color(hex: 0x3A86FF) // #3a86ff
+    static let accentPurple = Color(hex: 0x8338EC) // #8338ec
+    static let accentPink   = Color(hex: 0xFF006E) // #ff006e
+    static let buttonBg     = Color(hex: 0xFFBE0B) // #ffbe0b
+    static let iconBg       = Color(hex: 0xFB5607) // #fb5607
+
+    // Keep legacy names mapped to new colors to prevent breaking views
+    static let accentTeal = accentPurple
+    static let accentMint = accentPink
+    
     static let success = Color(hex: 0x32D74B)
     static let warning = Color(hex: 0xFF9F0A)
     static let critical = Color(hex: 0xFF453A)
@@ -315,8 +322,8 @@ struct CleanSweepHeroIcon: View {
                 .fill(
                     LinearGradient(
                         colors: [
-                            CleanSweepPalette.accentBlue,
-                            CleanSweepPalette.accentTeal
+                            CleanSweepPalette.iconBg,
+                            CleanSweepPalette.iconBg.opacity(0.8)
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
@@ -343,11 +350,11 @@ struct CleanSweepHeroIcon: View {
         .frame(width: size, height: size)
         .modifier(GlassEffectModifier(
             shape: shape,
-            tint: CleanSweepPalette.accentBlue.opacity(0.18),
+            tint: CleanSweepPalette.iconBg.opacity(0.18),
             interactive: true,
             reduceTransparency: reduceTransparency
         ))
-        .shadow(color: CleanSweepPalette.accentBlue.opacity(0.28), radius: 22, y: 14)
+        .shadow(color: CleanSweepPalette.iconBg.opacity(0.28), radius: 22, y: 14)
     }
 }
 
@@ -359,7 +366,7 @@ struct CleanSweepSectionEyebrow: View {
         Text(title.uppercased())
             .font(.caption.weight(.semibold))
             .tracking(1.2)
-            .foregroundStyle(CleanSweepPalette.accentBlue)
+            .foregroundStyle(CleanSweepPalette.iconBg)
     }
 }
 
@@ -370,12 +377,12 @@ struct CleanSweepPrimaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.headline.weight(.semibold))
-            .foregroundStyle(.white)
+            .foregroundStyle(.black)
             .padding(.horizontal, 22)
             .padding(.vertical, 14)
             .background(buttonBackground(isPressed: configuration.isPressed))
             .scaleEffect(configuration.isPressed ? 0.985 : 1)
-            .shadow(color: CleanSweepPalette.accentBlue.opacity(0.32), radius: 18, y: 10)
+            .shadow(color: CleanSweepPalette.buttonBg.opacity(0.32), radius: 18, y: 10)
             .animation(
                 reduceMotion ? nil : .spring(response: 0.26, dampingFraction: 0.72),
                 value: configuration.isPressed
@@ -387,8 +394,8 @@ struct CleanSweepPrimaryButtonStyle: ButtonStyle {
             .fill(
                 LinearGradient(
                     colors: [
-                        CleanSweepPalette.accentTeal.opacity(isPressed ? 0.9 : 1),
-                        CleanSweepPalette.accentBlue.opacity(isPressed ? 0.92 : 1)
+                        CleanSweepPalette.buttonBg.opacity(isPressed ? 0.9 : 1),
+                        CleanSweepPalette.buttonBg.opacity(isPressed ? 0.92 : 1)
                     ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
@@ -502,7 +509,7 @@ struct CleanSweepMetricTile: View {
     let title: String
     let value: String
     let systemImage: String
-    var accent: Color = CleanSweepPalette.accentBlue
+    var accent: Color = CleanSweepPalette.iconBg
 
     var body: some View {
         CleanSweepSurface(cornerRadius: 16, padding: 18) {

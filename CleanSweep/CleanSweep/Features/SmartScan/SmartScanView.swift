@@ -41,16 +41,16 @@ struct SmartScanView: View {
 
             HStack(spacing: 16) {
                 CleanSweepMetricTile(
-                    title: "Coverage",
-                    value: "12 Modules",
-                    systemImage: "square.grid.2x2.fill",
-                    accent: CleanSweepPalette.accentBlue
+                    title: "Cleanup",
+                    value: "Pending",
+                    systemImage: "sparkles",
+                    accent: CleanSweepPalette.iconBg
                 )
                 CleanSweepMetricTile(
-                    title: "Live Status",
-                    value: "Real-Time",
-                    systemImage: "waveform.path.ecg",
-                    accent: CleanSweepPalette.accentTeal
+                    title: "Protection",
+                    value: "Pending",
+                    systemImage: "shield.lefthalf.filled",
+                    accent: CleanSweepPalette.accentPurple
                 )
                 CleanSweepMetricTile(
                     title: "Safety",
@@ -101,7 +101,7 @@ struct SmartScanView: View {
                             .font(.system(size: 30, weight: .bold))
                         Text(activeModuleTitle)
                             .font(.title3.weight(.semibold))
-                            .foregroundStyle(CleanSweepPalette.accentBlue)
+                            .foregroundStyle(CleanSweepPalette.iconBg)
                             .lineLimit(1)
                         Text(
                             "Smooth progress, live module updates, and path feedback stay visible throughout the scan."
@@ -156,13 +156,13 @@ struct SmartScanView: View {
                         title: "Potential Cleanup",
                         value: formatBytes(summary.totalSize),
                         systemImage: "externaldrive.fill.badge.minus",
-                        accent: CleanSweepPalette.accentBlue
+                        accent: CleanSweepPalette.iconBg
                     )
                     CleanSweepMetricTile(
                         title: "Items Found",
                         value: "\(summary.allResults.count)",
                         systemImage: "doc.text.magnifyingglass",
-                        accent: CleanSweepPalette.accentTeal
+                        accent: CleanSweepPalette.accentPurple
                     )
                     CleanSweepMetricTile(
                         title: "Categories",
@@ -188,10 +188,10 @@ struct SmartScanView: View {
                 HStack(alignment: .top) {
                     ZStack {
                         RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(CleanSweepPalette.accentBlue.opacity(0.12))
+                            .fill(CleanSweepPalette.iconBg.opacity(0.12))
                         Image(systemName: category.iconName)
-                            .font(.title3.weight(.semibold))
-                            .foregroundStyle(CleanSweepPalette.accentBlue)
+                            .font(.title3.weight(.bold))
+                            .foregroundStyle(CleanSweepPalette.success)
                     }
                     .frame(width: 42, height: 42)
 
