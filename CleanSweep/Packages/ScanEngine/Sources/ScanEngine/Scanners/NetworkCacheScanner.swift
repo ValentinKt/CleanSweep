@@ -36,7 +36,8 @@ public actor NetworkCacheScanner: ModuleScanner {
                         category: .networkCache,
                         lastModified: result.lastModified,
                         creationDate: result.creationDate,
-                        appName: result.appName
+                        appName: result.appName,
+                        severity: result.severity
                     )
                     allResults.append(updatedResult)
                 }

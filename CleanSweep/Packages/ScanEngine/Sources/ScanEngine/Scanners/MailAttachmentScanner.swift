@@ -22,7 +22,8 @@ public actor MailAttachmentScanner: ModuleScanner {
                     category: .mailAttachment,
                     lastModified: result.lastModified,
                     creationDate: result.creationDate,
-                    appName: result.appName
+                    appName: result.appName,
+                    severity: result.severity
                 )
                 allResults.append(updatedResult)
             }

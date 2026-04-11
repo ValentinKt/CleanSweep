@@ -136,23 +136,23 @@ public actor LeftoversScanner: ModuleScanner {
         let lastModified = attributes?[.modificationDate] as? Date
         let creationDate = attributes?[.creationDate] as? Date
 
-        let severity: Severity
-        if size > 100 * 1024 * 1024 { // > 100MB
-            severity = .high
-        } else if size > 10 * 1024 * 1024 { // > 10MB
-            severity = .medium
-        } else {
-            severity = .low
-        }
-
-        return ScanResult(
+        let baseResult = ScanResult(
             url: url,
             size: size,
             category: .application,
             lastModified: lastModified,
             creationDate: creationDate,
-            appName: name,
-            severity: severity
+            appName: name
+        )
+        
+        return ScanResult(
+            url: baseResult.url,
+            size: baseResult.size,
+            category: baseResult.category,
+            lastModified: baseResult.lastModified,
+            creationDate: baseResult.creationDate,
+            appName: baseResult.appName,
+            severity: Categorizer().severity(for: baseResult)
         )
     }
 
@@ -180,6 +180,12 @@ public actor LeftoversScanner: ModuleScanner {
                     guard !Task.isCancelled else { break }
 
                     fileCount += 1
+                    
+                    // Throttling: yield every 256 files to keep CPU usage low
+                    if fileCount % 256 == 0 {
+                        await Task.yield()
+                    }
+
                     if fileCount % 4096 == 0 {
                         await Task.yield()
                         let now = clock.now

@@ -39,7 +39,8 @@ public actor ScreenshotScanner: ModuleScanner {
                             category: category,
                             lastModified: result.lastModified,
                             creationDate: result.creationDate,
-                            appName: result.appName
+                            appName: result.appName,
+                            severity: result.severity
                         )
                         allResults.append(updatedResult)
                     }

@@ -108,15 +108,12 @@ public final class SmartScanViewModel {
                 try? await Task.sleep(for: .milliseconds(50))
                 guard let self else { break }
 
-                // Gradually approach the target progress, and smoothly increment slightly even if waiting
+                // Gradually approach the target progress
                 if self.progress < self.targetProgress {
                     self.progress += (self.targetProgress - self.progress) * 0.05 + 0.001
                     if self.progress > self.targetProgress {
                         self.progress = self.targetProgress
                     }
-                } else if self.progress < 0.99 {
-                    // Slowly increment while waiting for the next module to complete
-                    self.progress += 0.0002
                 }
             }
         }

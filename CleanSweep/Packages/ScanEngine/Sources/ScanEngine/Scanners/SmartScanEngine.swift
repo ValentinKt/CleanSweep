@@ -1,8 +1,6 @@
 import Foundation
 
 public actor SmartScanEngine {
-    private let maxConcurrentModules = 1
-
     public init() {}
 
     public func scanAllModules(onProgress: (@MainActor @Sendable (Double, String) -> Void)? = nil) async throws -> ScanSummary {
@@ -22,42 +20,23 @@ public actor SmartScanEngine {
             ("Duplicates", { try await DuplicateFinderScanner().scan() })
         ]
 
-        return try await withThrowingTaskGroup(of: ModuleResult.self) { group in
-            var summary = ScanSummary()
-            let totalModules = scanJobs.count
-            var completedModules = 0
-            var nextJobIndex = 0
+        var summary = ScanSummary()
+        let totalModules = scanJobs.count
 
-            func enqueueNextJob() async {
-                guard nextJobIndex < scanJobs.count else { return }
-                let job = scanJobs[nextJobIndex]
-                nextJobIndex += 1
-
-                if let onProgress {
-                    let progress = Double(completedModules) / Double(totalModules)
-                    await onProgress(progress, job.0)
-                }
-
-                group.addTask {
-                    try await job.1()
-                }
-            }
-
-            for _ in 0..<min(maxConcurrentModules, scanJobs.count) {
-                await enqueueNextJob()
-            }
-
-            while let result = try await group.next() {
-                summary.merge(result)
-                completedModules += 1
-                await enqueueNextJob()
-            }
-
+        for (index, job) in scanJobs.enumerated() {
             if let onProgress {
-                await onProgress(1.0, "Complete")
+                let progress = Double(index) / Double(totalModules)
+                await onProgress(progress, job.0)
             }
-
-            return summary
+            
+            let result = try await job.1()
+            summary.merge(result)
         }
+
+        if let onProgress {
+            await onProgress(1.0, "Complete")
+        }
+
+        return summary
     }
 }
