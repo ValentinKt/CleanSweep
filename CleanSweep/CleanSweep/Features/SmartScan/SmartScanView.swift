@@ -77,59 +77,72 @@ struct SmartScanView: View {
 
     private var scanningView: some View {
         VStack(spacing: 24) {
-            CleanSweepSurface(cornerRadius: 26, padding: 28) {
-                HStack(spacing: 28) {
+            CleanSweepSurface(cornerRadius: 32, padding: 32) {
+                HStack(spacing: 32) {
                     ZStack {
                         Circle()
-                            .fill(Color.white.opacity(0.55))
-                            .overlay(Circle().stroke(Color.primary.opacity(0.05), lineWidth: 1))
+                            .fill(Color.white.opacity(0.04))
+                            .overlay(Circle().stroke(Color.white.opacity(0.08), lineWidth: 1))
+
                         CleanSweepProgressRing(progress: viewModel.progress, animated: !reduceMotion)
-                        VStack(spacing: 6) {
+                            .shadow(color: CleanSweepPalette.iconBg.opacity(0.6), radius: 20)
+
+                        VStack(spacing: 4) {
                             Text("\(Int(viewModel.progress * 100))%")
-                                .font(.system(size: 38, weight: .bold))
+                                .font(.system(size: 48, weight: .bold, design: .rounded))
                                 .monospacedDigit()
                             Text("Complete")
-                                .font(.caption.weight(.semibold))
+                                .font(.caption.weight(.bold))
                                 .foregroundStyle(.secondary)
                         }
                     }
-                    .frame(width: 220, height: 220)
+                    .frame(width: 200, height: 200)
 
-                    VStack(alignment: .leading, spacing: 14) {
+                    VStack(alignment: .leading, spacing: 12) {
                         CleanSweepSectionEyebrow(title: "Scanning")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(CleanSweepPalette.iconBg)
+
                         Text("Smart Scan is reviewing your Mac")
-                            .font(.system(size: 30, weight: .bold))
+                            .font(.system(size: 32, weight: .bold))
+                            .foregroundStyle(.primary)
+
                         Text(activeModuleTitle)
-                            .font(.title3.weight(.semibold))
+                            .font(.title3.weight(.bold))
                             .foregroundStyle(CleanSweepPalette.iconBg)
                             .lineLimit(1)
+
                         Text(
                             "Smooth progress, live module updates, and path feedback stay visible throughout the scan."
                         )
                             .font(.body)
                             .foregroundStyle(.secondary)
 
-                        CleanSweepSurface(cornerRadius: 18, padding: 16) {
-                            VStack(alignment: .leading, spacing: 8) {
+                        CleanSweepSurface(cornerRadius: 20, padding: 16) {
+                            VStack(alignment: .leading, spacing: 10) {
                                 Label("Currently Inspecting", systemImage: "folder.fill")
-                                    .font(.headline)
+                                    .font(.subheadline.weight(.bold))
+                                    .foregroundStyle(.primary.opacity(0.9))
+
                                 Text(
                                     viewModel.currentScannedPath.isEmpty
                                         ? "Preparing scan…"
                                         : viewModel.currentScannedPath
                                 )
-                                    .font(.subheadline.monospaced())
+                                    .font(.system(.caption, design: .monospaced))
                                     .foregroundStyle(.secondary)
                                     .lineLimit(1)
                                     .truncationMode(.middle)
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
                         }
+                        .glassEffect(.regular.tint(.black.opacity(0.2)), in: RoundedRectangle(cornerRadius: 20))
                     }
 
                     Spacer(minLength: 0)
                 }
             }
+            .glassEffect(.regular.tint(.black.opacity(0.3)), in: RoundedRectangle(cornerRadius: 32))
 
             HStack(spacing: 12) {
                 CleanSweepTag(title: "Bounded CPU", systemImage: "cpu")
@@ -137,9 +150,9 @@ struct SmartScanView: View {
                 CleanSweepTag(title: "Progress Memory", systemImage: "circle.hexagongrid.fill")
                 Spacer()
             }
-            .padding(.horizontal, 28)
+            .padding(.horizontal, 32)
         }
-        .padding(.vertical, 28)
+        .padding(.vertical, 32)
     }
 
     private var summaryView: some View {

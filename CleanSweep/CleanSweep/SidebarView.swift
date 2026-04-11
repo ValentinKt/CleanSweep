@@ -12,11 +12,13 @@ struct SidebarView: View {
 
     var body: some View {
         CleanSweepSidebarPanel(padding: 16) {
-            VStack(spacing: 18) {
-                sidebarHeader
-                sidebarList
+            GlassEffectContainer(spacing: 0) {
+                VStack(spacing: 18) {
+                    sidebarHeader
+                    sidebarList
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
@@ -180,69 +182,41 @@ struct SidebarRow: View {
                 iconView
 
                 Text(item.localizedName)
-                    .font(.subheadline.weight(isSelected ? .semibold : .medium))
-                    .foregroundStyle(isSelected ? .white : .primary)
+                    .font(.subheadline.weight(isSelected ? .bold : .medium))
+                    .foregroundStyle(isSelected ? .primary : .secondary)
                     .lineLimit(1)
 
                 Spacer()
 
                 if let badge {
                     Text(badge)
-                        .font(.caption.monospacedDigit())
+                        .font(.caption2.monospacedDigit().weight(.bold))
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
                         .background(
                             Capsule()
                                 .fill(
                                     isSelected
-                                        ? Color.white.opacity(0.9)
-                                        : CleanSweepPalette.iconBg.opacity(0.16)
+                                        ? Color.white.opacity(0.15)
+                                        : Color.black.opacity(0.08)
                                 )
                         )
+                        .foregroundStyle(isSelected ? .primary : .secondary)
                 }
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 10)
-            .background {
-                rowBackground
-            }
-            .overlay {
-                RoundedRectangle(cornerRadius: 15, style: .continuous)
-                    .stroke(
-                        LinearGradient(
-                            colors: isSelected
-                                ? [
-                                    Color.white.opacity(colorScheme == .dark ? 0.34 : 0.72),
-                                    CleanSweepPalette.iconBg.opacity(0.24)
-                                ]
-                                : isHovered
-                                    ? [
-                                        Color.white.opacity(colorScheme == .dark ? 0.12 : 0.30),
-                                        Color.clear
-                                    ]
-                                    : [Color.clear, Color.clear],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        lineWidth: isSelected ? 1 : 0.5
-                    )
-            }
-            .shadow(
-                color: isSelected
-                    ? CleanSweepPalette.iconBg.opacity(colorScheme == .dark ? 0.34 : 0.18)
-                    : .clear,
-                radius: 20,
-                y: 10
+            .padding(.horizontal, 10)
+            .padding(.vertical, 8)
+            .glassEffect(
+                isSelected ? .regular.interactive().tint(.white.opacity(0.1)) : (isHovered ? .regular.interactive().tint(.white.opacity(0.05)) : .clear),
+                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
             )
-            .contentShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
-            .scaleEffect(isHovered ? 1.01 : 1.0)
-            .animation(.spring(response: 0.28, dampingFraction: 0.72), value: isHovered)
-            .animation(.spring(response: 0.28, dampingFraction: 0.72), value: isSelected)
         }
         .buttonStyle(.plain)
         .onHover { hovering in
             isHovered = hovering
         }
+        .animation(.spring(response: 0.25, dampingFraction: 0.75), value: isHovered)
+        .animation(.spring(response: 0.25, dampingFraction: 0.75), value: isSelected)
     }
 
     @ViewBuilder
@@ -250,65 +224,23 @@ struct SidebarRow: View {
         let iconShape = RoundedRectangle(cornerRadius: 10, style: .continuous)
 
         ZStack {
-            iconShape
-                .fill(
-                    isSelected
-                        ? LinearGradient(
-                            colors: [
-                                CleanSweepPalette.iconBg,
-                                CleanSweepPalette.iconBg.opacity(0.8)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                        : LinearGradient(
-                            colors: [
-                                Color.white.opacity(colorScheme == .dark ? 0.16 : 0.42),
-                                Color.white.opacity(colorScheme == .dark ? 0.05 : 0.14)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                )
-            iconShape
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            Color.white.opacity(isSelected ? 0.28 : 0.16),
-                            Color.clear
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
+            if isSelected {
+                iconShape
+                    .fill(CleanSweepPalette.iconBg)
+                    .shadow(color: CleanSweepPalette.iconBg.opacity(0.4), radius: 8, y: 4)
+            } else {
+                iconShape
+                    .fill(Color.white.opacity(colorScheme == .dark ? 0.06 : 0.4))
+                    .overlay(
+                        iconShape
+                            .strokeBorder(Color.white.opacity(0.1), lineWidth: 0.5)
                     )
-                )
+            }
+
             Image(systemName: item.iconName)
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(isSelected ? .white : .primary)
+                .font(.system(size: 14, weight: .bold))
+                .foregroundStyle(isSelected ? .white : CleanSweepPalette.iconBg)
         }
         .frame(width: 32, height: 32)
-    }
-
-    private var rowBackground: some View {
-        RoundedRectangle(cornerRadius: 15, style: .continuous)
-            .fill(
-                LinearGradient(
-                    colors: isSelected
-                        ? [
-                            CleanSweepPalette.iconBg.opacity(colorScheme == .dark ? 0.48 : 0.20),
-                            CleanSweepPalette.iconBg.opacity(colorScheme == .dark ? 0.30 : 0.12)
-                        ]
-                        : isHovered
-                            ? [
-                                Color.white.opacity(colorScheme == .dark ? 0.10 : 0.26),
-                                Color.white.opacity(colorScheme == .dark ? 0.03 : 0.08)
-                            ]
-                            : [
-                                Color.white.opacity(colorScheme == .dark ? 0.03 : 0.10),
-                                Color.white.opacity(colorScheme == .dark ? 0.01 : 0.03)
-                            ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
     }
 }

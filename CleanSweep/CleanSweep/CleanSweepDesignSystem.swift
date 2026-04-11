@@ -42,7 +42,9 @@ enum CleanSweepPalette {
     static let accentPurple = Color(hex: 0x8338EC) // #8338ec
     static let accentPink   = Color(hex: 0xFF006E) // #ff006e
     static let buttonBg     = Color(hex: 0xFFBE0B) // #ffbe0b
-    static let iconBg       = Color(hex: 0xFB5607) // #fb5607
+    static let iconBg = Color(hex: 0xFF4D3D) // Vibrant Reddish-Orange from design
+    static let accent = Color(hex: 0xFF7A6B)
+    static let sidebarSelection = Color.white.opacity(0.12)
 
     // Keep legacy names mapped to new colors to prevent breaking views
     static let accentTeal = accentPurple
@@ -92,36 +94,58 @@ struct CleanSweepWindowBackground: View {
 
     var body: some View {
         ZStack {
+            // Base deep background
+            Color(colorScheme == .dark ? hex(0x04080F) : hex(0xF2F5F9))
+
+            // Subtle texture/depth
             LinearGradient(
                 colors: [
-                    CleanSweepPalette.canvasTop(for: colorScheme),
-                    CleanSweepPalette.canvasBottom(for: colorScheme)
+                    Color(colorScheme == .dark ? hex(0x0B1424) : hex(0xFFFFFF)),
+                    Color(colorScheme == .dark ? hex(0x04080F) : hex(0xE6EBF2))
                 ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
+                startPoint: .top,
+                endPoint: .bottom
             )
+            .opacity(0.8)
 
+            // Top-left glow (Blue)
             RadialGradient(
                 colors: [
-                    CleanSweepPalette.accentBlue.opacity(colorScheme == .dark ? 0.18 : 0.12),
+                    Color(hex: 0x3A86FF).opacity(colorScheme == .dark ? 0.22 : 0.14),
                     .clear
                 ],
                 center: .topLeading,
-                startRadius: 20,
-                endRadius: 520
+                startRadius: 0,
+                endRadius: 800
             )
 
+            // Bottom-right glow (Purple/Magenta)
             RadialGradient(
                 colors: [
-                    CleanSweepPalette.accentTeal.opacity(colorScheme == .dark ? 0.12 : 0.10),
+                    Color(hex: 0x8338EC).opacity(colorScheme == .dark ? 0.16 : 0.08),
                     .clear
                 ],
                 center: .bottomTrailing,
-                startRadius: 20,
-                endRadius: 520
+                startRadius: 0,
+                endRadius: 800
+            )
+
+            // Middle-right subtle glow (Pink/Red)
+            RadialGradient(
+                colors: [
+                    Color(hex: 0xFF006E).opacity(colorScheme == .dark ? 0.08 : 0.05),
+                    .clear
+                ],
+                center: UnitPoint(x: 0.8, y: 0.4),
+                startRadius: 0,
+                endRadius: 600
             )
         }
         .ignoresSafeArea()
+    }
+
+    private func hex(_ val: UInt32) -> Color {
+        Color(hex: val)
     }
 }
 
@@ -132,6 +156,8 @@ struct CleanSweepSurface<Content: View>: View {
     private let content: Content
 
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+
     init(
         cornerRadius: CGFloat = 16,
         padding: CGFloat = 24,
@@ -143,58 +169,39 @@ struct CleanSweepSurface<Content: View>: View {
     }
 
     var body: some View {
-        content
-            .padding(padding)
-            .background(surfaceBackground)
-            .overlay(surfaceHighlight)
-            .shadow(color: CleanSweepPalette.shadow(for: colorScheme), radius: 30, y: 16)
-            .shadow(color: CleanSweepPalette.secondaryShadow(for: colorScheme), radius: 10, y: 2)
-    }
-
-    private var surfaceBackground: some View {
         let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
 
-        return shape
-            .fill(
-                LinearGradient(
-                    colors: [
-                        CleanSweepPalette.surfaceStart(for: colorScheme),
-                        CleanSweepPalette.surfaceEnd(for: colorScheme)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
+        content
+            .padding(padding)
+            .glassEffect(
+                .regular.tint(
+                    colorScheme == .dark
+                        ? Color(hex: 0x0B121C, opacity: 0.16)
+                        : Color.white.opacity(0.12)
+                ),
+                in: shape
             )
+            .background {
+                if reduceTransparency {
+                    shape.fill(colorScheme == .dark ? Color(hex: 0x111827) : .white)
+                }
+            }
             .overlay {
                 shape
-                    .fill(
+                    .strokeBorder(
                         LinearGradient(
                             colors: [
-                                Color.white.opacity(colorScheme == .dark ? 0.16 : 0.34),
-                                Color.white.opacity(colorScheme == .dark ? 0.03 : 0.08),
+                                Color.white.opacity(colorScheme == .dark ? 0.12 : 0.44),
+                                Color.white.opacity(colorScheme == .dark ? 0.02 : 0.08),
                                 Color.clear
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
-                        )
+                        ),
+                        lineWidth: 0.5
                     )
             }
-    }
-
-    private var surfaceHighlight: some View {
-        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-            .strokeBorder(
-                LinearGradient(
-                    colors: [
-                        Color.white.opacity(colorScheme == .dark ? 0.22 : 0.44),
-                        Color.white.opacity(colorScheme == .dark ? 0.05 : 0.10),
-                        Color.clear
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                ),
-                lineWidth: 0.5
-            )
+            .shadow(color: CleanSweepPalette.shadow(for: colorScheme), radius: 30, y: 16)
     }
 }
 
@@ -215,96 +222,41 @@ struct CleanSweepSidebarPanel<Content: View>: View {
     }
 
     var body: some View {
-        let shape = RoundedRectangle(cornerRadius: 30, style: .continuous)
+        let shape = RoundedRectangle(cornerRadius: 44, style: .continuous)
 
-        return content
-            .padding(padding)
-            .background {
-                sidebarPanelBackground(shape: shape)
-            }
-            .overlay {
-                shape
-                    .strokeBorder(
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(colorScheme == .dark ? 0.22 : 0.62),
-                                Color.white.opacity(colorScheme == .dark ? 0.06 : 0.18),
-                                Color.clear
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        lineWidth: 1
-                    )
-            }
-            .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.18 : 0.10), radius: 30, y: 18)
-    }
-
-    private func sidebarPanelBackground(shape: RoundedRectangle) -> some View {
-        let baseBackground = shape
-            .fill(
-                LinearGradient(
-                    colors: [
-                        colorScheme == .dark
-                            ? Color(hex: 0x172235, opacity: 0.84)
-                            : Color.white.opacity(0.82),
-                        colorScheme == .dark
-                            ? Color(hex: 0x0F1828, opacity: 0.92)
-                            : Color.white.opacity(0.34)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-            .overlay {
-                shape
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                colorScheme == .dark
-                                    ? CleanSweepPalette.accentBlue.opacity(0.16)
-                                    : Color.white.opacity(0.30),
-                                colorScheme == .dark
-                                    ? Color.white.opacity(0.05)
-                                    : Color.clear,
-                                Color.clear
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-            }
-            .overlay(alignment: .leading) {
-                RoundedRectangle(cornerRadius: 30, style: .continuous)
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                CleanSweepPalette.accentBlue.opacity(colorScheme == .dark ? 0.20 : 0.08),
-                                Color.clear
-                            ],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-                    .frame(width: 46)
-                    .blur(radius: 18)
-            }
-
-        if reduceTransparency {
-            return AnyView(baseBackground)
-        }
-
-        return AnyView(
-            baseBackground
+        return GlassEffectContainer {
+            content
+                .padding(padding)
                 .glassEffect(
                     .regular.tint(
                         colorScheme == .dark
-                            ? Color(hex: 0x0B1A2D, opacity: 0.26)
-                            : Color.white.opacity(0.14)
+                            ? Color(hex: 0x0B1A2D, opacity: 0.12)
+                            : Color.white.opacity(0.18)
                     ),
                     in: shape
                 )
-        )
+                .background {
+                    if reduceTransparency {
+                        shape.fill(colorScheme == .dark ? Color(hex: 0x111827) : .white)
+                    }
+                }
+                .overlay {
+                    shape
+                        .strokeBorder(
+                            LinearGradient(
+                                colors: [
+                                    Color.white.opacity(colorScheme == .dark ? 0.18 : 0.62),
+                                    Color.white.opacity(colorScheme == .dark ? 0.04 : 0.12),
+                                    Color.clear
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 0.5
+                        )
+                }
+                .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.28 : 0.12), radius: 40, y: 24)
+        }
     }
 }
 
@@ -467,20 +419,36 @@ struct CleanSweepTag: View {
     let systemImage: String
 
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+
     var body: some View {
+        let shape = Capsule(style: .continuous)
+
         Label(title, systemImage: systemImage)
             .font(.subheadline.weight(.medium))
             .foregroundStyle(.secondary)
             .padding(.horizontal, 14)
             .padding(.vertical, 10)
-            .background(tagBackground)
+            .glassEffect(
+                .regular.interactive().tint(
+                    colorScheme == .dark
+                        ? Color.white.opacity(0.06)
+                        : Color.white.opacity(0.24)
+                ),
+                in: shape
+            )
+            .background {
+                if reduceTransparency {
+                    shape.fill(colorScheme == .dark ? Color.white.opacity(0.12) : Color.black.opacity(0.06))
+                }
+            }
             .overlay {
-                Capsule(style: .continuous)
-                    .stroke(
+                shape
+                    .strokeBorder(
                         LinearGradient(
                             colors: [
-                                Color.white.opacity(colorScheme == .dark ? 0.14 : 0.38),
-                                CleanSweepPalette.softBorder(for: colorScheme)
+                                Color.white.opacity(colorScheme == .dark ? 0.12 : 0.44),
+                                Color.clear
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
@@ -488,20 +456,6 @@ struct CleanSweepTag: View {
                         lineWidth: 0.5
                     )
             }
-    }
-
-    private var tagBackground: some View {
-        Capsule(style: .continuous)
-            .fill(
-                LinearGradient(
-                    colors: [
-                        CleanSweepPalette.surfaceStart(for: colorScheme),
-                        CleanSweepPalette.surfaceEnd(for: colorScheme)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
     }
 }
 
