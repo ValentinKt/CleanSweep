@@ -142,7 +142,7 @@ struct HealthDashboardRow: View {
             MetricCard(
                 symbol: "battery.100percent.bolt",
                 label: "Battery",
-                value: "Good",
+                value: viewModel.batteryStatus,
                 tint: CleanSweepPalette.success
             )
             MetricCard(

@@ -543,9 +543,9 @@ struct CleanSweepProgressPalette {
     let glow: NSColor
 
     static let scan = CleanSweepProgressPalette(
-        leading: NSColor(calibratedRed: 0.25, green: 0.78, blue: 0.93, alpha: 1),
-        trailing: NSColor(calibratedRed: 0.04, green: 0.52, blue: 1.00, alpha: 1),
-        glow: NSColor(calibratedRed: 0.07, green: 0.56, blue: 1.00, alpha: 1)
+        leading: NSColor(calibratedRed: 0.98, green: 0.34, blue: 0.03, alpha: 1), // #FB5607
+        trailing: NSColor(calibratedRed: 1.00, green: 0.75, blue: 0.04, alpha: 1), // #FFBE0B
+        glow: NSColor(calibratedRed: 0.98, green: 0.34, blue: 0.03, alpha: 1)
     )
 
     static let warning = CleanSweepProgressPalette(

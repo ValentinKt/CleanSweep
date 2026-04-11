@@ -163,6 +163,10 @@ public final class ModuleScanViewModel {
         selectedResultIDs.subtract(cleanupOutcome.removedIDs)
         failedCleanupCount = cleanupOutcome.failedCount
         isCleaningSelection = false
+        
+        if !cleanupOutcome.removedIDs.isEmpty {
+            UserDefaults.standard.set(Date(), forKey: "LastCleanedDate")
+        }
     }
 
     private func sortedResults(from results: [ScanResult]) -> [ScanResult] {

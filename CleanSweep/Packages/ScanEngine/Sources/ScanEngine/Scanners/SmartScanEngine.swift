@@ -18,6 +18,7 @@ public actor SmartScanEngine {
             { try await DevelopmentJunkScanner().scan() },
             { try await LargeFilesScanner().scan() },
             { try await AppUninstallerScanner().scan() },
+            { try await LeftoversScanner().scan() },
             { try await DuplicateFinderScanner().scan() }
         ]
 
