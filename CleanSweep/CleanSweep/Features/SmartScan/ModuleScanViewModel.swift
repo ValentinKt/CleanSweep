@@ -254,7 +254,7 @@ public final class ModuleScanViewModel {
         let notificationName = scanPathUpdatedNotification
         let updateInterval = minimumPathUpdateInterval
 
-        pathUpdateTask = Task.detached(priority: .utility) { [weak self] in
+        pathUpdateTask = Task.detached(priority: .background) { [weak self] in
             guard let self else { return }
             let stream = NotificationCenter.default.notifications(named: notificationName)
             let clock = ContinuousClock()
@@ -264,7 +264,7 @@ public final class ModuleScanViewModel {
             for await notification in stream {
                 guard !Task.isCancelled else { break }
 
-                guard let path = notification.object as? String, path != lastPublishedPath else {
+                guard let path = notification.object as? String, !path.isEmpty, path != lastPublishedPath else {
                     continue
                 }
 
@@ -276,7 +276,9 @@ public final class ModuleScanViewModel {
                 lastPathUpdate = now
                 lastPublishedPath = path
 
+                if Task.isCancelled { break }
                 await self.updateCurrentScannedPath(path)
+                await Task.yield()
             }
         }
     }

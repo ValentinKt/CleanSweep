@@ -76,9 +76,9 @@ public actor ScanActor {
                     // Throttling: yield every 256 files to keep CPU usage low
                     // If in ghost mode, yield more frequently and sleep
                     let isGhost = await self?.isGhostMode ?? false
-                    if fileCount % (isGhost ? 64 : 256) == 0 {
+                    if fileCount % (isGhost ? 64 : 128) == 0 {
                         if isGhost {
-                            try? await Task.sleep(for: .milliseconds(10))
+                            try? await Task.sleep(for: .milliseconds(20))
                         }
                         await Task.yield()
                     }
@@ -168,9 +168,9 @@ public actor ScanActor {
                     // Throttling: yield every 256 files to keep CPU usage low
                     // If in ghost mode, yield more frequently and sleep
                     let isGhost = await self?.isGhostMode ?? false
-                    if fileCount % (isGhost ? 64 : 256) == 0 {
+                    if fileCount % (isGhost ? 64 : 128) == 0 {
                         if isGhost {
-                            try? await Task.sleep(for: .milliseconds(10))
+                            try? await Task.sleep(for: .milliseconds(20))
                         }
                         await Task.yield()
                     }

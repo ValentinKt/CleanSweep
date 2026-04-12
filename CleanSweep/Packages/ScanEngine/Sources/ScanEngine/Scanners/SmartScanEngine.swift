@@ -29,6 +29,11 @@ public actor SmartScanEngine {
                     let result = try await job.1()
                     return (index, result)
                 }
+                
+                // Limit concurrency to avoid thread explosion during mass-module scan
+                if index % 3 == 2 {
+                    await Task.yield()
+                }
             }
 
             var completedCount = 0

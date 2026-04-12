@@ -130,7 +130,7 @@ public final class SmartScanViewModel {
         let notificationName = scanPathUpdatedNotification
         let updateInterval = minimumPathUpdateInterval
 
-        pathUpdateTask = Task.detached(priority: .utility) { [weak self] in
+        pathUpdateTask = Task.detached(priority: .background) { [weak self] in
             guard let self else { return }
             let stream = NotificationCenter.default.notifications(named: notificationName)
             let clock = ContinuousClock()
@@ -140,7 +140,7 @@ public final class SmartScanViewModel {
             for await notification in stream {
                 guard !Task.isCancelled else { break }
 
-                guard let path = notification.object as? String, path != lastPublishedPath else {
+                guard let path = notification.object as? String, !path.isEmpty, path != lastPublishedPath else {
                     continue
                 }
 
@@ -152,7 +152,13 @@ public final class SmartScanViewModel {
                 lastPathUpdate = now
                 lastPublishedPath = path
 
+                // Check for Task cancellation before hopping to MainActor
+                if Task.isCancelled { break }
+                
                 await self.updateCurrentScannedPath(path)
+                
+                // Yield to allow other background tasks to run
+                await Task.yield()
             }
         }
     }
