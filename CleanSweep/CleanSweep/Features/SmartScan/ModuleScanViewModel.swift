@@ -7,12 +7,22 @@ import ScanEngine
 public final class ModuleScanViewModel {
     public var results: [ScanResult] = []
     public var selectedResultIDs: Set<ScanResult.ID> = []
+    public var selectedSeverity: Severity?
+    public var showOnlySafeToDelete = true
     public var progress: Double = 0
     public var phase: ScanPhase = .idle
     public var isCleaningSelection = false
     public var failedCleanupCount = 0
     public var moduleName: String
     public var currentScannedPath: String = ""
+
+    public var filteredResults: [ScanResult] {
+        results.filter { result in
+            let matchesSeverity = selectedSeverity == nil || result.severity == selectedSeverity
+            let matchesSafe = !showOnlySafeToDelete || result.isSafeToDelete
+            return matchesSeverity && matchesSafe
+        }
+    }
 
     private let scanPathUpdatedNotification = NSNotification.Name("ScanPathUpdated")
     private let minimumPathUpdateInterval = Duration.milliseconds(150)
@@ -105,25 +115,26 @@ public final class ModuleScanViewModel {
     }
 
     public var totalSize: Int64 {
-        results.reduce(0) { $0 + $1.size }
+        filteredResults.reduce(0) { $0 + $1.size }
     }
 
     public var selectedSize: Int64 {
-        results.reduce(into: 0) { partialResult, result in
+        filteredResults.reduce(into: 0) { partialResult, result in
             guard selectedResultIDs.contains(result.id) else { return }
             partialResult += result.size
         }
     }
 
     public var isAllSelected: Bool {
-        !results.isEmpty && selectedResultIDs.count == results.count
+        !filteredResults.isEmpty && filteredResults.allSatisfy { selectedResultIDs.contains($0.id) }
     }
 
     public func toggleSelectAll() {
         if isAllSelected {
-            selectedResultIDs.removeAll()
+            let filteredIDs = Set(filteredResults.map(\.id))
+            selectedResultIDs.subtract(filteredIDs)
         } else {
-            selectedResultIDs = Set(results.map(\.id))
+            selectedResultIDs.formUnion(filteredResults.map(\.id))
         }
     }
 

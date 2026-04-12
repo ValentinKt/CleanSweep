@@ -27,6 +27,7 @@ public struct ScanResult: Sendable, Identifiable, Hashable {
     public let creationDate: Date?
     public let appName: String? // Resolved from bundle ID
     public let severity: Severity?
+    public let isSafeToDelete: Bool
 
     public init(
         url: URL,
@@ -35,7 +36,8 @@ public struct ScanResult: Sendable, Identifiable, Hashable {
         lastModified: Date? = nil,
         creationDate: Date? = nil,
         appName: String? = nil,
-        severity: Severity? = nil
+        severity: Severity? = nil,
+        isSafeToDelete: Bool = true
     ) {
         self.url = url
         self.size = size
@@ -44,5 +46,6 @@ public struct ScanResult: Sendable, Identifiable, Hashable {
         self.creationDate = creationDate
         self.appName = appName
         self.severity = severity
+        self.isSafeToDelete = isSafeToDelete
     }
 }

@@ -77,7 +77,8 @@ public actor ScanActor {
                                 lastModified: result.lastModified,
                                 creationDate: result.creationDate,
                                 appName: result.appName,
-                                severity: localCategorizer.severity(for: result)
+                                severity: localCategorizer.severity(for: result),
+                                isSafeToDelete: localCategorizer.isSafeToDelete(for: result)
                             )
                             continuation.yield(result)
                         }
@@ -147,21 +148,23 @@ public actor ScanActor {
                         let size = values.totalFileAllocatedSize ?? values.fileSize ?? 0
                         guard size > 0 else { continue }
 
-                        let result = ScanResult(
+                        let baseResult = ScanResult(
                             url: url,
                             size: Int64(size),
                             category: .unknown,
                             lastModified: values.contentModificationDate,
                             creationDate: nil,
-                            appName: nil,
-                            severity: localCategorizer.severity(for: ScanResult(
-                                url: url,
-                                size: Int64(size),
-                                category: .unknown,
-                                lastModified: values.contentModificationDate,
-                                creationDate: nil,
-                                appName: nil
-                            ))
+                            appName: nil
+                        )
+                        let result = ScanResult(
+                            url: baseResult.url,
+                            size: baseResult.size,
+                            category: baseResult.category,
+                            lastModified: baseResult.lastModified,
+                            creationDate: baseResult.creationDate,
+                            appName: baseResult.appName,
+                            severity: localCategorizer.severity(for: baseResult),
+                            isSafeToDelete: localCategorizer.isSafeToDelete(for: baseResult)
                         )
                         continuation.yield(result)
                     } catch {

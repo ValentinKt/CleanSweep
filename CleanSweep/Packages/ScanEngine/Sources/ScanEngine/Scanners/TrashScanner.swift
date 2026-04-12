@@ -19,11 +19,12 @@ public actor TrashScanner: ModuleScanner {
                 let updatedResult = ScanResult(
                     url: result.url,
                     size: result.size,
-                    category: .trashItem,
+                    category: result.category,
                     lastModified: result.lastModified,
                     creationDate: result.creationDate,
                     appName: result.appName,
-                    severity: result.severity
+                    severity: Categorizer().severity(for: result),
+                    isSafeToDelete: Categorizer().isSafeToDelete(for: result)
                 )
                 allResults.append(updatedResult)
             }

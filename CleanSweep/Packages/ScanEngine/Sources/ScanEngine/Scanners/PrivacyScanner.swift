@@ -25,21 +25,31 @@ public actor PrivacyScanner: ModuleScanner {
         let homeDir = fileManager.homeDirectoryForCurrentUser
 
         let targetPaths = getTargetPaths(homeDir: homeDir)
-
+        let categorizer = Categorizer()
         var allResults: [ScanResult] = []
 
         for path in targetPaths {
             var isDirectory: ObjCBool = false
             if fileManager.fileExists(atPath: path.path, isDirectory: &isDirectory) {
                 if isDirectory.boolValue {
-                    for await result in await scanActor.scanAllStream(at: path) {
-                        let updatedResult = ScanResult(
+                    for await result in await scanActor.scanStream(at: path) {
+                        let baseResult = ScanResult(
                             url: result.url,
                             size: result.size,
                             category: .browserCache, // sticking to existing categories
                             lastModified: result.lastModified,
                             creationDate: result.creationDate,
                             appName: result.appName
+                        )
+                        let updatedResult = ScanResult(
+                            url: baseResult.url,
+                            size: baseResult.size,
+                            category: baseResult.category,
+                            lastModified: baseResult.lastModified,
+                            creationDate: baseResult.creationDate,
+                            appName: baseResult.appName,
+                            severity: categorizer.severity(for: baseResult),
+                            isSafeToDelete: categorizer.isSafeToDelete(for: baseResult)
                         )
                         allResults.append(updatedResult)
                     }
@@ -53,13 +63,23 @@ public actor PrivacyScanner: ModuleScanner {
                         let values = try path.resourceValues(forKeys: keys)
                         let size = values.totalFileAllocatedSize ?? values.fileSize ?? 0
                         if size > 0 {
-                            let result = ScanResult(
+                            let baseResult = ScanResult(
                                 url: path,
                                 size: Int64(size),
                                 category: .browserCache,
                                 lastModified: values.contentModificationDate,
                                 creationDate: nil,
                                 appName: nil
+                            )
+                            let result = ScanResult(
+                                url: baseResult.url,
+                                size: baseResult.size,
+                                category: baseResult.category,
+                                lastModified: baseResult.lastModified,
+                                creationDate: baseResult.creationDate,
+                                appName: baseResult.appName,
+                                severity: categorizer.severity(for: baseResult),
+                                isSafeToDelete: categorizer.isSafeToDelete(for: baseResult)
                             )
                             allResults.append(result)
                         }

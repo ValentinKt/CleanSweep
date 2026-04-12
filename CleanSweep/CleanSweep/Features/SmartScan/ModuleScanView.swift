@@ -249,7 +249,7 @@ struct ModuleScanView: View {
             HStack(spacing: 16) {
                 ModuleMetricCard(
                     title: "Items Found",
-                    value: "\(viewModel.results.count)",
+                    value: "\(viewModel.filteredResults.count)",
                     systemImage: "doc.text.magnifyingglass",
                     accent: CleanSweepPalette.accentBlue
                 )
@@ -267,6 +267,54 @@ struct ModuleScanView: View {
                 )
             }
 
+            // Tabs and Filter Bar
+            HStack(spacing: 12) {
+                Picker("View", selection: $viewModel.showOnlySafeToDelete) {
+                    Text("Safe to Clean").tag(true)
+                    Text("All Files").tag(false)
+                }
+                .pickerStyle(.segmented)
+                .frame(width: 240)
+
+                Spacer()
+
+                Menu {
+                    Button {
+                        viewModel.selectedSeverity = nil
+                    } label: {
+                        HStack {
+                            Text("All Severities")
+                            if viewModel.selectedSeverity == nil {
+                                Image(systemName: "checkmark")
+                            }
+                        }
+                    }
+
+                    Divider()
+
+                    ForEach([Severity.high, .medium, .low], id: \.self) { severity in
+                        Button {
+                            viewModel.selectedSeverity = severity
+                        } label: {
+                            HStack {
+                                Text(severity.localizedName)
+                                if viewModel.selectedSeverity == severity {
+                                    Image(systemName: "checkmark")
+                                }
+                            }
+                        }
+                    }
+                } label: {
+                    Label(
+                        viewModel.selectedSeverity?.localizedName ?? "Filter by Severity",
+                        systemImage: "line.3.horizontal.decrease.circle"
+                    )
+                }
+                .menuStyle(.button)
+                .fixedSize()
+            }
+            .padding(.horizontal, 4)
+
             CleanSweepSurface(cornerRadius: 26, padding: 12) {
                 VStack(spacing: 0) {
                     listHeader
@@ -276,9 +324,10 @@ struct ModuleScanView: View {
                         .opacity(0.5)
 
                     List {
-                        let hasSeverity = viewModel.results.contains { $0.severity != nil }
+                        let results = viewModel.filteredResults
+                        let hasSeverity = results.contains { $0.severity != nil }
                         if hasSeverity {
-                            let grouped = Dictionary(grouping: viewModel.results, by: { $0.severity })
+                            let grouped = Dictionary(grouping: results, by: { $0.severity })
                             let sortedSeverities: [Severity] = [.high, .medium, .low].filter { grouped.keys.contains($0) }
 
                             ForEach(sortedSeverities, id: \.self) { severity in
@@ -307,7 +356,7 @@ struct ModuleScanView: View {
                                  }
                              }
                          } else {
-                             ForEach(viewModel.results) { result in
+                             ForEach(results) { result in
                                 ScanResultRowView(result: result, viewModel: viewModel)
                              }
                          }

@@ -25,7 +25,8 @@ public actor LargeFilesScanner: ModuleScanner {
             try Task.checkCancellation()
             var isDirectory: ObjCBool = false
             if fileManager.fileExists(atPath: dir.path, isDirectory: &isDirectory), isDirectory.boolValue {
-                for await result in await scanActor.scanAllStream(at: dir) {
+                let categorizer = Categorizer()
+                for await result in await scanActor.scanStream(at: dir) {
                     try Task.checkCancellation()
                     // Filter based on size or age
                     let isLarge = result.size >= sizeThreshold
@@ -34,14 +35,23 @@ public actor LargeFilesScanner: ModuleScanner {
                     if isLarge || isOld {
                         // Let's create a new result with correct category if needed
                         let category: FileCategory = isLarge ? .largeFile : .oldFile
-                        let updatedResult = ScanResult(
+                        let baseResult = ScanResult(
                             url: result.url,
                             size: result.size,
                             category: category,
                             lastModified: result.lastModified,
                             creationDate: result.creationDate,
-                            appName: result.appName,
-                            severity: result.severity
+                            appName: result.appName
+                        )
+                        let updatedResult = ScanResult(
+                            url: baseResult.url,
+                            size: baseResult.size,
+                            category: baseResult.category,
+                            lastModified: baseResult.lastModified,
+                            creationDate: baseResult.creationDate,
+                            appName: baseResult.appName,
+                            severity: categorizer.severity(for: baseResult),
+                            isSafeToDelete: categorizer.isSafeToDelete(for: baseResult)
                         )
                         allResults.append(updatedResult)
                     }

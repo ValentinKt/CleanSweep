@@ -14,6 +14,7 @@ public actor StartupManagerScanner: ModuleScanner {
         ]
 
         var results: [ScanResult] = []
+        let categorizer = Categorizer()
 
         for dir in targetDirs {
             var isDirectory: ObjCBool = false
@@ -38,13 +39,23 @@ public actor StartupManagerScanner: ModuleScanner {
                             let creationDate = attributes?[.creationDate] as? Date
                             let appName = url.deletingPathExtension().lastPathComponent
 
-                            let result = ScanResult(
+                            let baseResult = ScanResult(
                                 url: url,
                                 size: size,
                                 category: .startupItem,
                                 lastModified: lastModified,
                                 creationDate: creationDate,
                                 appName: appName
+                            )
+                            let result = ScanResult(
+                                url: baseResult.url,
+                                size: baseResult.size,
+                                category: baseResult.category,
+                                lastModified: baseResult.lastModified,
+                                creationDate: baseResult.creationDate,
+                                appName: baseResult.appName,
+                                severity: categorizer.severity(for: baseResult),
+                                isSafeToDelete: categorizer.isSafeToDelete(for: baseResult)
                             )
                             results.append(result)
                         }

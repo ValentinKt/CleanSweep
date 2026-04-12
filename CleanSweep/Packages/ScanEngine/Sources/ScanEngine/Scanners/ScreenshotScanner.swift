@@ -19,7 +19,8 @@ public actor ScreenshotScanner: ModuleScanner {
         for dir in targetDirs {
             var isDirectory: ObjCBool = false
             if fileManager.fileExists(atPath: dir.path, isDirectory: &isDirectory), isDirectory.boolValue {
-                for await result in await scanActor.scanAllStream(at: dir) {
+                    let categorizer = Categorizer()
+                    for await result in await scanActor.scanStream(at: dir) {
                     let filename = result.url.lastPathComponent.lowercased()
 
                     var isScreenshot = false
@@ -36,11 +37,12 @@ public actor ScreenshotScanner: ModuleScanner {
                         let updatedResult = ScanResult(
                             url: result.url,
                             size: result.size,
-                            category: category,
+                            category: result.category,
                             lastModified: result.lastModified,
                             creationDate: result.creationDate,
                             appName: result.appName,
-                            severity: result.severity
+                            severity: categorizer.severity(for: result),
+                            isSafeToDelete: categorizer.isSafeToDelete(for: result)
                         )
                         allResults.append(updatedResult)
                     }

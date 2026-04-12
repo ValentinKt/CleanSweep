@@ -51,4 +51,15 @@ public struct Categorizer: Sendable {
 
         return .low
     }
+
+    public func isSafeToDelete(for result: ScanResult) -> Bool {
+        switch result.category {
+        case .userCache, .systemLog, .tempFile, .languagePack, .browserCache, .networkCache, .trashItem:
+            return true
+        case .xcodeDerivedData, .xcodeSimulator, .spmCache:
+            return true
+        case .mailAttachment, .appSupportOrphan, .largeFile, .oldFile, .duplicate, .screenshot, .screenRecording, .fontDuplicate, .application, .startupItem, .unknown:
+            return false
+        }
+    }
 }

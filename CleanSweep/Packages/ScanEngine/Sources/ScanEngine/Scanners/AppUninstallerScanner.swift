@@ -48,7 +48,8 @@ public actor AppUninstallerScanner: ModuleScanner {
                             lastModified: baseResult.lastModified,
                             creationDate: baseResult.creationDate,
                             appName: baseResult.appName,
-                            severity: categorizer.severity(for: baseResult)
+                            severity: categorizer.severity(for: baseResult),
+                            isSafeToDelete: categorizer.isSafeToDelete(for: baseResult)
                         )
                         apps.append(result)
                     }

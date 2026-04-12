@@ -132,6 +132,7 @@ public actor LeftoversScanner: ModuleScanner {
         let size = await calculateSize(of: url)
         guard size > 0 else { return nil }
 
+        let categorizer = Categorizer()
         let attributes = try? fileManager.attributesOfItem(atPath: url.path)
         let lastModified = attributes?[.modificationDate] as? Date
         let creationDate = attributes?[.creationDate] as? Date
@@ -152,7 +153,8 @@ public actor LeftoversScanner: ModuleScanner {
             lastModified: baseResult.lastModified,
             creationDate: baseResult.creationDate,
             appName: baseResult.appName,
-            severity: Categorizer().severity(for: baseResult)
+            severity: categorizer.severity(for: baseResult),
+            isSafeToDelete: categorizer.isSafeToDelete(for: baseResult)
         )
     }
 

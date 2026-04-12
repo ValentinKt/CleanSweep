@@ -33,6 +33,7 @@ public actor DuplicateFinderScanner: ModuleScanner {
         let potentialDuplicates = sizeMap.filter { $0.value.count > 1 }
 
         var duplicates: [ScanResult] = []
+        let categorizer = Categorizer()
 
         for (_, files) in potentialDuplicates {
             try Task.checkCancellation()
@@ -51,13 +52,23 @@ public actor DuplicateFinderScanner: ModuleScanner {
                 // Add all to duplicates except the first one (we assume the first one is the original)
                 // Actually, let's just add all of them so the user can choose which to delete.
                 for file in hashedFiles {
-                    let duplicateResult = ScanResult(
+                    let baseResult = ScanResult(
                         url: file.url,
                         size: file.size,
                         category: .duplicate,
                         lastModified: file.lastModified,
                         creationDate: file.creationDate,
                         appName: file.appName
+                    )
+                    let duplicateResult = ScanResult(
+                        url: baseResult.url,
+                        size: baseResult.size,
+                        category: baseResult.category,
+                        lastModified: baseResult.lastModified,
+                        creationDate: baseResult.creationDate,
+                        appName: baseResult.appName,
+                        severity: categorizer.severity(for: baseResult),
+                        isSafeToDelete: categorizer.isSafeToDelete(for: baseResult)
                     )
                     duplicates.append(duplicateResult)
                 }
