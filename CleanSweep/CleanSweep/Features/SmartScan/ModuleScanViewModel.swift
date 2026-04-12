@@ -86,11 +86,26 @@ public final class ModuleScanViewModel {
         scanTask?.cancel()
         pathUpdateTask?.cancel()
         progressPulseTask?.cancel()
-        results = sortedResults(from: initialResults)
-        selectedResultIDs.removeAll()
-        progress = 1.0
-        phase = .complete
-        currentScannedPath = ""
+
+        // Offload sorting to a background task
+        Task {
+            let sorted = await Task.detached(priority: .userInitiated) {
+                initialResults.sorted { lhs, rhs in
+                    if lhs.size != rhs.size {
+                        return lhs.size > rhs.size
+                    }
+                    return lhs.url.path.localizedStandardCompare(rhs.url.path) == .orderedAscending
+                }
+            }.value
+
+            if !Task.isCancelled {
+                self.results = sorted
+                self.selectedResultIDs.removeAll()
+                self.progress = 1.0
+                self.phase = .complete
+                self.currentScannedPath = ""
+            }
+        }
     }
 
     public func startScan() async {
@@ -111,6 +126,19 @@ public final class ModuleScanViewModel {
             do {
                 let result = try await scanner.scan()
                 if Task.isCancelled { return }
+
+                // Sort results in the background to avoid blocking the Main Actor
+                let sorted = await Task.detached(priority: .userInitiated) { [results = result.results] in
+                    results.sorted { lhs, rhs in
+                        if lhs.size != rhs.size {
+                            return lhs.size > rhs.size
+                        }
+                        return lhs.url.path.localizedStandardCompare(rhs.url.path) == .orderedAscending
+                    }
+                }.value
+
+                if Task.isCancelled { return }
+
                 let elapsed = scanStartedAt.duration(to: .now)
                 let remainingPresentation = minimumScanPresentationDuration - elapsed
                 if remainingPresentation > .zero {
@@ -118,7 +146,7 @@ public final class ModuleScanViewModel {
                     try? await Task.sleep(for: remainingPresentation)
                 }
                 if Task.isCancelled { return }
-                self.results = self.sortedResults(from: result.results)
+                self.results = sorted
                 self.progress = 1.0
                 self.phase = .complete
                 self.currentScannedPath = ""
@@ -214,16 +242,6 @@ public final class ModuleScanViewModel {
 
         if !cleanupOutcome.removedIDs.isEmpty {
             UserDefaults.standard.set(Date(), forKey: "LastCleanedDate")
-        }
-    }
-
-    private func sortedResults(from results: [ScanResult]) -> [ScanResult] {
-        results.sorted { lhs, rhs in
-            if lhs.size != rhs.size {
-                return lhs.size > rhs.size
-            }
-
-            return lhs.url.path.localizedStandardCompare(rhs.url.path) == .orderedAscending
         }
     }
 

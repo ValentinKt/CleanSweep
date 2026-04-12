@@ -1,0 +1,300 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -project CleanSweep.xcodeproj -scheme CleanSweep -destination platform=macOS build
+
+Resolve Package Graph
+
+
+Resolved source packages:
+  ScanEngine: /Users/valentin/XCode/CleanSweep/CleanSweep/Packages/ScanEngine
+
+2026-04-12 04:42:03.577 xcodebuild[11253:19335963] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+--- xcodebuild: WARNING: Using the first of multiple matching destinations:
+{ platform:macOS, arch:arm64, id:00006021-001470E6367B401E, name:My Mac }
+{ platform:macOS, arch:x86_64, id:00006021-001470E6367B401E, name:My Mac }
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (3 targets)
+    Target 'CleanSweep' in project 'CleanSweep'
+        ➜ Explicit dependency on target 'ScanEngine' in project 'ScanEngine'
+    Target 'ScanEngine' in project 'ScanEngine'
+        ➜ Explicit dependency on target 'ScanEngine' in project 'ScanEngine'
+    Target 'ScanEngine' in project 'ScanEngine' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc --version
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/usr/bin/actool --version --output-format xml1
+
+ExecuteExternalTool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
+
+Build description signature: 68899510860ecbb8841d6873ef2721a0
+Build description path: /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/XCBuildData/68899510860ecbb8841d6873ef2721a0.xcbuilddata
+SwiftDriver CleanSweep normal arm64 com.apple.xcode.tools.swift.compiler (in target 'CleanSweep' from project 'CleanSweep')
+    cd /Users/valentin/XCode/CleanSweep/CleanSweep
+    builtin-SwiftDriver -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name CleanSweep -Onone @/Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/Objects-normal/arm64/CleanSweep.SwiftFileList -DDEBUG -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -target arm64-apple-macos26.0 -g -module-cache-path /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 6 -I /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Products/Debug -F /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Products/Debug/PackageFrameworks -F /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Products/Debug -c -j12 -enable-batch-mode -incremental -output-file-map /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/Objects-normal/arm64/CleanSweep-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -sdk-module-cache-path /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/Objects-normal/arm64/CleanSweep.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/Objects-normal/arm64/CleanSweep_const_extract_protocols.json -Xcc -iquote -Xcc /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/CleanSweep-generated-files.hmap -Xcc -I/Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/CleanSweep-own-target-headers.hmap -Xcc -I/Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/CleanSweep-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep-3c22453002f85a6b4c51f3a578ccb0c6-VFS/all-product-headers.yaml -Xcc -iquote -Xcc /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/CleanSweep-project-headers.hmap -Xcc -I/Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Products/Debug/include -Xcc -I/Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/DerivedSources-normal/arm64 -Xcc -I/Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/DerivedSources/arm64 -Xcc -I/Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/Objects-normal/arm64/CleanSweep-Swift.h -working-directory /Users/valentin/XCode/CleanSweep/CleanSweep -experimental-emit-module-separately -disable-cmo
+
+ProcessInfoPlistFile /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Products/Debug/CleanSweep.app/Contents/Info.plist /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/empty-CleanSweep.plist (in target 'CleanSweep' from project 'CleanSweep')
+    cd /Users/valentin/XCode/CleanSweep/CleanSweep
+    builtin-infoPlistUtility /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/empty-CleanSweep.plist -producttype com.apple.product-type.application -genpkginfo /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Products/Debug/CleanSweep.app/Contents/PkgInfo -expandbuildsettings -platform macosx -additionalcontentfile /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/assetcatalog_generated_info.plist -o /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Products/Debug/CleanSweep.app/Contents/Info.plist
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_Builtin_float-CCBIILIOHIZYG3RNSDLG1RE91.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_SwiftConcurrencyShims-4IXAPF8WRT5NQKBDNPJBUVLDL.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_Builtin_stdbool-5R56ZDNECBRS3AWOFURGYSOA2.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/ptrcheck-9FFVDUOPJZ9MQ1FOYBSXYMFGU.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/DeveloperToolsSupport-C4UOYER2DV2YDMD7E7Y60GWYL.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/SwiftShims-5DZMIQ97FVIHC2MALLRRH85VQ.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_Builtin_stdarg-6B9E8DVVCPV9G6VAN040YKPDE.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/ptrauth-9S7NW137LRYOHWU1CH7G6NQ2J.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_AvailabilityInternal-EM0HF4LKKLIRJIJORFDDS4BY6.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_Builtin_stddef-CMQBOC12FOU6YL8VMCTR86MQ6.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_DarwinFoundation1-CSP009B8QWZ4XRP9E25PVH5UD.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_Builtin_limits-B8WOK039CZ7QM9FQEDERUTK2T.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_DarwinFoundation2-33CEA2K6B1SIVEVB72BCKCZ5T.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_Builtin_stdint-O7MK1ZO5EEIJP954UFZCXFLZ.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/sys_types-6D7ZKU4OJRF1OXWZ5XEK3KX5Y.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_Builtin_tgmath-8N7ZHSJBQD034ECX76JVCZ57X.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_DarwinFoundation3-B2WIP3CAHL9XTCCWLKKGG59LY.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_Builtin_stdatomic-BW92UV7YA30YOZIOKV5D5L5PE.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/libDER-4RTUSXJ4IKYCIAX33TTFVQ55X.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_Builtin_intrinsics-5CSAJS86DH65DHFU5GMOQUHDS.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/OpenGL-4ZZ6KD9EBU6OQS2AZ3WPF0GYA.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_Builtin_inttypes-BUW8LJ6IHUYDWCBNYI48Z98VM.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Darwin-DGTZ960B50D6RB8F9S52K9JNK.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/simd-8PRNJWQ8VXKXC10PZRLY5J34K.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/CUPS-DI11O5AAC6WEXYK8SCTV7LV1G.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/launch-AHMJDPT8W31MXX6FRD6NVPCXK.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/libkern-9FM11WHBNMQL98CUFTWOK138I.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/MachO-2EXZW9QM5SORN67558BDKW3VV.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Spatial-50U3W76ASDR0DGADF0FFVZ7N5.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/ObjectiveC-F0Q4PM11MS5CRE9ZC3ATX2VTZ.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/os_object-DPMYSUER5X4ESQBKXCNZ0KPK9.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/os_workgroup-4KCHGL5DPKQ7A5BOTD1NXZ0EG.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Dispatch-A0M5SGBNNZT3J4QLLXJA0OY70.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/XPC-3JAFI6D5CUF7Z1Q6WSWNKVVR6.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/CoreFoundation-3UPNU4A72MTNZY7524DOLROUX.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/os-3A25J7NNX7WOWEU0GJWEN5LIU.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/ColorSync-CJYFZ4U1QBRNX2J7J7J55HX63.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Security-8BTVF8BUYDKXD9RO7ZDQ7DXZL.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/IOKit-X0L2030GEBFHXZXIOWRS6T6N.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/CFNetwork-9H4DN8917YLLQC7IP3NHYTRNA.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/CoreGraphics-7QUNNDI6BFBZW8P70C5H31SJH.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/DiskArbitration-BQYGOWGXYUGT64AWHQ8538YMU.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/CoreServices-4O4C67ZI4JSCW7UTVRCFDPNP8.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/CoreText-7IXER2VVMD5M2Y6FM0BU2XS53.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/ImageIO-44NFMQCN9HE4BTT1J759VQJ8.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Foundation-D8VXL9CXYA4EYAGFQK7LCHGZG.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/LocalAuthentication-BYMS7AU1CPJE7FC41SKYZ96OS.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/UniformTypeIdentifiers-6M7LNP8WPJZCLFODS6RSLEKNA.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Symbols-3TEZM0JMCW8L6BV1SVLVBPT3L.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/IOSurface-AQX980PHMT3TF8ZO9CZBHGUGB.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/OSLog-57R7RIDAMW4GRBLSMVJDOYXD7.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/ApplicationServices-70ZAM1VG9EZWUG8KJEY0ACK0H.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/CoreData-V8UTS2JUG049H1RT941HPG2L.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Accessibility-709QX4EGXDG3ORKK0X8YD448.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/DataDetection-Z36SDPDWP8WE8O5QM85WHIIW.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/CoreTransferable-6FX3X2O3LN2IC057ZL49PWEW3.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Metal-2T2RS34IXC4VQOIH829QIEX63.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/CoreVideo-2DSP2T4WUJ19KVGMRA7H0O0M6.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/CoreImage-2MMMCDJP1CPFTAZZZ0CBXWWN8.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/QuartzCore-CAMORXMP8E6XK2MF17AA0H62Z.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/SwiftUICore-D89IZYXIWRM3B2T18V9R3NHW1.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/AppKit-E552VLPDSWF7LJP01EWMZLBTO.pcm
+
+SwiftExplicitDependencyGeneratePcm arm64 /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/SwiftUI-6OHNLFH54SEPZQ1NOYFRRIVJB.pcm
+
+SwiftEmitModule normal arm64 Emitting\ module\ for\ CleanSweep (in target 'CleanSweep' from project 'CleanSweep')
+
+EmitSwiftModule normal arm64 (in target 'CleanSweep' from project 'CleanSweep')
+    cd /Users/valentin/XCode/CleanSweep/CleanSweep
+    
+
+SwiftCompile normal arm64 Compiling\ HealthDashboardViewModel.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/Features/HealthDashboardViewModel.swift (in target 'CleanSweep' from project 'CleanSweep')
+SwiftCompile normal arm64 /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/Features/HealthDashboardViewModel.swift (in target 'CleanSweep' from project 'CleanSweep')
+    cd /Users/valentin/XCode/CleanSweep/CleanSweep
+    
+/Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/Features/HealthDashboardViewModel.swift:51:60: error: reference to var 'vm_page_size' is not concurrency-safe because it involves shared mutable state
+            let active = Int64(stats.active_count) * Int64(vm_page_size)
+                                                           ^
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk/usr/include/mach/vm_page_size.h:42:25: note: var declared here
+extern  vm_size_t       vm_page_size;
+                        ^
+/Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/Features/HealthDashboardViewModel.swift:52:57: error: reference to var 'vm_page_size' is not concurrency-safe because it involves shared mutable state
+            let wired = Int64(stats.wire_count) * Int64(vm_page_size)
+                                                        ^
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk/usr/include/mach/vm_page_size.h:42:25: note: var declared here
+extern  vm_size_t       vm_page_size;
+                        ^
+/Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/Features/HealthDashboardViewModel.swift:53:73: error: reference to var 'vm_page_size' is not concurrency-safe because it involves shared mutable state
+            let compressed = Int64(stats.compressor_page_count) * Int64(vm_page_size)
+                                                                        ^
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk/usr/include/mach/vm_page_size.h:42:25: note: var declared here
+extern  vm_size_t       vm_page_size;
+                        ^
+
+Failed frontend command:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-frontend -frontend -c /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/AppModel.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/CleanSweepApp.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/CleanSweepDesignSystem.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/DashboardView.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/DetailView.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/Features/DiskAnalyzerView.swift -primary-file /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/Features/HealthDashboardViewModel.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/Features/MemoryMonitorView.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/Features/SmartScan/ModuleScanView.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/Features/SmartScan/ModuleScanViewModel.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/RootView.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/SidebarItem.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/SidebarView.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/Features/SmartScan/SmartScanView.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/Features/SmartScan/SmartScanViewModel.swift /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/DerivedSources/GeneratedAssetSymbols.swift -emit-dependencies-path /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/Objects-normal/arm64/HealthDashboardViewModel.d -emit-const-values-path /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/Objects-normal/arm64/HealthDashboardViewModel.swiftconstvalues -emit-reference-dependencies-path /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/Objects-normal/arm64/HealthDashboardViewModel.swiftdeps -serialize-diagnostics-path /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/Objects-normal/arm64/HealthDashboardViewModel.dia -target arm64-apple-macos26.0 -module-can-import-version DeveloperToolsSupport 23.40.26 23.40.26 -load-resolved-plugin /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib/swift/host/plugins/libFoundationMacros.dylib\#/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/bin/swift-plugin-server\#FoundationMacros -load-resolved-plugin /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib/swift/host/plugins/libObservationMacros.dylib\#/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/bin/swift-plugin-server\#ObservationMacros -load-resolved-plugin /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib/swift/host/plugins/libPreviewsMacros.dylib\#/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/bin/swift-plugin-server\#PreviewsMacros -load-resolved-plugin /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib/swift/host/plugins/libSwiftMacros.dylib\#/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/bin/swift-plugin-server\#SwiftMacros -load-resolved-plugin /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib/swift/host/plugins/libSwiftUIMacros.dylib\#/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/bin/swift-plugin-server\#SwiftUIMacros -disable-implicit-swift-modules -Xcc -fno-implicit-modules -Xcc -fno-implicit-module-maps -explicit-swift-module-map-file /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/Objects-normal/arm64/CleanSweep-dependencies-1.json -debug-module-path /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/Objects-normal/arm64/CleanSweep.swiftmodule -Xllvm -aarch64-use-tbi -enable-objc-interop -stack-check -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -I /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Products/Debug -F /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Products/Debug/PackageFrameworks -F /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Products/Debug -no-color-diagnostics -Xcc -fno-color-diagnostics -enable-testing -g -debug-info-format\=dwarf -dwarf-version\=5 -module-cache-path /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -swift-version 6 -Onone -D DEBUG -serialize-debugging-options -const-gather-protocols-file /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/Objects-normal/arm64/CleanSweep_const_extract_protocols.json -enable-experimental-feature DebugDescriptionMacro -empty-abi-descriptor -validate-clang-modules-once -clang-build-session-file /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -working-directory -Xcc /Users/valentin/XCode/CleanSweep/CleanSweep -enable-anonymous-context-mangled-names -file-compilation-dir /Users/valentin/XCode/CleanSweep/CleanSweep -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -Xcc -I/Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/swift-overrides.hmap -Xcc -iquote -Xcc /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/CleanSweep-generated-files.hmap -Xcc -I/Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/CleanSweep-own-target-headers.hmap -Xcc -I/Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/CleanSweep-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep-3c22453002f85a6b4c51f3a578ccb0c6-VFS/all-product-headers.yaml -Xcc -iquote -Xcc /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/CleanSweep-project-headers.hmap -Xcc -I/Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Products/Debug/include -Xcc -I/Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/DerivedSources-normal/arm64 -Xcc -I/Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/DerivedSources/arm64 -Xcc -I/Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/DerivedSources -Xcc -DDEBUG\=1 -no-auto-bridging-header-chaining -module-name CleanSweep -frontend-parseable-output -disable-clang-spi -clang-target arm64-apple-macos26.4 -target-sdk-version 26.4 -target-sdk-name macosx26.4 -in-process-plugin-server-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/libSwiftInProcPluginServer.dylib -o /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/Objects-normal/arm64/HealthDashboardViewModel.o -index-unit-output-path /CleanSweep.build/Debug/CleanSweep.build/Objects-normal/arm64/HealthDashboardViewModel.o -index-store-path /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Index.noindex/DataStore -index-system-modules
+SwiftCompile normal arm64 Compiling\ ModuleScanView.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/Features/SmartScan/ModuleScanView.swift (in target 'CleanSweep' from project 'CleanSweep')
+SwiftCompile normal arm64 /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/Features/SmartScan/ModuleScanView.swift (in target 'CleanSweep' from project 'CleanSweep')
+    cd /Users/valentin/XCode/CleanSweep/CleanSweep
+    
+
+SwiftCompile normal arm64 Compiling\ DashboardView.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/DashboardView.swift (in target 'CleanSweep' from project 'CleanSweep')
+
+SwiftCompile normal arm64 /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/DashboardView.swift (in target 'CleanSweep' from project 'CleanSweep')
+    cd /Users/valentin/XCode/CleanSweep/CleanSweep
+    
+
+SwiftCompile normal arm64 Compiling\ CleanSweepDesignSystem.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/CleanSweepDesignSystem.swift (in target 'CleanSweep' from project 'CleanSweep')
+
+SwiftCompile normal arm64 /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/CleanSweepDesignSystem.swift (in target 'CleanSweep' from project 'CleanSweep')
+    cd /Users/valentin/XCode/CleanSweep/CleanSweep
+    
+
+SwiftCompile normal arm64 Compiling\ DetailView.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/DetailView.swift (in target 'CleanSweep' from project 'CleanSweep')
+
+SwiftCompile normal arm64 /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/DetailView.swift (in target 'CleanSweep' from project 'CleanSweep')
+    cd /Users/valentin/XCode/CleanSweep/CleanSweep
+    
+
+SwiftCompile normal arm64 Compiling\ SmartScanView.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/Features/SmartScan/SmartScanView.swift (in target 'CleanSweep' from project 'CleanSweep')
+
+SwiftCompile normal arm64 /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/Features/SmartScan/SmartScanView.swift (in target 'CleanSweep' from project 'CleanSweep')
+    cd /Users/valentin/XCode/CleanSweep/CleanSweep
+    
+
+SwiftCompile normal arm64 Compiling\ MemoryMonitorView.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/Features/MemoryMonitorView.swift (in target 'CleanSweep' from project 'CleanSweep')
+
+SwiftCompile normal arm64 /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/Features/MemoryMonitorView.swift (in target 'CleanSweep' from project 'CleanSweep')
+    cd /Users/valentin/XCode/CleanSweep/CleanSweep
+    
+
+SwiftCompile normal arm64 Compiling\ DiskAnalyzerView.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/Features/DiskAnalyzerView.swift (in target 'CleanSweep' from project 'CleanSweep')
+
+SwiftCompile normal arm64 /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/Features/DiskAnalyzerView.swift (in target 'CleanSweep' from project 'CleanSweep')
+    cd /Users/valentin/XCode/CleanSweep/CleanSweep
+    
+
+SwiftDriverJobDiscovery normal arm64 Compiling DashboardView.swift (in target 'CleanSweep' from project 'CleanSweep')
+
+SwiftDriverJobDiscovery normal arm64 Compiling DetailView.swift (in target 'CleanSweep' from project 'CleanSweep')
+
+SwiftCompile normal arm64 Compiling\ SidebarItem.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/SidebarItem.swift (in target 'CleanSweep' from project 'CleanSweep')
+
+SwiftCompile normal arm64 /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/SidebarItem.swift (in target 'CleanSweep' from project 'CleanSweep')
+    cd /Users/valentin/XCode/CleanSweep/CleanSweep
+    
+
+SwiftCompile normal arm64 Compiling\ CleanSweepApp.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/CleanSweepApp.swift (in target 'CleanSweep' from project 'CleanSweep')
+
+SwiftCompile normal arm64 /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/CleanSweepApp.swift (in target 'CleanSweep' from project 'CleanSweep')
+    cd /Users/valentin/XCode/CleanSweep/CleanSweep
+    
+
+SwiftCompile normal arm64 Compiling\ RootView.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/RootView.swift (in target 'CleanSweep' from project 'CleanSweep')
+
+SwiftCompile normal arm64 /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/RootView.swift (in target 'CleanSweep' from project 'CleanSweep')
+    cd /Users/valentin/XCode/CleanSweep/CleanSweep
+    
+
+SwiftCompile normal arm64 Compiling\ SmartScanViewModel.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/Features/SmartScan/SmartScanViewModel.swift (in target 'CleanSweep' from project 'CleanSweep')
+
+SwiftCompile normal arm64 /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/Features/SmartScan/SmartScanViewModel.swift (in target 'CleanSweep' from project 'CleanSweep')
+    cd /Users/valentin/XCode/CleanSweep/CleanSweep
+    
+
+SwiftCompile normal arm64 Compiling\ SidebarView.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/SidebarView.swift (in target 'CleanSweep' from project 'CleanSweep')
+
+SwiftCompile normal arm64 /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/SidebarView.swift (in target 'CleanSweep' from project 'CleanSweep')
+    cd /Users/valentin/XCode/CleanSweep/CleanSweep
+    
+
+SwiftDriverJobDiscovery normal arm64 Compiling DiskAnalyzerView.swift (in target 'CleanSweep' from project 'CleanSweep')
+
+SwiftDriverJobDiscovery normal arm64 Compiling MemoryMonitorView.swift (in target 'CleanSweep' from project 'CleanSweep')
+
+SwiftDriver\ Compilation CleanSweep normal arm64 com.apple.xcode.tools.swift.compiler (in target 'CleanSweep' from project 'CleanSweep')
+    cd /Users/valentin/XCode/CleanSweep/CleanSweep
+    builtin-Swift-Compilation -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name CleanSweep -Onone @/Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/Objects-normal/arm64/CleanSweep.SwiftFileList -DDEBUG -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk -target arm64-apple-macos26.0 -g -module-cache-path /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 6 -I /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Products/Debug -F /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Products/Debug/PackageFrameworks -F /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Products/Debug -c -j12 -enable-batch-mode -incremental -output-file-map /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/Objects-normal/arm64/CleanSweep-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -sdk-module-cache-path /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/Objects-normal/arm64/CleanSweep.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/valentin/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/Objects-normal/arm64/CleanSweep_const_extract_protocols.json -Xcc -iquote -Xcc /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/CleanSweep-generated-files.hmap -Xcc -I/Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/CleanSweep-own-target-headers.hmap -Xcc -I/Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/CleanSweep-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep-3c22453002f85a6b4c51f3a578ccb0c6-VFS/all-product-headers.yaml -Xcc -iquote -Xcc /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/CleanSweep-project-headers.hmap -Xcc -I/Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Products/Debug/include -Xcc -I/Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/DerivedSources-normal/arm64 -Xcc -I/Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/DerivedSources/arm64 -Xcc -I/Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/valentin/Library/Developer/Xcode/DerivedData/CleanSweep-cuwiudfsubkkifbfqcxetdrpqmbw/Build/Intermediates.noindex/CleanSweep.build/Debug/CleanSweep.build/Objects-normal/arm64/CleanSweep-Swift.h -working-directory /Users/valentin/XCode/CleanSweep/CleanSweep -experimental-emit-module-separately -disable-cmo
+
+** BUILD FAILED **
+
+
+The following build commands failed:
+	SwiftCompile normal arm64 /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/Features/HealthDashboardViewModel.swift (in target 'CleanSweep' from project 'CleanSweep')
+	SwiftCompile normal arm64 Compiling\ HealthDashboardViewModel.swift /Users/valentin/XCode/CleanSweep/CleanSweep/CleanSweep/Features/HealthDashboardViewModel.swift (in target 'CleanSweep' from project 'CleanSweep')
+	Building project CleanSweep with scheme CleanSweep
+(3 failures)

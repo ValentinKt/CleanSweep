@@ -5,11 +5,47 @@ public actor ScanActor {
     private static let minimumPathUpdateInterval = Duration.milliseconds(150)
     private static let pathUpdateStride = 128
 
-    public init() {}
+    private var isGhostMode: Bool = false
+    private var ghostModeTask: Task<Void, Never>?
+
+    public init() {
+        // We can't use NotificationCenter directly in actor init easily without Task
+        Task {
+            await setupGhostMode()
+        }
+    }
+
+    private func setupGhostMode() {
+        let center = NotificationCenter.default
+        let activeName = NSNotification.Name("AppDidBecomeActive")
+        let inactiveName = NSNotification.Name("AppDidBecomeInactive")
+
+        ghostModeTask = Task {
+            let activeStream = center.notifications(named: activeName)
+            let inactiveStream = center.notifications(named: inactiveName)
+
+            await withTaskGroup(of: Void.self) { group in
+                group.addTask {
+                    for await _ in activeStream {
+                        await self.setGhostMode(false)
+                    }
+                }
+                group.addTask {
+                    for await _ in inactiveStream {
+                        await self.setGhostMode(true)
+                    }
+                }
+            }
+        }
+    }
+
+    private func setGhostMode(_ enabled: Bool) {
+        self.isGhostMode = enabled
+    }
 
     public func scanStream(at root: URL, onPath: (@Sendable (URL) -> Void)? = nil) -> AsyncStream<ScanResult> {
         AsyncStream { continuation in
-            let task = Task.detached(priority: .utility) {
+            let task = Task.detached(priority: .utility) { [weak self] in
                 let keys: [URLResourceKey] = [
                     .fileSizeKey,
                     .totalFileAllocatedSizeKey,
@@ -38,7 +74,12 @@ public actor ScanActor {
                     fileCount += 1
 
                     // Throttling: yield every 256 files to keep CPU usage low
-                    if fileCount % 256 == 0 {
+                    // If in ghost mode, yield more frequently and sleep
+                    let isGhost = await self?.isGhostMode ?? false
+                    if fileCount % (isGhost ? 64 : 256) == 0 {
+                        if isGhost {
+                            try? await Task.sleep(for: .milliseconds(10))
+                        }
                         await Task.yield()
                     }
 
@@ -97,7 +138,7 @@ public actor ScanActor {
 
     public func scanAllStream(at root: URL, onPath: (@Sendable (URL) -> Void)? = nil) -> AsyncStream<ScanResult> {
         AsyncStream { continuation in
-            let task = Task.detached(priority: .utility) {
+            let task = Task.detached(priority: .utility) { [weak self] in
                 let keys: [URLResourceKey] = [
                     .fileSizeKey,
                     .totalFileAllocatedSizeKey,
@@ -125,7 +166,12 @@ public actor ScanActor {
                     fileCount += 1
 
                     // Throttling: yield every 256 files to keep CPU usage low
-                    if fileCount % 256 == 0 {
+                    // If in ghost mode, yield more frequently and sleep
+                    let isGhost = await self?.isGhostMode ?? false
+                    if fileCount % (isGhost ? 64 : 256) == 0 {
+                        if isGhost {
+                            try? await Task.sleep(for: .milliseconds(10))
+                        }
                         await Task.yield()
                     }
 

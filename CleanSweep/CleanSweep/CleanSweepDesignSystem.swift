@@ -554,9 +554,15 @@ final class CleanSweepProgressRingNSView: NSView {
         wantsLayer = true
         guard let rootLayer = layer else { return }
 
+        // Set shouldRasterize for the entire view's layer to offload to GPU
+        rootLayer.shouldRasterize = true
+        rootLayer.rasterizationScale = NSScreen.main?.backingScaleFactor ?? 2.0
+        rootLayer.drawsAsynchronously = true
+
         trackLayer.fillColor = NSColor.clear.cgColor
         trackLayer.strokeColor = NSColor.white.withAlphaComponent(0.14).cgColor
         trackLayer.lineWidth = 14
+        trackLayer.drawsAsynchronously = true
 
         glowLayer.fillColor = NSColor.clear.cgColor
         glowLayer.lineWidth = 22

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		00F3DA01B05790AC8FC3BD90 /* ModuleScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F964AD144F0D08697B700243 /* ModuleScanView.swift */; };
+		0CB1A71DF44E3E53A13F97DD /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D16FF9238A9D46220FA9B86F /* AppModel.swift */; };
 		128677662FCE185CF71AA5F4 /* CleanSweepApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182852D20FA6601B170CD689 /* CleanSweepApp.swift */; };
 		260527AF75AFF421226634B2 /* ScanEngine in Frameworks */ = {isa = PBXBuildFile; productRef = EDE495C5256441EDF888B663 /* ScanEngine */; };
 		2A529C349E0556B1FAFB4C5B /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B0DF8D9EB688362869185BB /* DetailView.swift */; };
@@ -40,6 +41,7 @@
 		9E9229BF84CBC642F53971C8 /* DiskAnalyzerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskAnalyzerView.swift; sourceTree = "<group>"; };
 		AB569C8B0B69082F98B1C1E1 /* MemoryMonitorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryMonitorView.swift; sourceTree = "<group>"; };
 		C49C8835A3A15492A6613351 /* ScanEngine */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ScanEngine; path = Packages/ScanEngine; sourceTree = SOURCE_ROOT; };
+		D16FF9238A9D46220FA9B86F /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		DD291ECC2A8EEF63A5E8CC03 /* CleanSweepDesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanSweepDesignSystem.swift; sourceTree = "<group>"; };
 		E3968EA842C4BFC770853FAB /* ModuleScanViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModuleScanViewModel.swift; sourceTree = "<group>"; };
 		F964AD144F0D08697B700243 /* ModuleScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModuleScanView.swift; sourceTree = "<group>"; };
@@ -80,6 +82,7 @@
 		30C4B9531FAA2D0471C2738D /* CleanSweep */ = {
 			isa = PBXGroup;
 			children = (
+				D16FF9238A9D46220FA9B86F /* AppModel.swift */,
 				4516567E163F92E98A19E598 /* Assets.xcassets */,
 				182852D20FA6601B170CD689 /* CleanSweepApp.swift */,
 				DD291ECC2A8EEF63A5E8CC03 /* CleanSweepDesignSystem.swift */,
@@ -192,6 +195,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0CB1A71DF44E3E53A13F97DD /* AppModel.swift in Sources */,
 				128677662FCE185CF71AA5F4 /* CleanSweepApp.swift in Sources */,
 				703CE4429CFA3B09FA70A55B /* CleanSweepDesignSystem.swift in Sources */,
 				382ED880D8F64EAC697D4239 /* DashboardView.swift in Sources */,
@@ -226,6 +230,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.cleansweep.CleanSweep;
 				SDKROOT = macosx;
+				SWIFT_VERSION = 6.0;
 			};
 			name = Release;
 		};
@@ -362,6 +367,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.cleansweep.CleanSweep;
 				SDKROOT = macosx;
+				SWIFT_VERSION = 6.0;
 			};
 			name = Debug;
 		};

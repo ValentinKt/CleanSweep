@@ -23,14 +23,24 @@ public actor SmartScanEngine {
         var summary = ScanSummary()
         let totalModules = scanJobs.count
 
-        for (index, job) in scanJobs.enumerated() {
-            if let onProgress {
-                let progress = Double(index) / Double(totalModules)
-                await onProgress(progress, job.0)
+        try await withThrowingTaskGroup(of: (Int, ModuleResult).self) { group in
+            for (index, job) in scanJobs.enumerated() {
+                group.addTask {
+                    let result = try await job.1()
+                    return (index, result)
+                }
             }
 
-            let result = try await job.1()
-            summary.merge(result)
+            var completedCount = 0
+            for try await (index, result) in group {
+                completedCount += 1
+                summary.merge(result)
+
+                if let onProgress {
+                    let progress = Double(completedCount) / Double(totalModules)
+                    await onProgress(progress, result.moduleName)
+                }
+            }
         }
 
         if let onProgress {

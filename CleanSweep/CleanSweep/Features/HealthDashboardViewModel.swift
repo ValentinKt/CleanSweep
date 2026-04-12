@@ -48,9 +48,10 @@ class HealthDashboardViewModel {
         }
 
         if result == KERN_SUCCESS {
-            let active = Int64(stats.active_count) * Int64(vm_page_size)
-            let wired = Int64(stats.wire_count) * Int64(vm_page_size)
-            let compressed = Int64(stats.compressor_page_count) * Int64(vm_page_size)
+            let pageSize = Int64(getpagesize())
+            let active = Int64(stats.active_count) * pageSize
+            let wired = Int64(stats.wire_count) * pageSize
+            let compressed = Int64(stats.compressor_page_count) * pageSize
             let used = active + wired + compressed
 
             let physicalMemory = ProcessInfo.processInfo.physicalMemory
