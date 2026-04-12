@@ -246,36 +246,44 @@ public actor DevelopmentJunkScanner: ModuleScanner {
             return Int64(size)
         }
 
-        guard let enumerator = fileManager.enumerator(
-            at: url,
-            includingPropertiesForKeys: Array(keys),
-            options: [.skipsHiddenFiles]
-        ) else {
-            return 0
-        }
-
-        var totalSize: Int64 = 0
-        var itemCount = 0
-
-        while let child = enumerator.nextObject() as? URL {
-            guard !Task.isCancelled else { break }
-
-            let childValues = try? child.resourceValues(forKeys: keys)
-            if childValues?.isSymbolicLink == true || childValues?.isDirectory == true {
-                continue
+        // Run the heavy enumeration in a detached task to avoid blocking the actor
+        return await Task.detached(priority: .utility) {
+            guard let enumerator = fileManager.enumerator(
+                at: url,
+                includingPropertiesForKeys: Array(keys),
+                options: [] // Don't skip hidden files, as some Xcode caches are in hidden folders
+            ) else {
+                return 0
             }
 
-            let childSize = childValues?.totalFileAllocatedSize ?? childValues?.fileSize ?? 0
-            totalSize += Int64(childSize)
-            itemCount += 1
+            var totalSize: Int64 = 0
+            var itemCount = 0
 
-            if itemCount.isMultiple(of: Self.sizingYieldStride) {
-                try? await Task.sleep(for: .milliseconds(2))
-                await Task.yield()
+            while let child = enumerator.nextObject() as? URL {
+                guard !Task.isCancelled else { break }
+
+                do {
+                    let childValues = try child.resourceValues(forKeys: keys)
+                    if childValues.isSymbolicLink == true || childValues.isDirectory == true {
+                        continue
+                    }
+
+                    let childSize = childValues.totalFileAllocatedSize ?? childValues.fileSize ?? 0
+                    totalSize += Int64(childSize)
+                    itemCount += 1
+
+                    if itemCount.isMultiple(of: 1000) {
+                        Self.publishPathUpdate(child)
+                        // Yield to prevent CPU starvation without excessive sleeping
+                        await Task.yield()
+                    }
+                } catch {
+                    continue
+                }
             }
-        }
 
-        return totalSize
+            return totalSize
+        }.value
     }
 
 }
