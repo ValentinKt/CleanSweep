@@ -16,15 +16,23 @@ public actor TrashScanner: ModuleScanner {
         var isDirectory: ObjCBool = false
         if fileManager.fileExists(atPath: targetDir.path, isDirectory: &isDirectory), isDirectory.boolValue {
             for await result in await scanActor.scanAllStream(at: targetDir) {
-                let updatedResult = ScanResult(
+                let baseResult = ScanResult(
                     url: result.url,
                     size: result.size,
-                    category: result.category,
+                    category: .trashItem,
                     lastModified: result.lastModified,
                     creationDate: result.creationDate,
-                    appName: result.appName,
-                    severity: Categorizer().severity(for: result),
-                    isSafeToDelete: Categorizer().isSafeToDelete(for: result)
+                    appName: result.appName
+                )
+                let updatedResult = ScanResult(
+                    url: baseResult.url,
+                    size: baseResult.size,
+                    category: baseResult.category,
+                    lastModified: baseResult.lastModified,
+                    creationDate: baseResult.creationDate,
+                    appName: baseResult.appName,
+                    severity: Categorizer().severity(for: baseResult),
+                    isSafeToDelete: Categorizer().isSafeToDelete(for: baseResult)
                 )
                 allResults.append(updatedResult)
             }

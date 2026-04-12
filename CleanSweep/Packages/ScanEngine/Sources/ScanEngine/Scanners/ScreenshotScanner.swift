@@ -20,7 +20,7 @@ public actor ScreenshotScanner: ModuleScanner {
             var isDirectory: ObjCBool = false
             if fileManager.fileExists(atPath: dir.path, isDirectory: &isDirectory), isDirectory.boolValue {
                     let categorizer = Categorizer()
-                    for await result in await scanActor.scanStream(at: dir) {
+                    for await result in await scanActor.scanAllStream(at: dir) {
                     let filename = result.url.lastPathComponent.lowercased()
 
                     var isScreenshot = false
@@ -34,15 +34,23 @@ public actor ScreenshotScanner: ModuleScanner {
 
                     if isScreenshot || isRecording {
                         let category: FileCategory = isScreenshot ? .screenshot : .screenRecording
-                        let updatedResult = ScanResult(
+                        let baseResult = ScanResult(
                             url: result.url,
                             size: result.size,
-                            category: result.category,
+                            category: category,
                             lastModified: result.lastModified,
                             creationDate: result.creationDate,
-                            appName: result.appName,
-                            severity: categorizer.severity(for: result),
-                            isSafeToDelete: categorizer.isSafeToDelete(for: result)
+                            appName: result.appName
+                        )
+                        let updatedResult = ScanResult(
+                            url: baseResult.url,
+                            size: baseResult.size,
+                            category: baseResult.category,
+                            lastModified: baseResult.lastModified,
+                            creationDate: baseResult.creationDate,
+                            appName: baseResult.appName,
+                            severity: categorizer.severity(for: baseResult),
+                            isSafeToDelete: categorizer.isSafeToDelete(for: baseResult)
                         )
                         allResults.append(updatedResult)
                     }

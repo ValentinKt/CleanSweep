@@ -26,7 +26,7 @@ public actor LargeFilesScanner: ModuleScanner {
             var isDirectory: ObjCBool = false
             if fileManager.fileExists(atPath: dir.path, isDirectory: &isDirectory), isDirectory.boolValue {
                 let categorizer = Categorizer()
-                for await result in await scanActor.scanStream(at: dir) {
+                for await result in await scanActor.scanAllStream(at: dir) {
                     try Task.checkCancellation()
                     // Filter based on size or age
                     let isLarge = result.size >= sizeThreshold

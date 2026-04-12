@@ -37,7 +37,7 @@ public struct ScanResult: Sendable, Identifiable, Hashable {
         creationDate: Date? = nil,
         appName: String? = nil,
         severity: Severity? = nil,
-        isSafeToDelete: Bool = true
+        isSafeToDelete: Bool = false
     ) {
         self.url = url
         self.size = size

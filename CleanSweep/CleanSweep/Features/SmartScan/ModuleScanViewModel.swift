@@ -9,6 +9,7 @@ public final class ModuleScanViewModel {
     public var selectedResultIDs: Set<ScanResult.ID> = []
     public var selectedSeverity: Severity?
     public var showOnlySafeToDelete = true
+    public var expandedFolders: Set<String> = []
     public var progress: Double = 0
     public var phase: ScanPhase = .idle
     public var isCleaningSelection = false
@@ -21,6 +22,42 @@ public final class ModuleScanViewModel {
             let matchesSeverity = selectedSeverity == nil || result.severity == selectedSeverity
             let matchesSafe = !showOnlySafeToDelete || result.isSafeToDelete
             return matchesSeverity && matchesSafe
+        }
+    }
+
+    public var groupedResults: [String: [ScanResult]] {
+        Dictionary(grouping: filteredResults) { result in
+            result.url.deletingLastPathComponent().path
+        }
+    }
+
+    public var sortedFolderPaths: [String] {
+        groupedResults.keys.sorted { lhs, rhs in
+            lhs.localizedStandardCompare(rhs) == .orderedAscending
+        }
+    }
+
+    public func isFolderSelected(_ path: String) -> Bool {
+        guard let files = groupedResults[path], !files.isEmpty else { return false }
+        return files.allSatisfy { selectedResultIDs.contains($0.id) }
+    }
+
+    public func toggleFolderSelection(_ path: String) {
+        guard let files = groupedResults[path] else { return }
+        if isFolderSelected(path) {
+            let ids = Set(files.map(\.id))
+            selectedResultIDs.subtract(ids)
+        } else {
+            let ids = Set(files.map(\.id))
+            selectedResultIDs.formUnion(ids)
+        }
+    }
+
+    public func toggleFolderExpansion(_ path: String) {
+        if expandedFolders.contains(path) {
+            expandedFolders.remove(path)
+        } else {
+            expandedFolders.insert(path)
         }
     }
 

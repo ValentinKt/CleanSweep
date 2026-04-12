@@ -7,6 +7,56 @@ struct ModuleScanHighlight: Hashable {
 }
 
 @available(macOS 26.0, *)
+private struct FolderRowView: View {
+    let path: String
+    let files: [ScanResult]
+    @Bindable var viewModel: ModuleScanViewModel
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Button {
+                viewModel.toggleFolderExpansion(path)
+            } label: {
+                Image(systemName: viewModel.expandedFolders.contains(path) ? "chevron.down" : "chevron.right")
+                    .font(.caption2.bold())
+                    .foregroundStyle(.secondary)
+                    .frame(width: 12)
+            }
+            .buttonStyle(.plain)
+
+            Image(systemName: viewModel.isFolderSelected(path) ? "checkmark.circle.fill" : "circle")
+                .font(.title3)
+                .foregroundStyle(viewModel.isFolderSelected(path) ? CleanSweepPalette.accentBlue : .secondary)
+                .onTapGesture {
+                    viewModel.toggleFolderSelection(path)
+                }
+
+            Image(systemName: "folder.fill")
+                .foregroundStyle(CleanSweepPalette.accentBlue.opacity(0.8))
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(path)
+                    .font(.body.weight(.medium))
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                Text("\(files.count) files")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Text(moduleFormatBytes(files.reduce(0) { $0 + $1.size }))
+                .font(.callout.monospacedDigit())
+                .foregroundStyle(.secondary)
+        }
+        .padding(.vertical, 6)
+        .contentShape(Rectangle())
+        .listRowBackground(Color.clear)
+    }
+}
+
+@available(macOS 26.0, *)
 private struct ScanResultRowView: View {
     let result: ScanResult
     @Bindable var viewModel: ModuleScanViewModel
@@ -324,46 +374,21 @@ struct ModuleScanView: View {
                         .opacity(0.5)
 
                     List {
-                        let results = viewModel.filteredResults
-                        let hasSeverity = results.contains { $0.severity != nil }
-                        if hasSeverity {
-                            let grouped = Dictionary(grouping: results, by: { $0.severity })
-                            let sortedSeverities: [Severity] = [.high, .medium, .low].filter { grouped.keys.contains($0) }
+                        ForEach(viewModel.sortedFolderPaths, id: \.self) { path in
+                            let files = viewModel.groupedResults[path] ?? []
+                            FolderRowView(path: path, files: files, viewModel: viewModel)
 
-                            ForEach(sortedSeverities, id: \.self) { severity in
-                                Section {
-                                    ForEach(grouped[severity] ?? []) { result in
-                                        ScanResultRowView(result: result, viewModel: viewModel)
-                                     }
-                                 } header: {
-                                     Text("\(severity.localizedName) Severity")
-                                         .font(.headline)
-                                         .foregroundStyle(severityColor(for: severity))
-                                         .padding(.vertical, 4)
-                                 }
-                             }
-
-                             if let uncategorized = grouped[nil], !uncategorized.isEmpty {
-                                 Section {
-                                     ForEach(uncategorized) { result in
-                                        ScanResultRowView(result: result, viewModel: viewModel)
-                                     }
-                                 } header: {
-                                     Text("Other")
-                                         .font(.headline)
-                                         .foregroundStyle(.secondary)
-                                         .padding(.vertical, 4)
-                                 }
-                             }
-                         } else {
-                             ForEach(results) { result in
-                                ScanResultRowView(result: result, viewModel: viewModel)
-                             }
-                         }
+                            if viewModel.expandedFolders.contains(path) {
+                                ForEach(files) { result in
+                                    ScanResultRowView(result: result, viewModel: viewModel)
+                                        .padding(.leading, 36)
+                                }
+                            }
+                        }
                     }
-                .listStyle(.inset)
-                .frame(minHeight: 320)
-                .scrollContentBackground(.hidden)
+                    .listStyle(.inset)
+                    .frame(minHeight: 320)
+                    .scrollContentBackground(.hidden)
                 }
             }
 

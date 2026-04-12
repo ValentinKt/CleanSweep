@@ -54,11 +54,16 @@ public struct Categorizer: Sendable {
 
     public func isSafeToDelete(for result: ScanResult) -> Bool {
         switch result.category {
-        case .userCache, .systemLog, .tempFile, .languagePack, .browserCache, .networkCache, .trashItem:
+        case .userCache, .systemLog, .tempFile, .languagePack, .browserCache, .networkCache, .trashItem, .appSupportOrphan:
             return true
         case .xcodeDerivedData, .xcodeSimulator, .spmCache:
             return true
-        case .mailAttachment, .appSupportOrphan, .largeFile, .oldFile, .duplicate, .screenshot, .screenRecording, .fontDuplicate, .application, .startupItem, .unknown:
+        case .largeFile:
+            // Large files are only safe if they are also in a junk category, but here they are explicitly .largeFile
+            return false
+        case .oldFile:
+            return false
+        case .mailAttachment, .duplicate, .screenshot, .screenRecording, .fontDuplicate, .application, .startupItem, .unknown:
             return false
         }
     }
