@@ -44,7 +44,7 @@ public actor ScanActor {
     }
 
     public func scanStream(at root: URL, onPath: (@Sendable (URL) -> Void)? = nil) -> AsyncStream<ScanResult> {
-        AsyncStream { continuation in
+        AsyncStream(ScanResult.self) { continuation in
             let task = Task.detached(priority: .utility) { [weak self] in
                 let keys: [URLResourceKey] = [
                     .fileSizeKey,
@@ -137,7 +137,7 @@ public actor ScanActor {
     }
 
     public func scanAllStream(at root: URL, onPath: (@Sendable (URL) -> Void)? = nil) -> AsyncStream<ScanResult> {
-        AsyncStream { continuation in
+        AsyncStream(ScanResult.self) { continuation in
             let task = Task.detached(priority: .utility) { [weak self] in
                 let keys: [URLResourceKey] = [
                     .fileSizeKey,
@@ -212,7 +212,10 @@ public actor ScanActor {
                             severity: localCategorizer.severity(for: baseResult),
                             isSafeToDelete: localCategorizer.isSafeToDelete(for: baseResult)
                         )
-                        continuation.yield(result)
+                        let yieldResult = continuation.yield(result)
+                        if case .enqueued(let remaining) = yieldResult, remaining > 500 {
+                            try? await Task.sleep(for: .milliseconds(5))
+                        }
                     } catch {
                         continue
                     }
