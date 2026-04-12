@@ -7,29 +7,62 @@ public actor DevelopmentJunkScanner: ModuleScanner {
 
     public func scan() async throws -> ModuleResult {
         let fileManager = FileManager.default
-        let homeDir = fileManager.homeDirectoryForCurrentUser
+        let targetDirs = Self.targetDirectories(fileManager: fileManager)
 
-        let targetDirs = [
+        var allResults: [ScanResult] = []
+
+        for dir in targetDirs {
+            for await result in await scanActor.scanStream(at: dir) {
+                allResults.append(result)
+            }
+        }
+
+        return ModuleResult(moduleName: "Developer Junk", results: allResults)
+    }
+
+    public static func targetDirectories(
+        fileManager: FileManager = .default,
+        homeDirectory: URL? = nil
+    ) -> [URL] {
+        let homeDir = homeDirectory ?? fileManager.homeDirectoryForCurrentUser
+        var candidates = [
             homeDir.appendingPathComponent("Library/Developer/Xcode/DerivedData"),
             homeDir.appendingPathComponent("Library/Developer/Xcode/Archives"),
-            homeDir.appendingPathComponent("Library/Developer/CoreSimulator/Devices"),
+            homeDir.appendingPathComponent("Library/Developer/CoreSimulator/Caches"),
             homeDir.appendingPathComponent("Library/Caches/org.swift.swiftpm"),
             homeDir.appendingPathComponent(".cache/org.swift.swiftpm"),
             homeDir.appendingPathComponent("Library/Caches/CocoaPods"),
             homeDir.appendingPathComponent("Library/Caches/org.carthage.CarthageKit")
         ]
 
-        var allResults: [ScanResult] = []
+        let simulatorDevicesRoot = homeDir.appendingPathComponent("Library/Developer/CoreSimulator/Devices")
 
-        for dir in targetDirs {
-            var isDirectory: ObjCBool = false
-            if fileManager.fileExists(atPath: dir.path, isDirectory: &isDirectory), isDirectory.boolValue {
-                for await result in await scanActor.scanStream(at: dir) {
-                    allResults.append(result)
-                }
+        if let deviceDirectories = try? fileManager.contentsOfDirectory(
+            at: simulatorDevicesRoot,
+            includingPropertiesForKeys: [.isDirectoryKey],
+            options: [.skipsHiddenFiles]
+        ) {
+            for deviceDirectory in deviceDirectories {
+                guard isDirectory(deviceDirectory, using: fileManager) else { continue }
+
+                candidates.append(deviceDirectory.appendingPathComponent("data/Library/Caches"))
+                candidates.append(deviceDirectory.appendingPathComponent("data/Library/Logs"))
+                candidates.append(deviceDirectory.appendingPathComponent("data/tmp"))
             }
         }
 
-        return ModuleResult(moduleName: "Developer Junk", results: allResults)
+        var seenPaths = Set<String>()
+
+        return candidates
+            .filter { isDirectory($0, using: fileManager) }
+            .filter { seenPaths.insert($0.standardizedFileURL.path).inserted }
+            .sorted { lhs, rhs in
+                lhs.path.localizedStandardCompare(rhs.path) == .orderedAscending
+            }
+    }
+
+    nonisolated private static func isDirectory(_ url: URL, using fileManager: FileManager) -> Bool {
+        var isDirectoryFlag: ObjCBool = false
+        return fileManager.fileExists(atPath: url.path, isDirectory: &isDirectoryFlag) && isDirectoryFlag.boolValue
     }
 }

@@ -3,7 +3,9 @@ import Foundation
 public actor SmartScanEngine {
     public init() {}
 
-    public func scanAllModules(onProgress: (@MainActor @Sendable (Double, String) -> Void)? = nil) async throws -> ScanSummary {
+    public func scanAllModules(
+        onProgress: (@MainActor @Sendable (Double, String) -> Void)? = nil
+    ) async throws -> ScanSummary {
         let scanJobs: [(String, @Sendable () async throws -> ModuleResult)] = [
             ("Trash", { try await TrashScanner().scan() }),
             ("Mail Attachments", { try await MailAttachmentScanner().scan() }),
@@ -29,15 +31,13 @@ public actor SmartScanEngine {
                     let result = try await job.1()
                     return (index, result)
                 }
-                
-                // Limit concurrency to avoid thread explosion during mass-module scan
                 if index % 3 == 2 {
                     await Task.yield()
                 }
             }
 
             var completedCount = 0
-            for try await (index, result) in group {
+            for try await (_, result) in group {
                 completedCount += 1
                 summary.merge(result)
 
