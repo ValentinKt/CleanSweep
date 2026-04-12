@@ -24,9 +24,9 @@ private struct FolderRowView: View {
             }
             .buttonStyle(.plain)
 
-            Image(systemName: viewModel.isFolderSelected(path) ? "checkmark.circle.fill" : "circle")
+            Image(systemName: viewModel.isFolderSelected(path) ? "checkmark.square.fill" : "square")
                 .font(.title3)
-                .foregroundStyle(viewModel.isFolderSelected(path) ? CleanSweepPalette.accentBlue : .secondary)
+                .foregroundStyle(viewModel.isFolderSelected(path) ? CleanSweepPalette.iconBg : .secondary)
                 .onTapGesture {
                     viewModel.toggleFolderSelection(path)
                 }
@@ -65,13 +65,13 @@ private struct ScanResultRowView: View {
         HStack(spacing: 12) {
             Image(
                 systemName: viewModel.selectedResultIDs.contains(result.id)
-                    ? "checkmark.circle.fill"
-                    : "circle"
+                    ? "checkmark.square.fill"
+                    : "square"
             )
             .font(.title3)
             .foregroundStyle(
                 viewModel.selectedResultIDs.contains(result.id)
-                    ? CleanSweepPalette.accentBlue
+                    ? CleanSweepPalette.iconBg
                     : .secondary
             )
 
@@ -172,14 +172,17 @@ struct ModuleScanView: View {
 
     var body: some View {
         ScrollView {
-            switch viewModel.phase {
-            case .idle:
-                idleView
-            case .scanning:
-                scanningView
-            case .complete:
-                resultsView
+            GlassEffectContainer {
+                switch viewModel.phase {
+                case .idle:
+                    idleView
+                case .scanning:
+                    scanningView
+                case .complete:
+                    resultsView
+                }
             }
+            .padding(28)
         }
         .background {
             CleanSweepWindowBackground()
@@ -211,7 +214,6 @@ struct ModuleScanView: View {
                 }
             }
         }
-        .padding(28)
     }
 
     private var scanningView: some View {
@@ -284,7 +286,6 @@ struct ModuleScanView: View {
             }
             .padding(.horizontal, 28)
         }
-        .padding(.vertical, 28)
     }
 
     private var resultsView: some View {
@@ -301,30 +302,54 @@ struct ModuleScanView: View {
                     title: "Items Found",
                     value: "\(viewModel.filteredResults.count)",
                     systemImage: "doc.text.magnifyingglass",
-                    accent: CleanSweepPalette.accentBlue
+                    accent: CleanSweepPalette.iconBg
                 )
                 ModuleMetricCard(
                     title: "Selected Size",
                     value: moduleFormatBytes(viewModel.selectedSize),
                     systemImage: "checkmark.circle.fill",
-                    accent: CleanSweepPalette.success
+                    accent: CleanSweepPalette.iconBg
                 )
                 ModuleMetricCard(
                     title: "Cleanable",
                     value: formatBytes(viewModel.totalSize),
                     systemImage: "trash.fill",
-                    accent: CleanSweepPalette.accentTeal
+                    accent: CleanSweepPalette.iconBg
                 )
             }
 
             // Tabs and Filter Bar
-            HStack(spacing: 12) {
-                Picker("View", selection: $viewModel.showOnlySafeToDelete) {
-                    Text("Safe to Clean").tag(true)
-                    Text("All Files").tag(false)
+            HStack(spacing: 16) {
+                HStack(spacing: 4) {
+                    Text("View")
+                        .font(.body.weight(.medium))
+                        .foregroundStyle(.secondary)
+                        .padding(.trailing, 8)
+
+                    Button("Safe to Clean") { viewModel.showOnlySafeToDelete = true }
+                        .buttonStyle(.plain)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background {
+                            if viewModel.showOnlySafeToDelete {
+                                Capsule().fill(CleanSweepPalette.iconBg)
+                            }
+                        }
+                        .foregroundStyle(viewModel.showOnlySafeToDelete ? .white : .secondary)
+                        .contentShape(Capsule())
+
+                    Button("All Files") { viewModel.showOnlySafeToDelete = false }
+                        .buttonStyle(.plain)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background {
+                            if !viewModel.showOnlySafeToDelete {
+                                Capsule().fill(CleanSweepPalette.iconBg)
+                            }
+                        }
+                        .foregroundStyle(!viewModel.showOnlySafeToDelete ? .white : .secondary)
+                        .contentShape(Capsule())
                 }
-                .pickerStyle(.segmented)
-                .frame(width: 240)
 
                 Spacer()
 
@@ -355,15 +380,23 @@ struct ModuleScanView: View {
                         }
                     }
                 } label: {
-                    Label(
-                        viewModel.selectedSeverity?.localizedName ?? "Filter by Severity",
-                        systemImage: "line.3.horizontal.decrease.circle"
-                    )
+                    HStack(spacing: 6) {
+                        Image(systemName: "face.smiling")
+                            .foregroundStyle(CleanSweepPalette.iconBg)
+                        Text(viewModel.selectedSeverity?.localizedName ?? "Filter by Severity")
+                        Image(systemName: "chevron.down")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(Capsule().strokeBorder(CleanSweepPalette.iconBg.opacity(0.3), lineWidth: 1))
+                    .glassEffect(.regular, in: Capsule())
                 }
-                .menuStyle(.button)
+                .menuStyle(.borderlessButton)
                 .fixedSize()
             }
-            .padding(.horizontal, 4)
+            .padding(.horizontal, 12)
 
             CleanSweepSurface(cornerRadius: 26, padding: 12) {
                 VStack(spacing: 0) {
@@ -409,7 +442,6 @@ struct ModuleScanView: View {
                 trigger: cleanTriggered
             )
         }
-        .padding(28)
     }
 
     private var cleanButtonTitle: String {
@@ -431,7 +463,7 @@ struct ModuleScanView: View {
                     .font(.title3)
                     .foregroundStyle(
                         viewModel.isAllSelected
-                            ? CleanSweepPalette.accentBlue
+                            ? CleanSweepPalette.iconBg
                             : .secondary
                     )
                     Text(viewModel.isAllSelected ? "Deselect All" : "Select All")
@@ -465,6 +497,13 @@ struct ModuleScanView: View {
         CleanSweepSurface(cornerRadius: 26, padding: 28) {
             HStack(spacing: 24) {
                 CleanSweepHeroIcon(systemImage: systemImage, size: 104)
+                    .background {
+                        RoundedRectangle(cornerRadius: 104 * 0.28, style: .continuous)
+                            .fill(CleanSweepPalette.iconBg)
+                            .blur(radius: 20)
+                            .opacity(0.6)
+                            .offset(y: 8)
+                    }
 
                 VStack(alignment: .leading, spacing: 14) {
                     CleanSweepSectionEyebrow(title: eyebrow)
