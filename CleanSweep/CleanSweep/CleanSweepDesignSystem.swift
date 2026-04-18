@@ -67,163 +67,27 @@ struct CleanSweepWindowConfigurator: NSViewRepresentable {
     }
 }
 
-// MARK: - Native Liquid Glass Helpers
-
-private struct CleanSweepLiquidGlassModifier<S: InsettableShape>: ViewModifier {
-    let shape: S
-    let material: NSVisualEffectView.Material
-    let tint: Color
-    let borderOpacity: Double
-    let showIridescence: Bool
-    let bandOpacity: Double
-    let reduceTransparency: Bool
-
-    func body(content: Content) -> some View {
-        content
-            .background { glassBackground }
-            .overlay { topSpecularOverlay }
-            .overlay { diagonalBandOverlay }
-            .overlay { borderOverlay }
-            .shadow(color: Color.black.opacity(0.36), radius: 28, y: 16)
-            .shadow(color: Color.black.opacity(0.18), radius: 8, y: 3)
-    }
-
-    @ViewBuilder
-    private var glassBackground: some View {
-        if reduceTransparency {
-            shape
-                .fill(tint.opacity(0.92))
-                .allowsHitTesting(false)
-        } else {
-            ZStack {
-                CleanSweepVisualEffectView(material: material, blendingMode: .behindWindow)
-
-                shape.fill(tint)
-
-                shape.fill(
-                    LinearGradient(
-                        colors: [
-                            Color.white.opacity(0.08),
-                            Color.white.opacity(0.03),
-                            Color.black.opacity(0.05)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-
-                if showIridescence {
-                    shape.fill(
-                        LinearGradient(
-                            colors: [
-                                Color(hex: 0x8BC6FF, opacity: 0.14),
-                                Color(hex: 0xB88CFF, opacity: 0.10),
-                                Color(hex: 0x7BE7C7, opacity: 0.08),
-                                .clear
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                }
-            }
-            .clipShape(shape)
-            .allowsHitTesting(false)
-        }
-    }
-
-    private var topSpecularOverlay: some View {
-        shape
-            .fill(
-                LinearGradient(
-                    colors: [
-                        Color.white.opacity(0.34),
-                        Color.white.opacity(0.10),
-                        .clear
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottom
-                )
-            )
-            .mask(
-                Rectangle()
-                    .frame(height: 110)
-                    .frame(maxHeight: .infinity, alignment: .top)
-            )
-            .opacity(reduceTransparency ? 0 : 0.95)
-            .allowsHitTesting(false)
-    }
-
-    private var diagonalBandOverlay: some View {
-        shape
-            .overlay {
-                Rectangle()
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(0.26 * bandOpacity),
-                                Color.white.opacity(0.12 * bandOpacity),
-                                Color.white.opacity(0.04 * bandOpacity),
-                                .clear
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-                    .frame(width: 180)
-                    .rotationEffect(.degrees(22))
-                    .offset(x: -40, y: -10)
-                    .blur(radius: 1.5)
-            }
-            .clipShape(shape)
-            .opacity(reduceTransparency ? 0 : 1)
-            .allowsHitTesting(false)
-    }
-
-    private var borderOverlay: some View {
-        shape
-            .strokeBorder(
-                LinearGradient(
-                    colors: [
-                        Color.white.opacity(borderOpacity),
-                        Color.white.opacity(borderOpacity * 0.35),
-                        Color.clear
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                ),
-                lineWidth: 0.85
-            )
-            .allowsHitTesting(false)
-    }
-}
-
 @available(macOS 26.0, *)
 extension View {
-    /// Applies a Tahoe-style Liquid Glass stack with a native blur foundation.
+    /// Applies native Liquid Glass with an accessibility fallback.
     func cleanSweepGlass<S: InsettableShape>(
         in shape: S,
-        material: NSVisualEffectView.Material = .hudWindow,
         tint: Color = .white.opacity(0.06),
         interactive: Bool = false,
-        showIridescence: Bool = false,
-        bandOpacity: Double = 0.8,
-        borderOpacity: Double = 0.18,
         reduceTransparency: Bool = false
     ) -> some View {
-        let resolvedBandOpacity = interactive ? max(bandOpacity, 0.85) : bandOpacity
-
-        return modifier(
-            CleanSweepLiquidGlassModifier(
-                shape: shape,
-                material: material,
-                tint: tint,
-                borderOpacity: borderOpacity,
-                showIridescence: showIridescence,
-                bandOpacity: resolvedBandOpacity,
-                reduceTransparency: reduceTransparency
-            )
-        )
+        Group {
+            if reduceTransparency {
+                self.background(.regularMaterial, in: shape)
+            } else {
+                self.glassEffect(
+                    interactive
+                        ? .regular.interactive().tint(tint)
+                        : .regular.tint(tint),
+                    in: shape
+                )
+            }
+        }
     }
 }
 
@@ -377,15 +241,68 @@ struct CleanSweepSurface<Content: View>: View {
             .padding(padding)
             .cleanSweepGlass(
                 in: shape,
-                material: .hudWindow,
                 tint: colorScheme == .dark
-                    ? Color(hex: 0x1B2233, opacity: 0.42)
-                    : Color.white.opacity(0.18),
-                showIridescence: true,
-                bandOpacity: 0.95,
-                borderOpacity: colorScheme == .dark ? 0.24 : 0.36,
+                    ? Color.white.opacity(0.06)
+                    : Color.white.opacity(0.15),
                 reduceTransparency: reduceTransparency
             )
+            .overlay {
+                shape
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(colorScheme == .dark ? 0.26 : 0.42),
+                                Color.white.opacity(colorScheme == .dark ? 0.08 : 0.12),
+                                .clear
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottom
+                        )
+                    )
+                    .mask(
+                        Rectangle()
+                            .frame(height: max(72, cornerRadius * 2.6))
+                            .frame(maxHeight: .infinity, alignment: .top)
+                    )
+                    .opacity(reduceTransparency ? 0 : 1)
+                    .allowsHitTesting(false)
+            }
+            .overlay {
+                shape
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(colorScheme == .dark ? 0.14 : 0.18),
+                                Color(hex: 0x3A86FF, opacity: colorScheme == .dark ? 0.10 : 0.06),
+                                Color(hex: 0x8338EC, opacity: colorScheme == .dark ? 0.08 : 0.04),
+                                .clear
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .blendMode(.screen)
+                    .opacity(reduceTransparency ? 0 : 0.95)
+                    .allowsHitTesting(false)
+            }
+            .overlay {
+                shape
+                    .strokeBorder(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(colorScheme == .dark ? 0.12 : 0.40),
+                                Color.white.opacity(colorScheme == .dark ? 0.03 : 0.10),
+                                Color.clear
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 0.5
+                    )
+                    .allowsHitTesting(false)
+            }
+            .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.38 : 0.12), radius: 28, y: 16)
+            .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.18 : 0.06), radius: 8, y: 3)
     }
 }
 
@@ -413,15 +330,67 @@ struct CleanSweepSidebarPanel<Content: View>: View {
                 .padding(padding)
                 .cleanSweepGlass(
                     in: shape,
-                    material: .sidebar,
                     tint: colorScheme == .dark
-                        ? Color(hex: 0x10182B, opacity: 0.52)
+                        ? Color(hex: 0x111827, opacity: 0.34)
                         : Color.white.opacity(0.20),
-                    showIridescence: true,
-                    bandOpacity: 0.9,
-                    borderOpacity: colorScheme == .dark ? 0.22 : 0.34,
                     reduceTransparency: reduceTransparency
                 )
+                .overlay {
+                    shape
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    Color.white.opacity(colorScheme == .dark ? 0.24 : 0.40),
+                                    Color.white.opacity(colorScheme == .dark ? 0.10 : 0.14),
+                                    .clear
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottom
+                            )
+                        )
+                        .mask(
+                            Rectangle()
+                                .frame(height: 112)
+                                .frame(maxHeight: .infinity, alignment: .top)
+                        )
+                        .opacity(reduceTransparency ? 0 : 0.95)
+                        .allowsHitTesting(false)
+                }
+                .overlay {
+                    shape
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    Color(hex: 0x3A86FF, opacity: colorScheme == .dark ? 0.12 : 0.06),
+                                    Color(hex: 0x8338EC, opacity: colorScheme == .dark ? 0.10 : 0.05),
+                                    .clear
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .blendMode(.screen)
+                        .opacity(reduceTransparency ? 0 : 0.75)
+                        .allowsHitTesting(false)
+                }
+                .overlay {
+                    shape
+                        .strokeBorder(
+                            LinearGradient(
+                                colors: [
+                                    Color.white.opacity(colorScheme == .dark ? 0.14 : 0.50),
+                                    Color.white.opacity(colorScheme == .dark ? 0.04 : 0.12),
+                                    Color.clear
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 0.5
+                        )
+                        .allowsHitTesting(false)
+                }
+                .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.34 : 0.12), radius: 34, y: 18)
+                .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.18 : 0.05), radius: 10, y: 4)
         }
     }
 }
@@ -595,17 +564,19 @@ struct CleanSweepTag: View {
             .foregroundStyle(.secondary)
             .padding(.horizontal, 14)
             .padding(.vertical, 10)
-            .cleanSweepGlass(
-                in: shape,
-                material: .menu,
-                tint: colorScheme == .dark
-                    ? Color.white.opacity(0.08)
-                    : Color.white.opacity(0.20),
-                interactive: true,
-                bandOpacity: 0.7,
-                borderOpacity: colorScheme == .dark ? 0.16 : 0.28,
-                reduceTransparency: reduceTransparency
+            .glassEffect(
+                .regular.interactive().tint(
+                    colorScheme == .dark
+                        ? Color.white.opacity(0.06)
+                        : Color.white.opacity(0.24)
+                ),
+                in: shape
             )
+            .background {
+                if reduceTransparency {
+                    shape.fill(colorScheme == .dark ? Color.white.opacity(0.12) : Color.black.opacity(0.06))
+                }
+            }
             .overlay {
                 shape
                     .strokeBorder(
