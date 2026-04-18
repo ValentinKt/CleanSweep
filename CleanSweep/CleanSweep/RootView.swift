@@ -20,18 +20,18 @@ struct RootView: View {
     }
 
     var body: some View {
-        NavigationSplitView {
+        HStack(alignment: .top, spacing: 18) {
             SidebarView(selection: $selection)
-                .navigationSplitViewColumnWidth(min: 280, ideal: 300, max: 340)
-        } detail: {
+                .frame(width: 300, alignment: .topLeading)
+
             DetailView(
                 selection: $selection,
                 smartScanViewModel: smartScanViewModel,
                 moduleSessionStore: moduleSessionStore
             )
-                .backgroundExtensionEffect()
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
-        .navigationSplitViewStyle(.balanced)
+        .padding(16)
         .background {
             CleanSweepWindowBackground()
         }
@@ -39,6 +39,7 @@ struct RootView: View {
             CleanSweepWindowConfigurator()
                 .allowsHitTesting(false)
         }
+        .frame(minWidth: 1180, minHeight: 760, alignment: .topLeading)
         .tint(CleanSweepPalette.iconBg)
     }
 }

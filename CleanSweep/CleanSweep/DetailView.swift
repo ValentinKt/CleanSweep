@@ -15,11 +15,6 @@ struct DetailView: View {
         contentView
             .navigationTitle(selection?.rawValue.capitalized ?? "CleanSweep")
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .background {
-                if #available(macOS 26.0, *) {
-                    CleanSweepWindowBackground()
-                }
-            }
     }
 
     @ViewBuilder

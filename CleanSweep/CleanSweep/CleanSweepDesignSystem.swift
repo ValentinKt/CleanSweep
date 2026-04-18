@@ -251,6 +251,45 @@ struct CleanSweepSurface<Content: View>: View {
             )
             .overlay {
                 shape
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(colorScheme == .dark ? 0.26 : 0.42),
+                                Color.white.opacity(colorScheme == .dark ? 0.08 : 0.12),
+                                .clear
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottom
+                        )
+                    )
+                    .mask(
+                        Rectangle()
+                            .frame(height: max(72, cornerRadius * 2.6))
+                            .frame(maxHeight: .infinity, alignment: .top)
+                    )
+                    .opacity(reduceTransparency ? 0 : 1)
+                    .allowsHitTesting(false)
+            }
+            .overlay {
+                shape
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(colorScheme == .dark ? 0.14 : 0.18),
+                                Color(hex: 0x3A86FF, opacity: colorScheme == .dark ? 0.10 : 0.06),
+                                Color(hex: 0x8338EC, opacity: colorScheme == .dark ? 0.08 : 0.04),
+                                .clear
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .blendMode(.screen)
+                    .opacity(reduceTransparency ? 0 : 0.95)
+                    .allowsHitTesting(false)
+            }
+            .overlay {
+                shape
                     .strokeBorder(
                         LinearGradient(
                             colors: [
@@ -265,7 +304,8 @@ struct CleanSweepSurface<Content: View>: View {
                     )
                     .allowsHitTesting(false)
             }
-            .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.3 : 0.12), radius: 20, y: 10)
+            .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.38 : 0.12), radius: 28, y: 16)
+            .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.18 : 0.06), radius: 8, y: 3)
     }
 }
 
@@ -294,10 +334,48 @@ struct CleanSweepSidebarPanel<Content: View>: View {
                 .cleanSweepGlass(
                     in: shape,
                     tint: colorScheme == .dark
-                        ? Color.white.opacity(0.04)
+                        ? Color(hex: 0x111827, opacity: 0.34)
                         : Color.white.opacity(0.20),
                     reduceTransparency: reduceTransparency
                 )
+                .overlay {
+                    shape
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    Color.white.opacity(colorScheme == .dark ? 0.24 : 0.40),
+                                    Color.white.opacity(colorScheme == .dark ? 0.10 : 0.14),
+                                    .clear
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottom
+                            )
+                        )
+                        .mask(
+                            Rectangle()
+                                .frame(height: 112)
+                                .frame(maxHeight: .infinity, alignment: .top)
+                        )
+                        .opacity(reduceTransparency ? 0 : 0.95)
+                        .allowsHitTesting(false)
+                }
+                .overlay {
+                    shape
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    Color(hex: 0x3A86FF, opacity: colorScheme == .dark ? 0.12 : 0.06),
+                                    Color(hex: 0x8338EC, opacity: colorScheme == .dark ? 0.10 : 0.05),
+                                    .clear
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .blendMode(.screen)
+                        .opacity(reduceTransparency ? 0 : 0.75)
+                        .allowsHitTesting(false)
+                }
                 .overlay {
                     shape
                         .strokeBorder(
@@ -314,7 +392,8 @@ struct CleanSweepSidebarPanel<Content: View>: View {
                         )
                         .allowsHitTesting(false)
                 }
-                .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.3 : 0.12), radius: 30, y: 16)
+                .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.34 : 0.12), radius: 34, y: 18)
+                .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.18 : 0.05), radius: 10, y: 4)
         }
     }
 }

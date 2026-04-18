@@ -9,45 +9,40 @@ struct MemoryMonitorView: View {
 
     var body: some View {
         ScrollView {
-            GlassEffectContainer {
-                VStack(spacing: 24) {
-                    heroSection
-                    pressureSection
-                    HStack(spacing: 16) {
-                        metricCard(
-                            title: "Current Pressure",
-                            value: "\(Int(memoryPressure * 100))%",
-                            systemImage: "memorychip.fill",
-                            accent: CleanSweepPalette.accentBlue
-                        )
-                        metricCard(
-                            title: pressureLabel,
-                            value: pressureState,
-                            systemImage: pressureSymbol,
-                            accent: pressureAccent
-                        )
-                        metricCard(
-                            title: "Recommended",
-                            value: recommendationTitle,
-                            systemImage: "sparkles",
-                            accent: CleanSweepPalette.accentTeal
-                        )
-                    }
+            VStack(spacing: 24) {
+                heroSection
+                pressureSection
+                HStack(spacing: 16) {
+                    metricCard(
+                        title: "Current Pressure",
+                        value: "\(Int(memoryPressure * 100))%",
+                        systemImage: "memorychip.fill",
+                        accent: CleanSweepPalette.accentBlue
+                    )
+                    metricCard(
+                        title: pressureLabel,
+                        value: pressureState,
+                        systemImage: pressureSymbol,
+                        accent: pressureAccent
+                    )
+                    metricCard(
+                        title: "Recommended",
+                        value: recommendationTitle,
+                        systemImage: "sparkles",
+                        accent: CleanSweepPalette.accentTeal
+                    )
+                }
 
-                    CleanSweepSurface(cornerRadius: 22, padding: 20) {
-                        HStack(spacing: 12) {
-                            CleanSweepTag(title: "Live Updates", systemImage: "waveform.path.ecg")
-                            CleanSweepTag(title: "Pressure Gauge", systemImage: "gauge.with.needle")
-                            CleanSweepTag(title: "Purge Ready", systemImage: "bolt.fill")
-                            Spacer(minLength: 0)
-                        }
+                CleanSweepSurface(cornerRadius: 22, padding: 20) {
+                    HStack(spacing: 12) {
+                        CleanSweepTag(title: "Live Updates", systemImage: "waveform.path.ecg")
+                        CleanSweepTag(title: "Pressure Gauge", systemImage: "gauge.with.needle")
+                        CleanSweepTag(title: "Purge Ready", systemImage: "bolt.fill")
+                        Spacer(minLength: 0)
                     }
                 }
-                .padding(28)
             }
-        }
-        .background {
-            CleanSweepWindowBackground()
+            .padding(28)
         }
         .onAppear {
             startMonitoring()

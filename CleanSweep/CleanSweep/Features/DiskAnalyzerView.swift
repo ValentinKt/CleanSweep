@@ -14,39 +14,34 @@ struct DiskAnalyzerView: View {
 
     var body: some View {
         ScrollView {
-            GlassEffectContainer {
-                VStack(spacing: 24) {
-                    heroSection
+            VStack(spacing: 24) {
+                heroSection
 
-                    HStack(spacing: 16) {
-                        metricCard(
-                            title: "Used Space",
-                            value: formattedBytes(usedSpace),
-                            systemImage: "externaldrive.fill",
-                            accent: CleanSweepPalette.accentBlue
-                        )
-                        metricCard(
-                            title: "Largest Category",
-                            value: largestCategory.name,
-                            systemImage: "chart.pie.fill",
-                            accent: largestCategory.color
-                        )
-                        metricCard(
-                            title: "Available",
-                            value: formattedBytes(freeSpace),
-                            systemImage: "internaldrive.fill.badge.checkmark",
-                            accent: CleanSweepPalette.success
-                        )
-                    }
-
-                    chartSection
-                    legendSection
+                HStack(spacing: 16) {
+                    metricCard(
+                        title: "Used Space",
+                        value: formattedBytes(usedSpace),
+                        systemImage: "externaldrive.fill",
+                        accent: CleanSweepPalette.accentBlue
+                    )
+                    metricCard(
+                        title: "Largest Category",
+                        value: largestCategory.name,
+                        systemImage: "chart.pie.fill",
+                        accent: largestCategory.color
+                    )
+                    metricCard(
+                        title: "Available",
+                        value: formattedBytes(freeSpace),
+                        systemImage: "internaldrive.fill.badge.checkmark",
+                        accent: CleanSweepPalette.success
+                    )
                 }
-                .padding(28)
+
+                chartSection
+                legendSection
             }
-        }
-        .background {
-            CleanSweepWindowBackground()
+            .padding(28)
         }
     }
 

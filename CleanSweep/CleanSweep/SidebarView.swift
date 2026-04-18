@@ -19,12 +19,7 @@ struct SidebarView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
-        .frame(minWidth: 280, idealWidth: 300, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background {
-            CleanSweepWindowBackground()
-        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
     private var sidebarList: some View {
@@ -249,11 +244,40 @@ struct SidebarRow: View {
     @ViewBuilder
     private func rowBackground(shape: RoundedRectangle) -> some View {
         if isSelected {
-            shape
-                .fill(Color.white.opacity(colorScheme == .dark ? 0.10 : 0.14))
+            Color.clear
+                .cleanSweepGlass(
+                    in: shape,
+                    tint: colorScheme == .dark
+                        ? Color.white.opacity(0.08)
+                        : Color.white.opacity(0.18),
+                    interactive: true,
+                    reduceTransparency: reduceTransparency
+                )
+                .overlay {
+                    shape
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    Color.white.opacity(0.18),
+                                    Color.white.opacity(0.05),
+                                    .clear
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .allowsHitTesting(false)
+                }
         } else if isHovered {
-            shape
-                .fill(Color.white.opacity(colorScheme == .dark ? 0.04 : 0.08))
+            Color.clear
+                .cleanSweepGlass(
+                    in: shape,
+                    tint: colorScheme == .dark
+                        ? Color.white.opacity(0.04)
+                        : Color.white.opacity(0.10),
+                    interactive: true,
+                    reduceTransparency: reduceTransparency
+                )
         } else {
             shape
                 .fill(Color.clear)

@@ -15,19 +15,14 @@ struct SmartScanView: View {
 
     var body: some View {
         ScrollView {
-            GlassEffectContainer {
-                switch viewModel.phase {
-                case .idle:
-                    idleView
-                case .scanning:
-                    scanningView
-                case .complete:
-                    summaryView
-                }
+            switch viewModel.phase {
+            case .idle:
+                idleView
+            case .scanning:
+                scanningView
+            case .complete:
+                summaryView
             }
-        }
-        .background {
-            CleanSweepWindowBackground()
         }
         .sensoryFeedback(.success, trigger: viewModel.phase == .complete)
     }

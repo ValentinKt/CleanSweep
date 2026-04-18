@@ -172,7 +172,7 @@ struct ModuleScanView: View {
 
     var body: some View {
         ScrollView {
-            GlassEffectContainer {
+            Group {
                 switch viewModel.phase {
                 case .idle:
                     idleView
@@ -183,9 +183,6 @@ struct ModuleScanView: View {
                 }
             }
             .padding(28)
-        }
-        .background {
-            CleanSweepWindowBackground()
         }
         .navigationTitle(title)
         .sensoryFeedback(.success, trigger: viewModel.phase == .complete)
