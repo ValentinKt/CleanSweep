@@ -1,6 +1,32 @@
 import SwiftUI
 import AppKit
 
+private final class CleanSweepPassthroughVisualEffectView: NSVisualEffectView {
+    override func hitTest(_ point: NSPoint) -> NSView? {
+        nil
+    }
+}
+
+struct CleanSweepVisualEffectView: NSViewRepresentable {
+    var material: NSVisualEffectView.Material = .hudWindow
+    var blendingMode: NSVisualEffectView.BlendingMode = .behindWindow
+    var state: NSVisualEffectView.State = .active
+
+    func makeNSView(context: Context) -> NSVisualEffectView {
+        let view = CleanSweepPassthroughVisualEffectView()
+        view.material = material
+        view.blendingMode = blendingMode
+        view.state = state
+        return view
+    }
+
+    func updateNSView(_ nsView: NSVisualEffectView, context: Context) {
+        nsView.material = material
+        nsView.blendingMode = blendingMode
+        nsView.state = state
+    }
+}
+
 // MARK: - Reusable Glass Effect Modifier
 
 @available(macOS 26.0, *)
@@ -21,6 +47,49 @@ struct GlassEffectModifier<S: Shape>: ViewModifier {
                         : .regular.tint(tint),
                     in: shape
                 )
+        }
+    }
+}
+
+@available(macOS 26.0, *)
+struct CleanSweepWindowConfigurator: NSViewRepresentable {
+    func makeNSView(context: Context) -> NSView {
+        NSView()
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {
+        DispatchQueue.main.async {
+            guard let window = nsView.window else { return }
+            window.isOpaque = false
+            window.backgroundColor = .clear
+            window.titlebarAppearsTransparent = true
+            window.hasShadow = true
+        }
+    }
+}
+
+// MARK: - Native Liquid Glass Helpers
+
+@available(macOS 26.0, *)
+extension View {
+    /// Applies native Liquid Glass with an accessibility fallback.
+    func cleanSweepGlass<S: InsettableShape>(
+        in shape: S,
+        tint: Color = .white.opacity(0.06),
+        interactive: Bool = false,
+        reduceTransparency: Bool = false
+    ) -> some View {
+        Group {
+            if reduceTransparency {
+                self.background(.regularMaterial, in: shape)
+            } else {
+                self.glassEffect(
+                    interactive
+                        ? .regular.interactive().tint(tint)
+                        : .regular.tint(tint),
+                    in: shape
+                )
+            }
         }
     }
 }
@@ -173,26 +242,20 @@ struct CleanSweepSurface<Content: View>: View {
 
         content
             .padding(padding)
-            .glassEffect(
-                .regular.tint(
-                    colorScheme == .dark
-                        ? Color(hex: 0x0B121C, opacity: 0.16)
-                        : Color.white.opacity(0.12)
-                ),
-                in: shape
+            .cleanSweepGlass(
+                in: shape,
+                tint: colorScheme == .dark
+                    ? Color.white.opacity(0.06)
+                    : Color.white.opacity(0.15),
+                reduceTransparency: reduceTransparency
             )
-            .background {
-                if reduceTransparency {
-                    shape.fill(colorScheme == .dark ? Color(hex: 0x111827) : .white)
-                }
-            }
             .overlay {
                 shape
                     .strokeBorder(
                         LinearGradient(
                             colors: [
-                                Color.white.opacity(colorScheme == .dark ? 0.12 : 0.44),
-                                Color.white.opacity(colorScheme == .dark ? 0.02 : 0.08),
+                                Color.white.opacity(colorScheme == .dark ? 0.12 : 0.40),
+                                Color.white.opacity(colorScheme == .dark ? 0.03 : 0.10),
                                 Color.clear
                             ],
                             startPoint: .topLeading,
@@ -200,8 +263,9 @@ struct CleanSweepSurface<Content: View>: View {
                         ),
                         lineWidth: 0.5
                     )
+                    .allowsHitTesting(false)
             }
-            .shadow(color: CleanSweepPalette.shadow(for: colorScheme), radius: 30, y: 16)
+            .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.3 : 0.12), radius: 20, y: 10)
     }
 }
 
@@ -227,25 +291,19 @@ struct CleanSweepSidebarPanel<Content: View>: View {
         return GlassEffectContainer {
             content
                 .padding(padding)
-                .glassEffect(
-                    .regular.tint(
-                        colorScheme == .dark
-                            ? Color(hex: 0x0B1A2D, opacity: 0.12)
-                            : Color.white.opacity(0.18)
-                    ),
-                    in: shape
+                .cleanSweepGlass(
+                    in: shape,
+                    tint: colorScheme == .dark
+                        ? Color.white.opacity(0.04)
+                        : Color.white.opacity(0.20),
+                    reduceTransparency: reduceTransparency
                 )
-                .background {
-                    if reduceTransparency {
-                        shape.fill(colorScheme == .dark ? Color(hex: 0x111827) : .white)
-                    }
-                }
                 .overlay {
                     shape
                         .strokeBorder(
                             LinearGradient(
                                 colors: [
-                                    Color.white.opacity(colorScheme == .dark ? 0.18 : 0.62),
+                                    Color.white.opacity(colorScheme == .dark ? 0.14 : 0.50),
                                     Color.white.opacity(colorScheme == .dark ? 0.04 : 0.12),
                                     Color.clear
                                 ],
@@ -254,8 +312,9 @@ struct CleanSweepSidebarPanel<Content: View>: View {
                             ),
                             lineWidth: 0.5
                         )
+                        .allowsHitTesting(false)
                 }
-                .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.28 : 0.12), radius: 40, y: 24)
+                .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.3 : 0.12), radius: 30, y: 16)
         }
     }
 }

@@ -15,13 +15,15 @@ struct SmartScanView: View {
 
     var body: some View {
         ScrollView {
-            switch viewModel.phase {
-            case .idle:
-                idleView
-            case .scanning:
-                scanningView
-            case .complete:
-                summaryView
+            GlassEffectContainer {
+                switch viewModel.phase {
+                case .idle:
+                    idleView
+                case .scanning:
+                    scanningView
+                case .complete:
+                    summaryView
+                }
             }
         }
         .background {
@@ -136,13 +138,11 @@ struct SmartScanView: View {
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
                         }
-                        .glassEffect(.regular.tint(.black.opacity(0.2)), in: RoundedRectangle(cornerRadius: 20))
                     }
 
                     Spacer(minLength: 0)
                 }
             }
-            .glassEffect(.regular.tint(.black.opacity(0.3)), in: RoundedRectangle(cornerRadius: 32))
 
             HStack(spacing: 12) {
                 CleanSweepTag(title: "Bounded CPU", systemImage: "cpu")

@@ -12,13 +12,15 @@ struct DashboardView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
-                heroSection
-                HealthDashboardRow(viewModel: viewModel)
-                healthHighlights
-                quickActions
+            GlassEffectContainer {
+                VStack(spacing: 24) {
+                    heroSection
+                    HealthDashboardRow(viewModel: viewModel)
+                    healthHighlights
+                    quickActions
+                }
+                .padding(28)
             }
-            .padding(28)
         }
         .background {
             CleanSweepWindowBackground()

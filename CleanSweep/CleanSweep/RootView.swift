@@ -35,6 +35,10 @@ struct RootView: View {
         .background {
             CleanSweepWindowBackground()
         }
+        .overlay {
+            CleanSweepWindowConfigurator()
+                .allowsHitTesting(false)
+        }
         .tint(CleanSweepPalette.iconBg)
     }
 }

@@ -9,16 +9,15 @@ import SwiftUI
 struct SidebarView: View {
     @Binding var selection: SidebarItem?
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
     var body: some View {
         CleanSweepSidebarPanel(padding: 16) {
-            GlassEffectContainer(spacing: 0) {
-                VStack(spacing: 18) {
-                    sidebarHeader
-                    sidebarList
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            VStack(spacing: 18) {
+                sidebarHeader
+                sidebarList
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
@@ -116,36 +115,17 @@ struct SidebarView: View {
     }
 
     private var headerBackground: some View {
-        RoundedRectangle(cornerRadius: 24, style: .continuous)
-            .fill(
-                LinearGradient(
-                    colors: [
-                        colorScheme == .dark
-                            ? Color.white.opacity(0.12)
-                            : Color.white.opacity(0.58),
-                        colorScheme == .dark
-                            ? Color.white.opacity(0.04)
-                            : Color.white.opacity(0.18)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
+        let shape = RoundedRectangle(cornerRadius: 24, style: .continuous)
+
+        return Color.clear
+            .cleanSweepGlass(
+                in: shape,
+                tint: colorScheme == .dark
+                    ? Color.white.opacity(0.05)
+                    : Color.white.opacity(0.18),
+                interactive: true,
+                reduceTransparency: reduceTransparency
             )
-            .overlay {
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .stroke(
-                        LinearGradient(
-                            colors: [
-                                Color.white.opacity(0.24),
-                                Color.white.opacity(0.05),
-                                Color.clear
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        lineWidth: 1
-                    )
-            }
     }
 
     private func statusPill(title: String, tint: Color) -> some View {
@@ -174,9 +154,12 @@ struct SidebarRow: View {
     var action: () -> Void
 
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @State private var isHovered = false
 
     var body: some View {
+        let rowShape = RoundedRectangle(cornerRadius: 14, style: .continuous)
+
         Button(action: action) {
             HStack(spacing: 12) {
                 iconView
@@ -206,10 +189,29 @@ struct SidebarRow: View {
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
-            .glassEffect(
-                isSelected ? .regular.interactive().tint(.white.opacity(0.1)) : (isHovered ? .regular.interactive().tint(.white.opacity(0.05)) : .clear),
-                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
-            )
+            .background(rowBackground(shape: rowShape))
+            .overlay(alignment: .topLeading) {
+                if isSelected {
+                    rowShape
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    Color.white.opacity(0.20),
+                                    Color.white.opacity(0.04),
+                                    .clear
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .mask(
+                            Rectangle()
+                                .frame(height: 20)
+                                .frame(maxHeight: .infinity, alignment: .top)
+                        )
+                        .allowsHitTesting(false)
+                }
+            }
         }
         .buttonStyle(.plain)
         .onHover { hovering in
@@ -242,5 +244,19 @@ struct SidebarRow: View {
                 .foregroundStyle(isSelected ? .white : CleanSweepPalette.iconBg)
         }
         .frame(width: 32, height: 32)
+    }
+
+    @ViewBuilder
+    private func rowBackground(shape: RoundedRectangle) -> some View {
+        if isSelected {
+            shape
+                .fill(Color.white.opacity(colorScheme == .dark ? 0.10 : 0.14))
+        } else if isHovered {
+            shape
+                .fill(Color.white.opacity(colorScheme == .dark ? 0.04 : 0.08))
+        } else {
+            shape
+                .fill(Color.clear)
+        }
     }
 }
