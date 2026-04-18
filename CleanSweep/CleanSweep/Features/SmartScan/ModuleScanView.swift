@@ -114,7 +114,13 @@ private struct ScanResultRowView: View {
                 .foregroundStyle(.secondary)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 4)
-                .glassEffect(.regular, in: Capsule())
+                .cleanSweepGlass(
+                    in: Capsule(),
+                    material: .menu,
+                    tint: Color.white.opacity(0.08),
+                    bandOpacity: 0.55,
+                    borderOpacity: 0.16
+                )
         }
         .padding(.vertical, 4)
         .contentShape(Rectangle())
@@ -327,11 +333,7 @@ struct ModuleScanView: View {
                         .buttonStyle(.plain)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
-                        .background {
-                            if viewModel.showOnlySafeToDelete {
-                                Capsule().fill(CleanSweepPalette.iconBg)
-                            }
-                        }
+                        .background(activeTabBackground(isActive: viewModel.showOnlySafeToDelete))
                         .foregroundStyle(viewModel.showOnlySafeToDelete ? .white : .secondary)
                         .contentShape(Capsule())
 
@@ -339,13 +341,20 @@ struct ModuleScanView: View {
                         .buttonStyle(.plain)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
-                        .background {
-                            if !viewModel.showOnlySafeToDelete {
-                                Capsule().fill(CleanSweepPalette.iconBg)
-                            }
-                        }
+                        .background(activeTabBackground(isActive: !viewModel.showOnlySafeToDelete))
                         .foregroundStyle(!viewModel.showOnlySafeToDelete ? .white : .secondary)
                         .contentShape(Capsule())
+                }
+                .padding(4)
+                .background {
+                    Capsule(style: .continuous)
+                        .cleanSweepGlass(
+                            in: Capsule(style: .continuous),
+                            material: .menu,
+                            tint: Color.white.opacity(0.05),
+                            bandOpacity: 0.55,
+                            borderOpacity: 0.14
+                        )
                 }
 
                 Spacer()
@@ -387,8 +396,14 @@ struct ModuleScanView: View {
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
-                    .background(Capsule().strokeBorder(CleanSweepPalette.iconBg.opacity(0.3), lineWidth: 1))
-                    .glassEffect(.regular, in: Capsule())
+                    .cleanSweepGlass(
+                        in: Capsule(),
+                        material: .menu,
+                        tint: Color.white.opacity(0.06),
+                        showIridescence: true,
+                        bandOpacity: 0.7,
+                        borderOpacity: 0.2
+                    )
                 }
                 .menuStyle(.borderlessButton)
                 .fixedSize()
@@ -444,6 +459,27 @@ struct ModuleScanView: View {
     private var cleanButtonTitle: String {
         let selectedCount = viewModel.selectedResultIDs.count
         return selectedCount == 1 ? "Clean Selected Item" : "Clean Selected (\(selectedCount))"
+    }
+
+    @ViewBuilder
+    private func activeTabBackground(isActive: Bool) -> some View {
+        if isActive {
+            Capsule(style: .continuous)
+                .fill(CleanSweepPalette.iconBg)
+                .overlay {
+                    Capsule(style: .continuous)
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    Color.white.opacity(0.22),
+                                    .clear
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                }
+        }
     }
 
     private var listHeader: some View {
