@@ -254,7 +254,12 @@ struct CleanSweepSurface<Content: View>: View {
                     shape.fill(.regularMaterial)
                 } else {
                     Color.clear
-                        .glassEffect(variant == .clear ? .clear.interactive() : .regular.interactive(), in: shape)
+                        .glassEffect(
+                            variant == .clear
+                                ? (isHovered ? .clear.interactive().tint(variant.tint(for: colorScheme, interactive: isHovered)) : .clear.tint(variant.tint(for: colorScheme, interactive: isHovered)))
+                                : (isHovered ? .regular.interactive().tint(variant.tint(for: colorScheme, interactive: isHovered)) : .regular.tint(variant.tint(for: colorScheme, interactive: isHovered))),
+                            in: shape
+                        )
                 }
             }
             .contentShape(shape)

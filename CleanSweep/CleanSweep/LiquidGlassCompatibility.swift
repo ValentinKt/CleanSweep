@@ -119,7 +119,12 @@ private struct LiquidGlassCompatibilityModifier<S: InsettableShape>: ViewModifie
                     shape.fill(.regularMaterial)
                 } else {
                     Color.clear
-                        .glassEffect(variant == .clear ? .clear.interactive() : .regular.interactive(), in: shape)
+                        .glassEffect(
+                            variant == .clear
+                                ? (interactive ? .clear.interactive().tint(variant.tint(for: colorScheme, interactive: interactive)) : .clear.tint(variant.tint(for: colorScheme, interactive: interactive)))
+                                : (interactive ? .regular.interactive().tint(variant.tint(for: colorScheme, interactive: interactive)) : .regular.tint(variant.tint(for: colorScheme, interactive: interactive))),
+                            in: shape
+                        )
                 }
             }
             .overlay {
