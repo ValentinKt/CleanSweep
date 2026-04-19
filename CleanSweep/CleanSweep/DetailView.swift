@@ -10,11 +10,41 @@ struct DetailView: View {
     @Binding var selection: SidebarItem?
     var smartScanViewModel: SmartScanViewModel
     var moduleSessionStore: ModuleScanSessionStore
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        contentView
+        if #available(macOS 26.0, *) {
+            CleanSweepLiquidGlassPanel(
+                cornerRadius: 30,
+                padding: 0,
+                material: .ultraThin,
+                tint: CleanSweepPalette.accentPurple.opacity(0.10),
+                shadowOpacity: 0.18
+            ) {
+                VStack(spacing: 0) {
+                    CleanSweepLiquidDetailHeader(selection: selection)
+
+                    Divider()
+                        .overlay(Color.white.opacity(0.08))
+                        .padding(.horizontal, 28)
+
+                    contentView
+                        .padding(28)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                }
+            }
+            .backgroundExtensionEffect()
             .navigationTitle(selection?.rawValue.capitalized ?? "CleanSweep")
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .animation(
+                reduceMotion ? nil : .spring(response: 0.38, dampingFraction: 0.82),
+                value: selection
+            )
+        } else {
+            contentView
+                .navigationTitle(selection?.rawValue.capitalized ?? "CleanSweep")
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        }
     }
 
     @ViewBuilder

@@ -41,6 +41,7 @@ struct RootView: View {
         }
         .frame(minWidth: 1180, minHeight: 760, alignment: .topLeading)
         .tint(CleanSweepPalette.iconBg)
+        .animation(.spring(response: 0.42, dampingFraction: 0.84), value: selection)
     }
 }
 

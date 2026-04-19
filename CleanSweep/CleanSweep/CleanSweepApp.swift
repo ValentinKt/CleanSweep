@@ -14,8 +14,11 @@ struct CleanSweepApp: App {
         WindowGroup {
             RootView()
                 .environment(appModel)
+                .containerBackground(.thinMaterial, for: .window)
+                .toolbarBackgroundVisibility(.hidden, for: .windowToolbar)
         }
         .windowStyle(.hiddenTitleBar)
+        .windowBackgroundDragBehavior(.enabled)
         .windowResizability(.contentSize)
         .defaultSize(width: 960, height: 640)
         .onChange(of: scenePhase) { _, newPhase in

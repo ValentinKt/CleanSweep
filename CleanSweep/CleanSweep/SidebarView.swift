@@ -8,8 +8,7 @@ import SwiftUI
 @available(macOS 26.0, *)
 struct SidebarView: View {
     @Binding var selection: SidebarItem?
-    @Environment(\.colorScheme) private var colorScheme
-    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         CleanSweepSidebarPanel(padding: 16) {
@@ -66,7 +65,11 @@ struct SidebarView: View {
                     SidebarRow(
                         item: item,
                         isSelected: selection == item,
-                        action: { selection = item }
+                        action: {
+                            withAnimation(reduceMotion ? nil : .spring(response: 0.38, dampingFraction: 0.82)) {
+                                selection = item
+                            }
+                        }
                     )
                 }
             }
@@ -113,13 +116,11 @@ struct SidebarView: View {
         let shape = RoundedRectangle(cornerRadius: 24, style: .continuous)
 
         return Color.clear
-            .cleanSweepGlass(
+            .cleanSweepLiquidGlass(
                 in: shape,
-                tint: colorScheme == .dark
-                    ? Color.white.opacity(0.05)
-                    : Color.white.opacity(0.18),
-                interactive: true,
-                reduceTransparency: reduceTransparency
+                material: .ultraThin,
+                tint: CleanSweepPalette.accentBlue.opacity(0.12),
+                shadowOpacity: 0.10
             )
     }
 
@@ -134,10 +135,12 @@ struct SidebarView: View {
         .foregroundStyle(.secondary)
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
-        .background {
-            Capsule(style: .continuous)
-                .fill(Color.white.opacity(0.08))
-        }
+        .cleanSweepLiquidGlass(
+            in: Capsule(style: .continuous),
+            material: .ultraThin,
+            tint: tint.opacity(0.16),
+            shadowOpacity: 0.06
+        )
     }
 }
 
@@ -149,7 +152,6 @@ struct SidebarRow: View {
     var action: () -> Void
 
     @Environment(\.colorScheme) private var colorScheme
-    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @State private var isHovered = false
 
     var body: some View {
@@ -245,13 +247,11 @@ struct SidebarRow: View {
     private func rowBackground(shape: RoundedRectangle) -> some View {
         if isSelected {
             Color.clear
-                .cleanSweepGlass(
+                .cleanSweepLiquidGlass(
                     in: shape,
-                    tint: colorScheme == .dark
-                        ? Color.white.opacity(0.08)
-                        : Color.white.opacity(0.18),
-                    interactive: true,
-                    reduceTransparency: reduceTransparency
+                    material: .thin,
+                    tint: CleanSweepPalette.accentBlue.opacity(colorScheme == .dark ? 0.22 : 0.12),
+                    shadowOpacity: 0.12
                 )
                 .overlay {
                     shape
@@ -270,13 +270,11 @@ struct SidebarRow: View {
                 }
         } else if isHovered {
             Color.clear
-                .cleanSweepGlass(
+                .cleanSweepLiquidGlass(
                     in: shape,
-                    tint: colorScheme == .dark
-                        ? Color.white.opacity(0.04)
-                        : Color.white.opacity(0.10),
-                    interactive: true,
-                    reduceTransparency: reduceTransparency
+                    material: .ultraThin,
+                    tint: Color.white.opacity(colorScheme == .dark ? 0.08 : 0.12),
+                    shadowOpacity: 0.08
                 )
         } else {
             shape
