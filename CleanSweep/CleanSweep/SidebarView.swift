@@ -11,20 +11,18 @@ struct SidebarView: View {
     private let sidebarShape = RoundedRectangle(cornerRadius: 26, style: .continuous)
 
     var body: some View {
-        GlassEffectContainer {
-            VStack(alignment: .leading, spacing: 24) {
-                sidebarHeader
-                sidebarList
-                Spacer(minLength: 0)
-            }
-            .padding(.top, 16)
-            .padding(.bottom, 36)
-            .padding(.horizontal, 24)
-            .frame(width: 280)
-            .liquidGlass(sidebarShape, interactive: false, variant: .sidebar)
-            .clipShape(sidebarShape)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        VStack(alignment: .leading, spacing: 24) {
+            sidebarHeader
+            sidebarList
+            Spacer(minLength: 0)
         }
+        .padding(.top, 16)
+        .padding(.bottom, 36)
+        .padding(.horizontal, 24)
+        .frame(width: 280)
+        .liquidGlass(sidebarShape, interactive: false, variant: .sidebar)
+        .clipShape(sidebarShape)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
     private var sidebarList: some View {
@@ -151,11 +149,8 @@ struct SidebarRow: View {
     var badge: String?
     var action: () -> Void
 
-    @State private var isHovered = false
-
     var body: some View {
         let rowShape = RoundedRectangle(cornerRadius: 14, style: .continuous)
-        let isActive = isSelected || isHovered
 
         Button(action: action) {
             HStack(spacing: 12) {
@@ -188,7 +183,7 @@ struct SidebarRow: View {
             .padding(.vertical, 8)
             .frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(Rectangle())
-            .liquidGlass(rowShape, interactive: isActive, variant: isSelected ? .selection : .clear)
+            .liquidGlass(rowShape, interactive: isSelected, variant: isSelected ? .selection : .clear)
             .clipShape(rowShape)
             .overlay {
                 if isSelected {
@@ -206,14 +201,10 @@ struct SidebarRow: View {
                         )
                 }
             }
-            .opacity(isSelected || isHovered ? 1 : 0.96)
+            .opacity(isSelected ? 1 : 0.96)
         }
         .buttonStyle(.plain)
         .focusable(false)
-        .onHover { hovering in
-            isHovered = hovering
-        }
-        .animation(.spring(response: 0.25, dampingFraction: 0.75), value: isHovered)
         .animation(.spring(response: 0.25, dampingFraction: 0.75), value: isSelected)
     }
 

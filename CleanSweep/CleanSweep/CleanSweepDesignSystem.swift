@@ -158,6 +158,7 @@ struct CleanSweepWindowBackground: View {
         ZStack {
             // Base deep background
             Color(colorScheme == .dark ? hex(0x04080F) : hex(0xF2F5F9))
+                .opacity(colorScheme == .dark ? 0.75 : 0.85)
 
             // Subtle texture/depth
             LinearGradient(
@@ -168,7 +169,7 @@ struct CleanSweepWindowBackground: View {
                 startPoint: .top,
                 endPoint: .bottom
             )
-            .opacity(0.8)
+            .opacity(0.6)
 
             // Top-left glow (Blue)
             RadialGradient(
@@ -252,12 +253,8 @@ struct CleanSweepSurface<Content: View>: View {
                 if reduceTransparency {
                     shape.fill(.regularMaterial)
                 } else {
-                    let tintColor = variant.tint(for: colorScheme, interactive: isHovered)
-                    if variant == .clear {
-                        Color.clear.glassEffect(isHovered ? .clear.interactive().tint(tintColor) : .clear.tint(tintColor), in: shape)
-                    } else {
-                        Color.clear.glassEffect(isHovered ? .regular.interactive().tint(tintColor) : .regular.tint(tintColor), in: shape)
-                    }
+                    Color.clear
+                        .glassEffect(variant == .clear ? .clear.interactive() : .regular.interactive(), in: shape)
                 }
             }
             .contentShape(shape)
@@ -265,7 +262,7 @@ struct CleanSweepSurface<Content: View>: View {
             .onHover { isHovered = $0 }
             .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isHovered)
             .overlay {
-                if !reduceTransparency && (isHovered || variant == .selection) {
+                if !reduceTransparency {
                     shape
                         .strokeBorder(
                             variant.borderColor(for: colorScheme, interactive: isHovered),
@@ -280,6 +277,8 @@ struct CleanSweepSidebarPanel<Content: View>: View {
     private let padding: CGFloat
     private let content: Content
 
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+
     init(
         padding: CGFloat = 14,
         @ViewBuilder content: () -> Content
@@ -293,7 +292,14 @@ struct CleanSweepSidebarPanel<Content: View>: View {
 
         content
             .padding(padding)
-            .liquidGlass(shape, interactive: false, variant: .sidebar)
+            .background {
+                if reduceTransparency {
+                    shape.fill(.regularMaterial)
+                } else {
+                    Color.clear
+                        .glassEffect(.regular, in: shape)
+                }
+            }
             .clipShape(shape)
     }
 }
@@ -338,12 +344,14 @@ struct CleanSweepHeroIcon: View {
                 .symbolRenderingMode(.hierarchical)
         }
         .frame(width: size, height: size)
-        .modifier(GlassEffectModifier(
-            shape: shape,
-            tint: CleanSweepPalette.iconBg.opacity(0.18),
-            interactive: true,
-            reduceTransparency: reduceTransparency
-        ))
+        .background {
+            if reduceTransparency {
+                shape.fill(.regularMaterial)
+            } else {
+                Color.clear
+                    .glassEffect(.regular.interactive(), in: shape)
+            }
+        }
         .shadow(color: CleanSweepPalette.iconBg.opacity(0.28), radius: 22, y: 14)
     }
 }
@@ -407,6 +415,7 @@ struct CleanSweepPrimaryButtonStyle: ButtonStyle {
 
 struct CleanSweepSecondaryButtonStyle: ButtonStyle {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -415,13 +424,12 @@ struct CleanSweepSecondaryButtonStyle: ButtonStyle {
             .padding(.horizontal, 18)
             .padding(.vertical, 12)
             .background {
-                Capsule(style: .continuous)
-                    .fill(Color.clear)
-                    .liquidGlass(
-                        Capsule(style: .continuous),
-                        interactive: !configuration.isPressed,
-                        variant: .tag
-                    )
+                if reduceTransparency {
+                    Capsule(style: .continuous).fill(.regularMaterial)
+                } else {
+                    Color.clear
+                        .glassEffect(configuration.isPressed ? .regular.interactive() : .clear.interactive(), in: Capsule(style: .continuous))
+                }
             }
             .overlay {
                 Capsule(style: .continuous)
@@ -449,6 +457,8 @@ struct CleanSweepTag: View {
     let title: String
     let systemImage: String
 
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+
     var body: some View {
         let shape = Capsule(style: .continuous)
 
@@ -457,7 +467,14 @@ struct CleanSweepTag: View {
             .foregroundStyle(.white.opacity(0.78))
             .padding(.horizontal, 14)
             .padding(.vertical, 10)
-            .liquidGlass(shape, interactive: false, variant: .tag)
+            .background {
+                if reduceTransparency {
+                    shape.fill(.regularMaterial)
+                } else {
+                    Color.clear
+                        .glassEffect(.regular.interactive(), in: shape)
+                }
+            }
             .clipShape(shape)
             .overlay {
                 shape

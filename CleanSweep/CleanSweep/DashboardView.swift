@@ -156,7 +156,6 @@ struct MetricCard: View {
     let value: String
     let tint: Color
 
-    @State private var isHovered = false
     var body: some View {
         CleanSweepSurface(cornerRadius: 20, padding: 18, variant: .card) {
             VStack(alignment: .leading, spacing: 14) {
@@ -170,7 +169,6 @@ struct MetricCard: View {
                     Image(systemName: symbol)
                         .foregroundStyle(tint)
                         .font(.title3.weight(.semibold))
-                        .symbolEffect(.bounce, value: isHovered)
                 }
                 .frame(width: 44, height: 44)
 
@@ -186,11 +184,6 @@ struct MetricCard: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .frame(minWidth: 140, alignment: .leading)
-        .scaleEffect(isHovered ? 1.02 : 1.0)
-        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isHovered)
-        .onHover { hovering in
-            isHovered = hovering
-        }
     }
 }
 

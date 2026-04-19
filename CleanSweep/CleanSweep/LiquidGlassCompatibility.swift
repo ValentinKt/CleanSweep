@@ -113,24 +113,17 @@ private struct LiquidGlassCompatibilityModifier<S: InsettableShape>: ViewModifie
     @Environment(\.colorScheme) private var colorScheme
 
     func body(content: Content) -> some View {
-        let tintColor = variant.tint(for: colorScheme, interactive: interactive)
-        
         content
             .background {
                 if reduceTransparency {
                     shape.fill(.regularMaterial)
                 } else {
-                    Color.clear.applyGlassEffect(
-                        variant: variant,
-                        interactive: interactive,
-                        tintColor: tintColor,
-                        shape: shape,
-                        isEnabled: true
-                    )
+                    Color.clear
+                        .glassEffect(variant == .clear ? .clear.interactive() : .regular.interactive(), in: shape)
                 }
             }
             .overlay {
-                if !reduceTransparency && (interactive || variant == .selection) {
+                if !reduceTransparency {
                     shape
                         .strokeBorder(
                             variant.borderColor(for: colorScheme, interactive: interactive),
