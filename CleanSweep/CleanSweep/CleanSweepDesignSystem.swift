@@ -227,6 +227,10 @@ struct CleanSweepSurface<Content: View>: View {
     private let variant: LiquidGlassVariant
     private let content: Content
 
+    @State private var isHovered = false
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @Environment(\.colorScheme) private var colorScheme
+
     init(
         cornerRadius: CGFloat = 16,
         padding: CGFloat = 24,
@@ -244,8 +248,31 @@ struct CleanSweepSurface<Content: View>: View {
 
         content
             .padding(padding)
-            .liquidGlass(shape, interactive: false, variant: variant)
-            .clipShape(shape)
+            .background {
+                if reduceTransparency {
+                    shape.fill(.regularMaterial)
+                } else {
+                    let tintColor = variant.tint(for: colorScheme, interactive: isHovered)
+                    if variant == .clear {
+                        Color.clear.glassEffect(isHovered ? .clear.interactive().tint(tintColor) : .clear.tint(tintColor), in: shape)
+                    } else {
+                        Color.clear.glassEffect(isHovered ? .regular.interactive().tint(tintColor) : .regular.tint(tintColor), in: shape)
+                    }
+                }
+            }
+            .contentShape(shape)
+            .scaleEffect(isHovered ? 1.02 : 1.0)
+            .onHover { isHovered = $0 }
+            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isHovered)
+            .overlay {
+                if !reduceTransparency && (isHovered || variant == .selection) {
+                    shape
+                        .strokeBorder(
+                            variant.borderColor(for: colorScheme, interactive: isHovered),
+                            lineWidth: variant.borderLineWidth
+                        )
+                }
+            }
     }
 }
 

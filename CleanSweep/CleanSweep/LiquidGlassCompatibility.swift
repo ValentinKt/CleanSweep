@@ -9,7 +9,7 @@ enum LiquidGlassVariant {
     case selection
     case accent
 
-    fileprivate var material: CleanSweepLiquidGlassMaterial {
+    internal var material: CleanSweepLiquidGlassMaterial {
         switch self {
         case .clear, .panel, .card, .tag, .selection, .accent:
             .ultraThin
@@ -18,7 +18,7 @@ enum LiquidGlassVariant {
         }
     }
 
-    fileprivate var shadowOpacity: Double {
+    internal var shadowOpacity: Double {
         switch self {
         case .clear:
             0.10
@@ -37,7 +37,7 @@ enum LiquidGlassVariant {
         }
     }
 
-    fileprivate var showIridescence: Bool {
+    internal var showIridescence: Bool {
         switch self {
         case .clear, .card, .tag, .selection:
             false
@@ -46,7 +46,7 @@ enum LiquidGlassVariant {
         }
     }
 
-    fileprivate func tint(for colorScheme: ColorScheme, interactive: Bool) -> Color {
+    internal func tint(for colorScheme: ColorScheme, interactive: Bool) -> Color {
         switch self {
         case .clear:
             return colorScheme == .dark
@@ -79,7 +79,7 @@ enum LiquidGlassVariant {
         }
     }
 
-    fileprivate func borderColor(for colorScheme: ColorScheme, interactive: Bool) -> Color {
+    internal func borderColor(for colorScheme: ColorScheme, interactive: Bool) -> Color {
         switch self {
         case .selection:
             return CleanSweepPalette.iconBg.opacity(interactive ? 0.46 : 0.34)
@@ -92,7 +92,7 @@ enum LiquidGlassVariant {
         }
     }
 
-    fileprivate var borderLineWidth: CGFloat {
+    internal var borderLineWidth: CGFloat {
         switch self {
         case .selection:
             0.95
@@ -119,15 +119,16 @@ private struct LiquidGlassCompatibilityModifier<S: InsettableShape>: ViewModifie
             .background {
                 if reduceTransparency {
                     shape.fill(.regularMaterial)
+                } else {
+                    Color.clear.applyGlassEffect(
+                        variant: variant,
+                        interactive: interactive,
+                        tintColor: tintColor,
+                        shape: shape,
+                        isEnabled: true
+                    )
                 }
             }
-            .applyGlassEffect(
-                variant: variant,
-                interactive: interactive,
-                tintColor: tintColor,
-                shape: shape,
-                isEnabled: !reduceTransparency
-            )
             .overlay {
                 if !reduceTransparency && (interactive || variant == .selection) {
                     shape
