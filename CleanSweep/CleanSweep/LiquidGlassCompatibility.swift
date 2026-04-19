@@ -16,6 +16,35 @@ enum LiquidGlassVariant {
             CleanSweepPalette.accentBlue.opacity(0.14)
         }
     }
+
+    fileprivate var material: CleanSweepLiquidGlassMaterial {
+        switch self {
+        case .clear, .accent:
+            .ultraThin
+        case .sidebar:
+            .thin
+        }
+    }
+
+    fileprivate var shadowOpacity: Double {
+        switch self {
+        case .clear:
+            0.14
+        case .sidebar:
+            0.26
+        case .accent:
+            0.18
+        }
+    }
+
+    fileprivate var showIridescence: Bool {
+        switch self {
+        case .clear:
+            false
+        case .sidebar, .accent:
+            true
+        }
+    }
 }
 
 @available(macOS 26.0, *)
@@ -27,12 +56,20 @@ private struct LiquidGlassCompatibilityModifier<S: InsettableShape>: ViewModifie
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
     func body(content: Content) -> some View {
-        content.cleanSweepGlass(
-            in: shape,
-            tint: variant.tint,
-            interactive: interactive,
-            reduceTransparency: reduceTransparency
-        )
+        content
+            .cleanSweepLiquidGlass(
+                in: shape,
+                material: variant.material,
+                tint: interactive ? variant.tint.opacity(1.12) : variant.tint,
+                shadowOpacity: variant.shadowOpacity,
+                showIridescence: variant.showIridescence
+            )
+            .overlay {
+                if interactive && !reduceTransparency {
+                    shape
+                        .strokeBorder(Color.white.opacity(0.18), lineWidth: 0.8)
+                }
+            }
     }
 }
 

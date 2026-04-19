@@ -1,9 +1,19 @@
 import SwiftUI
+import AppKit
 
 @available(macOS 14.0, *)
 enum CleanSweepLiquidGlassMaterial {
     case ultraThin
     case thin
+
+    fileprivate var visualEffectMaterial: NSVisualEffectView.Material {
+        switch self {
+        case .ultraThin:
+            .hudWindow
+        case .thin:
+            .sidebar
+        }
+    }
 }
 
 @available(macOS 14.0, *)
@@ -12,31 +22,27 @@ struct CleanSweepLiquidGlassModifier<S: InsettableShape>: ViewModifier {
     var material: CleanSweepLiquidGlassMaterial = .ultraThin
     var tint: Color = .white.opacity(0.08)
     var shadowOpacity: Double = 0.18
+    var showIridescence = true
 
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
     func body(content: Content) -> some View {
-        let isDarkMode = colorScheme == .dark
-
         content
             .background { materialBackground }
-            .visualEffect { view, proxy in
-                view
-                    .brightness(proxy.size.height > 160 ? 0.025 : 0.012)
-                    .saturation(isDarkMode ? 1.04 : 1.02)
-            }
             .overlay { specularHighlight }
             .overlay { edgeStroke }
             .overlay { innerGlow }
+            .clipShape(shape)
+            .compositingGroup()
             .shadow(
-                color: Color.black.opacity(colorScheme == .dark ? shadowOpacity : shadowOpacity * 0.45),
-                radius: 24,
+                color: Color.black.opacity(colorScheme == .dark ? shadowOpacity * 1.35 : shadowOpacity * 0.50),
+                radius: 28,
                 y: 14
             )
             .shadow(
-                color: Color.black.opacity(colorScheme == .dark ? shadowOpacity * 0.55 : shadowOpacity * 0.2),
-                radius: 8,
+                color: Color.black.opacity(colorScheme == .dark ? shadowOpacity * 0.72 : shadowOpacity * 0.24),
+                radius: 10,
                 y: 2
             )
     }
@@ -56,12 +62,41 @@ struct CleanSweepLiquidGlassModifier<S: InsettableShape>: ViewModifier {
                     )
                 )
         } else {
-            switch material {
-            case .ultraThin:
-                glassFill.background(.ultraThinMaterial, in: shape)
-            case .thin:
-                glassFill.background(.thinMaterial, in: shape)
+            ZStack {
+                CleanSweepVisualEffectView(
+                    material: material.visualEffectMaterial,
+                    blendingMode: .behindWindow,
+                    state: .active
+                )
+
+                glassFill
+
+                if showIridescence {
+                    iridescenceOverlay
+                }
             }
+            .clipShape(shape)
+            .overlay {
+                shape
+                    .fill(Color.white.opacity(colorScheme == .dark ? 0.028 : 0.08))
+                    .blendMode(.screen)
+            }
+            .overlay {
+                shape
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                tint.opacity(colorScheme == .dark ? 0.12 : 0.08),
+                                .clear,
+                                tint.opacity(colorScheme == .dark ? 0.08 : 0.04)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .blendMode(.screen)
+            }
+            .saturation(colorScheme == .dark ? 1.12 : 1.04)
         }
     }
 
@@ -70,10 +105,10 @@ struct CleanSweepLiquidGlassModifier<S: InsettableShape>: ViewModifier {
             .fill(
                 LinearGradient(
                     colors: [
-                        Color.white.opacity(colorScheme == .dark ? 0.12 : 0.48),
-                        tint.opacity(colorScheme == .dark ? 0.7 : 0.4),
-                        Color.secondary.opacity(colorScheme == .dark ? 0.05 : 0.03),
-                        Color.white.opacity(colorScheme == .dark ? 0.03 : 0.08)
+                        Color.white.opacity(colorScheme == .dark ? 0.14 : 0.42),
+                        tint.opacity(colorScheme == .dark ? 0.92 : 0.46),
+                        Color.white.opacity(colorScheme == .dark ? 0.05 : 0.08),
+                        Color.black.opacity(colorScheme == .dark ? 0.10 : 0.04)
                     ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
@@ -84,7 +119,8 @@ struct CleanSweepLiquidGlassModifier<S: InsettableShape>: ViewModifier {
                     .fill(
                         LinearGradient(
                             colors: [
-                                tint.opacity(colorScheme == .dark ? 0.22 : 0.12),
+                                Color.white.opacity(colorScheme == .dark ? 0.10 : 0.18),
+                                tint.opacity(colorScheme == .dark ? 0.26 : 0.12),
                                 .clear
                             ],
                             startPoint: .topLeading,
@@ -95,13 +131,30 @@ struct CleanSweepLiquidGlassModifier<S: InsettableShape>: ViewModifier {
             }
     }
 
+    private var iridescenceOverlay: some View {
+        shape
+            .fill(
+                LinearGradient(
+                    stops: [
+                        .init(color: CleanSweepPalette.accentBlue.opacity(0.12), location: 0.0),
+                        .init(color: CleanSweepPalette.accentPurple.opacity(0.10), location: 0.45),
+                        .init(color: CleanSweepPalette.accentPink.opacity(0.06), location: 1.0)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+            .blendMode(.screen)
+            .opacity(colorScheme == .dark ? 1 : 0.6)
+    }
+
     private var specularHighlight: some View {
         shape
             .fill(
                 LinearGradient(
                     colors: [
-                        Color.white.opacity(colorScheme == .dark ? 0.18 : 0.30),
-                        Color.white.opacity(0.10),
+                        Color.white.opacity(colorScheme == .dark ? 0.24 : 0.34),
+                        Color.white.opacity(colorScheme == .dark ? 0.12 : 0.16),
                         .clear
                     ],
                     startPoint: .topLeading,
@@ -110,7 +163,7 @@ struct CleanSweepLiquidGlassModifier<S: InsettableShape>: ViewModifier {
             )
             .mask(
                 Rectangle()
-                    .frame(height: 92)
+                    .frame(height: 104)
                     .frame(maxHeight: .infinity, alignment: .top)
             )
             .allowsHitTesting(false)
@@ -121,9 +174,9 @@ struct CleanSweepLiquidGlassModifier<S: InsettableShape>: ViewModifier {
             .strokeBorder(
                 LinearGradient(
                     colors: [
-                        Color.white.opacity(0.10),
-                        Color.white.opacity(colorScheme == .dark ? 0.06 : 0.03),
-                        .clear
+                        Color.white.opacity(colorScheme == .dark ? 0.18 : 0.30),
+                        Color.white.opacity(colorScheme == .dark ? 0.08 : 0.10),
+                        Color.white.opacity(0.02)
                     ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
@@ -135,7 +188,7 @@ struct CleanSweepLiquidGlassModifier<S: InsettableShape>: ViewModifier {
 
     private var innerGlow: some View {
         shape
-            .strokeBorder(Color.white.opacity(0.06), lineWidth: 0.5)
+            .strokeBorder(Color.white.opacity(colorScheme == .dark ? 0.08 : 0.12), lineWidth: 0.5)
             .padding(1)
             .allowsHitTesting(false)
     }
@@ -147,14 +200,16 @@ extension View {
         in shape: S,
         material: CleanSweepLiquidGlassMaterial = .ultraThin,
         tint: Color = .white.opacity(0.08),
-        shadowOpacity: Double = 0.18
+        shadowOpacity: Double = 0.18,
+        showIridescence: Bool = true
     ) -> some View {
         modifier(
             CleanSweepLiquidGlassModifier(
                 shape: shape,
                 material: material,
                 tint: tint,
-                shadowOpacity: shadowOpacity
+                shadowOpacity: shadowOpacity,
+                showIridescence: showIridescence
             )
         )
     }
@@ -167,6 +222,7 @@ struct CleanSweepLiquidGlassPanel<Content: View>: View {
     private let material: CleanSweepLiquidGlassMaterial
     private let tint: Color
     private let shadowOpacity: Double
+    private let showIridescence: Bool
     private let content: Content
 
     init(
@@ -175,6 +231,7 @@ struct CleanSweepLiquidGlassPanel<Content: View>: View {
         material: CleanSweepLiquidGlassMaterial = .ultraThin,
         tint: Color = .white.opacity(0.08),
         shadowOpacity: Double = 0.18,
+        showIridescence: Bool = true,
         @ViewBuilder content: () -> Content
     ) {
         self.cornerRadius = cornerRadius
@@ -182,6 +239,7 @@ struct CleanSweepLiquidGlassPanel<Content: View>: View {
         self.material = material
         self.tint = tint
         self.shadowOpacity = shadowOpacity
+        self.showIridescence = showIridescence
         self.content = content()
     }
 
@@ -194,7 +252,8 @@ struct CleanSweepLiquidGlassPanel<Content: View>: View {
                 in: shape,
                 material: material,
                 tint: tint,
-                shadowOpacity: shadowOpacity
+                shadowOpacity: shadowOpacity,
+                showIridescence: showIridescence
             )
     }
 }
