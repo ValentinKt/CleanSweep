@@ -6,7 +6,6 @@ struct ModuleScanHighlight: Hashable {
     let systemImage: String
 }
 
-@available(macOS 26.0, *)
 private struct FolderRowView: View {
     let path: String
     let files: [ScanResult]
@@ -56,7 +55,6 @@ private struct FolderRowView: View {
     }
 }
 
-@available(macOS 26.0, *)
 private struct ScanResultRowView: View {
     let result: ScanResult
     @Bindable var viewModel: ModuleScanViewModel
@@ -143,7 +141,6 @@ private struct ScanResultRowView: View {
     }
 }
 
-@available(macOS 26.0, *)
 struct ModuleScanView: View {
     @Bindable var viewModel: ModuleScanViewModel
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -542,7 +539,6 @@ struct ModuleScanView: View {
     }
 }
 
-@available(macOS 26.0, *)
 private struct ModuleMetricCard: View {
     let title: String
     let value: String
@@ -576,7 +572,6 @@ private struct ModuleMetricCard: View {
     }
 }
 
-@available(macOS 26.0, *)
 private struct ModuleFeaturePill: View {
     let title: String
     let systemImage: String

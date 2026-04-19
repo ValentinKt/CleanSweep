@@ -1,7 +1,6 @@
 import SwiftUI
 import Charts
 
-@available(macOS 26.0, *)
 struct DiskAnalyzerView: View {
     @State private var diskUsage: [DiskUsageCategory] = [
         DiskUsageCategory(name: "System", size: 40_000_000_000, color: Color(hex: UInt32(0x8E8E93))),

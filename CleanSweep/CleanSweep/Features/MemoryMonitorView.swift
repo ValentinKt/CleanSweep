@@ -1,6 +1,5 @@
 import SwiftUI
 
-@available(macOS 26.0, *)
 struct MemoryMonitorView: View {
     @State private var memoryPressure: Double = 0.0
     @State private var monitorTask: Task<Void, Never>?

@@ -1,6 +1,5 @@
 import SwiftUI
 
-@available(macOS 26.0, *)
 enum LiquidGlassVariant {
     case clear
     case sidebar
@@ -105,7 +104,6 @@ enum LiquidGlassVariant {
     }
 }
 
-@available(macOS 26.0, *)
 private struct LiquidGlassCompatibilityModifier<S: InsettableShape>: ViewModifier {
     let shape: S
     let interactive: Bool
@@ -142,7 +140,6 @@ private struct LiquidGlassCompatibilityModifier<S: InsettableShape>: ViewModifie
     }
 }
 
-@available(macOS 26.0, *)
 private extension View {
     @ViewBuilder
     func applyGlassEffect<S: InsettableShape>(
@@ -172,7 +169,6 @@ private extension View {
     }
 }
 
-@available(macOS 26.0, *)
 extension View {
     func liquidGlass<S: InsettableShape>(
         _ shape: S,

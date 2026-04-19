@@ -5,7 +5,6 @@
 
 import SwiftUI
 
-@available(macOS 26.0, *)
 struct RootView: View {
     @State private var selection: SidebarItem? = .dashboard
     @State private var smartScanViewModel = SmartScanViewModel()
@@ -46,7 +45,5 @@ struct RootView: View {
 }
 
 #Preview {
-    if #available(macOS 26.0, *) {
-        RootView()
-    }
+    RootView()
 }

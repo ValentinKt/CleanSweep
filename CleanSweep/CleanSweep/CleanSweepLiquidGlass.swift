@@ -1,7 +1,6 @@
 import SwiftUI
 import AppKit
 
-@available(macOS 14.0, *)
 enum CleanSweepLiquidGlassMaterial {
     case ultraThin
     case thin
@@ -16,7 +15,6 @@ enum CleanSweepLiquidGlassMaterial {
     }
 }
 
-@available(macOS 14.0, *)
 struct CleanSweepLiquidGlassModifier<S: InsettableShape>: ViewModifier {
     let shape: S
     var material: CleanSweepLiquidGlassMaterial = .ultraThin
@@ -194,7 +192,6 @@ struct CleanSweepLiquidGlassModifier<S: InsettableShape>: ViewModifier {
     }
 }
 
-@available(macOS 14.0, *)
 extension View {
     func cleanSweepLiquidGlass<S: InsettableShape>(
         in shape: S,
@@ -215,7 +212,6 @@ extension View {
     }
 }
 
-@available(macOS 14.0, *)
 struct CleanSweepLiquidGlassPanel<Content: View>: View {
     private let cornerRadius: CGFloat
     private let padding: CGFloat
@@ -258,7 +254,6 @@ struct CleanSweepLiquidGlassPanel<Content: View>: View {
     }
 }
 
-@available(macOS 26.0, *)
 struct CleanSweepLiquidDetailHeader: View {
     let selection: SidebarItem?
 

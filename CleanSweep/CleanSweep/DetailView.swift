@@ -13,38 +13,32 @@ struct DetailView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        if #available(macOS 26.0, *) {
-            CleanSweepLiquidGlassPanel(
-                cornerRadius: 32,
-                padding: 0,
-                material: .ultraThin,
-                tint: Color(hex: 0x1A2338, opacity: 0.30),
-                shadowOpacity: 0.24
-            ) {
-                VStack(spacing: 0) {
-                    CleanSweepLiquidDetailHeader(selection: selection)
+        CleanSweepLiquidGlassPanel(
+            cornerRadius: 32,
+            padding: 0,
+            material: .ultraThin,
+            tint: Color(hex: 0x1A2338, opacity: 0.30),
+            shadowOpacity: 0.24
+        ) {
+            VStack(spacing: 0) {
+                CleanSweepLiquidDetailHeader(selection: selection)
 
-                    Divider()
-                        .overlay(Color.white.opacity(0.10))
-                        .padding(.horizontal, 28)
+                Divider()
+                    .overlay(Color.white.opacity(0.10))
+                    .padding(.horizontal, 28)
 
-                    contentView
-                        .padding(28)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                }
+                contentView
+                    .padding(28)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             }
-            .backgroundExtensionEffect()
-            .navigationTitle(selection?.rawValue.capitalized ?? "CleanSweep")
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .animation(
-                reduceMotion ? nil : .spring(response: 0.38, dampingFraction: 0.82),
-                value: selection
-            )
-        } else {
-            contentView
-                .navigationTitle(selection?.rawValue.capitalized ?? "CleanSweep")
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
+        .backgroundExtensionEffect()
+        .navigationTitle(selection?.rawValue.capitalized ?? "CleanSweep")
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .animation(
+            reduceMotion ? nil : .spring(response: 0.38, dampingFraction: 0.82),
+            value: selection
+        )
     }
 
     @ViewBuilder
@@ -52,47 +46,26 @@ struct DetailView: View {
         if let selection {
             switch selection {
             case .dashboard:
-                if #available(macOS 26.0, *) {
-                    DashboardView {
-                        self.selection = .smartScan
-                        Task { await smartScanViewModel.startScan() }
-                    }
-                } else {
-                    Text("Dashboard requires macOS 26.0")
+                DashboardView {
+                    self.selection = .smartScan
+                    Task { await smartScanViewModel.startScan() }
                 }
             case .smartScan:
-                if #available(macOS 26.0, *) {
-                    SmartScanView(viewModel: smartScanViewModel, selection: $selection)
-                } else {
-                    Text("Smart Scan requires macOS 26.0")
-                }
+                SmartScanView(viewModel: smartScanViewModel, selection: $selection)
             case .systemJunk, .development, .largeFiles, .screenshots, .duplicates,
                     .mailAttachments, .trash, .privacy, .uninstaller, .startup,
                     .networkCache, .fonts, .leftovers:
-                if #available(macOS 26.0, *) {
-                    moduleScanView(for: selection)
-                } else {
-                    Text("\(selection.localizedName) requires macOS 26.0")
-                }
+                moduleScanView(for: selection)
             case .memory:
-                if #available(macOS 26.0, *) {
-                    MemoryMonitorView()
-                } else {
-                    Text("Memory Monitor requires macOS 26.0")
-                }
+                MemoryMonitorView()
             case .disk:
-                if #available(macOS 26.0, *) {
-                    DiskAnalyzerView()
-                } else {
-                    Text("Disk Analyzer requires macOS 26.0")
-                }
+                DiskAnalyzerView()
             }
         } else {
             ContentUnavailableView("Select an item", systemImage: "sidebar.left")
         }
     }
 
-    @available(macOS 26.0, *)
     @ViewBuilder
     private func moduleScanView(for item: SidebarItem) -> some View {
         if let descriptor = item.moduleScanDescriptor {

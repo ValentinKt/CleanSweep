@@ -1,7 +1,6 @@
 import SwiftUI
 import ScanEngine
 
-@available(macOS 26.0, *)
 struct SmartScanView: View {
     @Bindable var viewModel: SmartScanViewModel
     @Binding var selection: SidebarItem?
@@ -323,7 +322,5 @@ struct SmartScanView: View {
 }
 
 #Preview {
-    if #available(macOS 26.0, *) {
-        SmartScanView(viewModel: SmartScanViewModel(), selection: .constant(.smartScan))
-    }
+    SmartScanView(viewModel: SmartScanViewModel(), selection: .constant(.smartScan))
 }

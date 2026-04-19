@@ -29,7 +29,6 @@ struct CleanSweepVisualEffectView: NSViewRepresentable {
 
 // MARK: - Reusable Glass Effect Modifier
 
-@available(macOS 26.0, *)
 struct GlassEffectModifier<S: InsettableShape>: ViewModifier {
     let shape: S
     var tint: Color = .white.opacity(0.06)
@@ -50,7 +49,6 @@ struct GlassEffectModifier<S: InsettableShape>: ViewModifier {
     }
 }
 
-@available(macOS 26.0, *)
 struct CleanSweepWindowConfigurator: NSViewRepresentable {
     func makeNSView(context: Context) -> NSView {
         NSView()
@@ -67,7 +65,6 @@ struct CleanSweepWindowConfigurator: NSViewRepresentable {
     }
 }
 
-@available(macOS 26.0, *)
 extension View {
     /// Applies native Liquid Glass with an accessibility fallback.
     func cleanSweepGlass<S: InsettableShape>(
@@ -154,7 +151,6 @@ enum CleanSweepPalette {
     }
 }
 
-@available(macOS 26.0, *)
 struct CleanSweepWindowBackground: View {
     @Environment(\.colorScheme) private var colorScheme
 
@@ -225,7 +221,6 @@ struct CleanSweepWindowBackground: View {
     }
 }
 
-@available(macOS 26.0, *)
 struct CleanSweepSurface<Content: View>: View {
     private let cornerRadius: CGFloat
     private let padding: CGFloat
@@ -254,7 +249,6 @@ struct CleanSweepSurface<Content: View>: View {
     }
 }
 
-@available(macOS 26.0, *)
 struct CleanSweepSidebarPanel<Content: View>: View {
     private let padding: CGFloat
     private let content: Content
@@ -277,7 +271,6 @@ struct CleanSweepSidebarPanel<Content: View>: View {
     }
 }
 
-@available(macOS 26.0, *)
 struct CleanSweepHeroIcon: View {
     let systemImage: String
     var size: CGFloat = 96
@@ -328,7 +321,6 @@ struct CleanSweepHeroIcon: View {
     }
 }
 
-@available(macOS 26.0, *)
 struct CleanSweepSectionEyebrow: View {
     let title: String
 
@@ -340,7 +332,6 @@ struct CleanSweepSectionEyebrow: View {
     }
 }
 
-@available(macOS 26.0, *)
 struct CleanSweepPrimaryButtonStyle: ButtonStyle {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -387,7 +378,6 @@ struct CleanSweepPrimaryButtonStyle: ButtonStyle {
     }
 }
 
-@available(macOS 26.0, *)
 struct CleanSweepSecondaryButtonStyle: ButtonStyle {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -428,7 +418,6 @@ struct CleanSweepSecondaryButtonStyle: ButtonStyle {
     }
 }
 
-@available(macOS 26.0, *)
 struct CleanSweepTag: View {
     let title: String
     let systemImage: String
@@ -460,7 +449,6 @@ struct CleanSweepTag: View {
     }
 }
 
-@available(macOS 26.0, *)
 struct CleanSweepMetricTile: View {
     let title: String
     let value: String
@@ -521,7 +509,6 @@ struct CleanSweepProgressPalette {
     )
 }
 
-@available(macOS 26.0, *)
 struct CleanSweepProgressRing: NSViewRepresentable {
     var progress: Double
     var palette: CleanSweepProgressPalette = .scan

@@ -5,7 +5,6 @@
 
 import SwiftUI
 
-@available(macOS 26.0, *)
 struct DashboardView: View {
     @State private var viewModel = HealthDashboardViewModel()
     var onStartSmartScan: () -> Void = {}
@@ -118,7 +117,6 @@ struct DashboardView: View {
     }
 }
 
-@available(macOS 26.0, *)
 struct HealthDashboardRow: View {
     var viewModel: HealthDashboardViewModel
 
@@ -152,7 +150,6 @@ struct HealthDashboardRow: View {
     }
 }
 
-@available(macOS 26.0, *)
 struct MetricCard: View {
     let symbol: String
     let label: String
@@ -198,7 +195,5 @@ struct MetricCard: View {
 }
 
 #Preview {
-    if #available(macOS 26.0, *) {
-        DashboardView()
-    }
+    DashboardView()
 }

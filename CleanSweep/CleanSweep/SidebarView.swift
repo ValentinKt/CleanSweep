@@ -5,7 +5,6 @@
 
 import SwiftUI
 
-@available(macOS 26.0, *)
 struct SidebarView: View {
     @Binding var selection: SidebarItem?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -146,7 +145,6 @@ struct SidebarView: View {
     }
 }
 
-@available(macOS 26.0, *)
 struct SidebarRow: View {
     let item: SidebarItem
     var isSelected: Bool
