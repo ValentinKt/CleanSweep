@@ -9,15 +9,20 @@ import SwiftUI
 struct SidebarView: View {
     @Binding var selection: SidebarItem?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    private let sidebarShape = RoundedRectangle(cornerRadius: 8, style: .continuous)
 
     var body: some View {
-        CleanSweepSidebarPanel(padding: 16) {
-            VStack(spacing: 18) {
-                sidebarHeader
-                sidebarList
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        VStack(alignment: .leading, spacing: 24) {
+            sidebarHeader
+            sidebarList
+            Spacer(minLength: 0)
         }
+        .padding(.top, 16)
+        .padding(.bottom, 36)
+        .padding(.horizontal, 24)
+        .frame(width: 280)
+        .liquidGlass(sidebarShape, interactive: false, variant: .sidebar)
+        .clipShape(sidebarShape)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
@@ -86,61 +91,56 @@ struct SidebarView: View {
             Text(title.uppercased())
                 .font(.caption.weight(.bold))
                 .tracking(1.4)
-                .foregroundStyle(.secondary.opacity(0.9))
+                .foregroundStyle(.white.opacity(0.55))
         }
     }
 
     private var sidebarHeader: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack(spacing: 14) {
-                CleanSweepHeroIcon(systemImage: "bubbles.and.sparkles", size: 42)
+        let headerShape = RoundedRectangle(cornerRadius: 8, style: .continuous)
 
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("CleanSweep")
-                        .font(.headline.weight(.bold))
-                        .foregroundStyle(.primary)
-                    Text("Mac Health Suite")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.8)
-                }
+        return HStack(spacing: 12) {
+            Image(systemName: "bubbles.and.sparkles")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(.white)
+                .symbolRenderingMode(.hierarchical)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("CleanSweep")
+                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.92))
+
+                Text("Mac Health Suite")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.62))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
             }
+
+            Spacer(minLength: 0)
         }
-        .padding(18)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(headerBackground)
-    }
-
-    private var headerBackground: some View {
-        let shape = RoundedRectangle(cornerRadius: 24, style: .continuous)
-
-        return Color.clear
-            .cleanSweepLiquidGlass(
-                in: shape,
-                material: .ultraThin,
-                tint: CleanSweepPalette.accentBlue.opacity(0.12),
-                shadowOpacity: 0.10
-            )
+        .liquidGlass(headerShape, interactive: false, variant: .clear)
+        .clipShape(headerShape)
     }
 
     private func statusPill(title: String, tint: Color) -> some View {
-        HStack(spacing: 6) {
+        let pillShape = Capsule(style: .continuous)
+
+        return HStack(spacing: 6) {
             Circle()
                 .fill(tint)
                 .frame(width: 6, height: 6)
             Text(title)
                 .font(.caption.weight(.semibold))
         }
-        .foregroundStyle(.secondary)
+        .foregroundStyle(.white.opacity(0.82))
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
-        .cleanSweepLiquidGlass(
-            in: Capsule(style: .continuous),
-            material: .ultraThin,
-            tint: tint.opacity(0.16),
-            shadowOpacity: 0.06
-        )
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .liquidGlass(pillShape, interactive: false, variant: .clear)
+        .clipShape(pillShape)
     }
 }
 
@@ -151,19 +151,18 @@ struct SidebarRow: View {
     var badge: String?
     var action: () -> Void
 
-    @Environment(\.colorScheme) private var colorScheme
     @State private var isHovered = false
 
     var body: some View {
-        let rowShape = RoundedRectangle(cornerRadius: 14, style: .continuous)
+        let rowShape = RoundedRectangle(cornerRadius: 8, style: .continuous)
 
         Button(action: action) {
             HStack(spacing: 12) {
                 iconView
 
                 Text(item.localizedName)
-                    .font(.subheadline.weight(isSelected ? .bold : .medium))
-                    .foregroundStyle(isSelected ? .primary : .secondary)
+                    .font(.system(size: 13, weight: isSelected ? .semibold : .medium))
+                    .foregroundStyle(.white.opacity(isSelected ? 0.92 : 0.78))
                     .lineLimit(1)
 
                 Spacer()
@@ -177,38 +176,19 @@ struct SidebarRow: View {
                             Capsule()
                                 .fill(
                                     isSelected
-                                        ? Color.white.opacity(0.15)
-                                        : Color.black.opacity(0.08)
+                                        ? Color.white.opacity(0.16)
+                                        : Color.white.opacity(0.08)
                                 )
                         )
-                        .foregroundStyle(isSelected ? .primary : .secondary)
+                        .foregroundStyle(.white.opacity(isSelected ? 0.92 : 0.70))
                 }
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
-            .background(rowBackground(shape: rowShape))
-            .overlay(alignment: .topLeading) {
-                if isSelected {
-                    rowShape
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    Color.white.opacity(0.20),
-                                    Color.white.opacity(0.04),
-                                    .clear
-                                ],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .mask(
-                            Rectangle()
-                                .frame(height: 20)
-                                .frame(maxHeight: .infinity, alignment: .top)
-                        )
-                        .allowsHitTesting(false)
-                }
-            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .liquidGlass(rowShape, interactive: isHovered, variant: isSelected ? .accent : .clear)
+            .clipShape(rowShape)
+            .opacity(isSelected || isHovered ? 1 : 0.96)
         }
         .buttonStyle(.plain)
         .onHover { hovering in
@@ -220,7 +200,7 @@ struct SidebarRow: View {
 
     @ViewBuilder
     private var iconView: some View {
-        let iconShape = RoundedRectangle(cornerRadius: 10, style: .continuous)
+        let iconShape = RoundedRectangle(cornerRadius: 7, style: .continuous)
 
         ZStack {
             if isSelected {
@@ -229,7 +209,7 @@ struct SidebarRow: View {
                     .shadow(color: CleanSweepPalette.iconBg.opacity(0.4), radius: 8, y: 4)
             } else {
                 iconShape
-                    .fill(Color.white.opacity(colorScheme == .dark ? 0.06 : 0.4))
+                    .fill(Color.white.opacity(0.10))
                     .overlay(
                         iconShape
                             .strokeBorder(Color.white.opacity(0.1), lineWidth: 0.5)
@@ -238,47 +218,8 @@ struct SidebarRow: View {
 
             Image(systemName: item.iconName)
                 .font(.system(size: 14, weight: .bold))
-                .foregroundStyle(isSelected ? .white : CleanSweepPalette.iconBg)
+                .foregroundStyle(isSelected ? .white : .white.opacity(0.82))
         }
         .frame(width: 32, height: 32)
-    }
-
-    @ViewBuilder
-    private func rowBackground(shape: RoundedRectangle) -> some View {
-        if isSelected {
-            Color.clear
-                .cleanSweepLiquidGlass(
-                    in: shape,
-                    material: .thin,
-                    tint: CleanSweepPalette.accentBlue.opacity(colorScheme == .dark ? 0.22 : 0.12),
-                    shadowOpacity: 0.12
-                )
-                .overlay {
-                    shape
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    Color.white.opacity(0.18),
-                                    Color.white.opacity(0.05),
-                                    .clear
-                                ],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .allowsHitTesting(false)
-                }
-        } else if isHovered {
-            Color.clear
-                .cleanSweepLiquidGlass(
-                    in: shape,
-                    material: .ultraThin,
-                    tint: Color.white.opacity(colorScheme == .dark ? 0.08 : 0.12),
-                    shadowOpacity: 0.08
-                )
-        } else {
-            shape
-                .fill(Color.clear)
-        }
     }
 }

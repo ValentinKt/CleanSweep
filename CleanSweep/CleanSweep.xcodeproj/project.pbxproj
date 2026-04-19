@@ -24,6 +24,7 @@
 		892A0A2F6A56E368D6405B7A /* DiskAnalyzerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9229BF84CBC642F53971C8 /* DiskAnalyzerView.swift */; };
 		91E2155A2B0FF59F4B1B2D89 /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A09C1FB53E68B212130633C /* SidebarView.swift */; };
 		B9E2C35D47A55F84BA23CD12 /* CleanSweepLiquidGlass.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8D1B24C36F44E73A912BC01 /* CleanSweepLiquidGlass.swift */; };
+		C5A5D32467F845BF9C2C0F11 /* LiquidGlassCompatibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5A5D32467F845BF9C2C0F10 /* LiquidGlassCompatibility.swift */; };
 		F4110AC8785B49AFA4D69643 /* MemoryMonitorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB569C8B0B69082F98B1C1E1 /* MemoryMonitorView.swift */; };
 /* End PBXBuildFile section */
 
@@ -42,6 +43,7 @@
 		A8D1B24C36F44E73A912BC01 /* CleanSweepLiquidGlass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanSweepLiquidGlass.swift; sourceTree = "<group>"; };
 		9E9229BF84CBC642F53971C8 /* DiskAnalyzerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskAnalyzerView.swift; sourceTree = "<group>"; };
 		AB569C8B0B69082F98B1C1E1 /* MemoryMonitorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryMonitorView.swift; sourceTree = "<group>"; };
+		C5A5D32467F845BF9C2C0F10 /* LiquidGlassCompatibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassCompatibility.swift; sourceTree = "<group>"; };
 		C49C8835A3A15492A6613351 /* ScanEngine */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ScanEngine; path = Packages/ScanEngine; sourceTree = SOURCE_ROOT; };
 		D16FF9238A9D46220FA9B86F /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		DD291ECC2A8EEF63A5E8CC03 /* CleanSweepDesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanSweepDesignSystem.swift; sourceTree = "<group>"; };
@@ -89,6 +91,7 @@
 				182852D20FA6601B170CD689 /* CleanSweepApp.swift */,
 				DD291ECC2A8EEF63A5E8CC03 /* CleanSweepDesignSystem.swift */,
 				A8D1B24C36F44E73A912BC01 /* CleanSweepLiquidGlass.swift */,
+				C5A5D32467F845BF9C2C0F10 /* LiquidGlassCompatibility.swift */,
 				64799F53539F617549D592E5 /* DashboardView.swift */,
 				1B0DF8D9EB688362869185BB /* DetailView.swift */,
 				5D8060B542C381FB1CB79DCA /* RootView.swift */,
@@ -202,6 +205,7 @@
 				128677662FCE185CF71AA5F4 /* CleanSweepApp.swift in Sources */,
 				703CE4429CFA3B09FA70A55B /* CleanSweepDesignSystem.swift in Sources */,
 				B9E2C35D47A55F84BA23CD12 /* CleanSweepLiquidGlass.swift in Sources */,
+				C5A5D32467F845BF9C2C0F11 /* LiquidGlassCompatibility.swift in Sources */,
 				382ED880D8F64EAC697D4239 /* DashboardView.swift in Sources */,
 				2A529C349E0556B1FAFB4C5B /* DetailView.swift in Sources */,
 				892A0A2F6A56E368D6405B7A /* DiskAnalyzerView.swift in Sources */,
