@@ -115,13 +115,20 @@ private struct LiquidGlassCompatibilityModifier<S: InsettableShape>: ViewModifie
     @Environment(\.colorScheme) private var colorScheme
 
     func body(content: Content) -> some View {
+        let tintColor = variant.tint(for: colorScheme, interactive: interactive)
+        
         content
-            .cleanSweepLiquidGlass(
-                in: shape,
-                material: variant.material,
-                tint: variant.tint(for: colorScheme, interactive: interactive),
-                shadowOpacity: variant.shadowOpacity,
-                showIridescence: variant.showIridescence
+            .background {
+                if reduceTransparency {
+                    shape.fill(.regularMaterial)
+                }
+            }
+            .applyGlassEffect(
+                variant: variant,
+                interactive: interactive,
+                tintColor: tintColor,
+                shape: shape,
+                isEnabled: !reduceTransparency
             )
             .overlay {
                 if !reduceTransparency && (interactive || variant == .selection) {
@@ -132,6 +139,36 @@ private struct LiquidGlassCompatibilityModifier<S: InsettableShape>: ViewModifie
                         )
                 }
             }
+    }
+}
+
+@available(macOS 26.0, *)
+private extension View {
+    @ViewBuilder
+    func applyGlassEffect<S: InsettableShape>(
+        variant: LiquidGlassVariant,
+        interactive: Bool,
+        tintColor: Color,
+        shape: S,
+        isEnabled: Bool
+    ) -> some View {
+        if isEnabled {
+            if variant == .clear {
+                if interactive {
+                    self.glassEffect(.clear.interactive().tint(tintColor), in: shape)
+                } else {
+                    self.glassEffect(.clear.tint(tintColor), in: shape)
+                }
+            } else {
+                if interactive {
+                    self.glassEffect(.regular.interactive().tint(tintColor), in: shape)
+                } else {
+                    self.glassEffect(.regular.tint(tintColor), in: shape)
+                }
+            }
+        } else {
+            self
+        }
     }
 }
 

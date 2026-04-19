@@ -65,7 +65,7 @@ struct CleanSweepLiquidGlassModifier<S: InsettableShape>: ViewModifier {
             ZStack {
                 CleanSweepVisualEffectView(
                     material: material.visualEffectMaterial,
-                    blendingMode: .behindWindow,
+                    blendingMode: .withinWindow,
                     state: .active
                 )
 

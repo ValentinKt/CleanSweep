@@ -12,18 +12,20 @@ struct SidebarView: View {
     private let sidebarShape = RoundedRectangle(cornerRadius: 26, style: .continuous)
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 24) {
-            sidebarHeader
-            sidebarList
-            Spacer(minLength: 0)
+        GlassEffectContainer {
+            VStack(alignment: .leading, spacing: 24) {
+                sidebarHeader
+                sidebarList
+                Spacer(minLength: 0)
+            }
+            .padding(.top, 16)
+            .padding(.bottom, 36)
+            .padding(.horizontal, 24)
+            .frame(width: 280)
+            .liquidGlass(sidebarShape, interactive: false, variant: .sidebar)
+            .clipShape(sidebarShape)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
-        .padding(.top, 16)
-        .padding(.bottom, 36)
-        .padding(.horizontal, 24)
-        .frame(width: 280)
-        .liquidGlass(sidebarShape, interactive: false, variant: .sidebar)
-        .clipShape(sidebarShape)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
     private var sidebarList: some View {
@@ -187,12 +189,6 @@ struct SidebarRow: View {
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background {
-                if isSelected {
-                    rowShape
-                        .fill(Color.white.opacity(0.08))
-                }
-            }
             .liquidGlass(rowShape, interactive: isActive, variant: isSelected ? .selection : .clear)
             .clipShape(rowShape)
             .overlay {
