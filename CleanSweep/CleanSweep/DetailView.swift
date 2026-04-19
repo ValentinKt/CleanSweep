@@ -13,24 +13,12 @@ struct DetailView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        CleanSweepLiquidGlassPanel(
-            cornerRadius: 32,
-            padding: 0,
-            material: .ultraThin,
-            tint: Color(hex: 0x1A2338, opacity: 0.30),
-            shadowOpacity: 0.24
-        ) {
-            VStack(spacing: 0) {
-                CleanSweepLiquidDetailHeader(selection: selection)
+        VStack(spacing: 0) {
+            CleanSweepLiquidDetailHeader(selection: selection)
 
-                Divider()
-                    .overlay(Color.white.opacity(0.10))
-                    .padding(.horizontal, 28)
-
-                contentView
-                    .padding(28)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            }
+            contentView
+                .padding(28)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
         .backgroundExtensionEffect()
         .navigationTitle(selection?.rawValue.capitalized ?? "CleanSweep")

@@ -187,6 +187,7 @@ struct SidebarRow: View {
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
             .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
             .liquidGlass(rowShape, interactive: isActive, variant: isSelected ? .selection : .clear)
             .clipShape(rowShape)
             .overlay {
@@ -208,6 +209,7 @@ struct SidebarRow: View {
             .opacity(isSelected || isHovered ? 1 : 0.96)
         }
         .buttonStyle(.plain)
+        .focusable(false)
         .onHover { hovering in
             isHovered = hovering
         }
