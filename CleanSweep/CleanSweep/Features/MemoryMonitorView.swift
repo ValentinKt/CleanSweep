@@ -33,7 +33,7 @@ struct MemoryMonitorView: View {
                     )
                 }
 
-                CleanSweepSurface(cornerRadius: 22, padding: 20) {
+                CleanSweepSurface(cornerRadius: 22, padding: 20, variant: .card) {
                     HStack(spacing: 12) {
                         CleanSweepTag(title: "Live Updates", systemImage: "waveform.path.ecg")
                         CleanSweepTag(title: "Pressure Gauge", systemImage: "gauge.with.needle")
@@ -53,7 +53,7 @@ struct MemoryMonitorView: View {
     }
 
     private var heroSection: some View {
-        CleanSweepSurface(cornerRadius: 26, padding: 28) {
+        CleanSweepSurface(cornerRadius: 26, padding: 28, variant: .panel) {
             HStack(spacing: 24) {
                 CleanSweepHeroIcon(systemImage: "memorychip.fill", size: 104)
 
@@ -85,7 +85,7 @@ struct MemoryMonitorView: View {
     }
 
     private var pressureSection: some View {
-        CleanSweepSurface(cornerRadius: 26, padding: 28) {
+        CleanSweepSurface(cornerRadius: 26, padding: 28, variant: .panel) {
             HStack(spacing: 28) {
                 ZStack {
                     Circle()
@@ -120,7 +120,7 @@ struct MemoryMonitorView: View {
                         .font(.body)
                         .foregroundStyle(.secondary)
 
-                    CleanSweepSurface(cornerRadius: 18, padding: 16) {
+                    CleanSweepSurface(cornerRadius: 18, padding: 16, variant: .card) {
                         VStack(alignment: .leading, spacing: 8) {
                             Label("Current Guidance", systemImage: pressureSymbol)
                                 .font(.headline)
@@ -260,7 +260,7 @@ struct MemoryMonitorView: View {
     }
 
     private func metricCard(title: String, value: String, systemImage: String, accent: Color) -> some View {
-        CleanSweepSurface(cornerRadius: 20, padding: 18) {
+        CleanSweepSurface(cornerRadius: 20, padding: 18, variant: .card) {
             VStack(alignment: .leading, spacing: 12) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 12, style: .continuous)

@@ -40,11 +40,11 @@ struct GlassEffectModifier<S: InsettableShape>: ViewModifier {
         if reduceTransparency {
             content
         } else {
-            content.cleanSweepGlass(
+            content.cleanSweepLiquidGlass(
                 in: shape,
                 tint: tint,
-                interactive: interactive,
-                reduceTransparency: reduceTransparency
+                shadowOpacity: interactive ? 0.18 : 0.12,
+                showIridescence: interactive
             )
         }
     }
@@ -177,7 +177,7 @@ struct CleanSweepWindowBackground: View {
             // Top-left glow (Blue)
             RadialGradient(
                 colors: [
-                    Color(hex: 0x3A86FF).opacity(colorScheme == .dark ? 0.22 : 0.14),
+                    Color(hex: 0x3A86FF).opacity(colorScheme == .dark ? 0.26 : 0.14),
                     .clear
                 ],
                 center: .topLeading,
@@ -188,12 +188,22 @@ struct CleanSweepWindowBackground: View {
             // Bottom-right glow (Purple/Magenta)
             RadialGradient(
                 colors: [
-                    Color(hex: 0x8338EC).opacity(colorScheme == .dark ? 0.16 : 0.08),
+                    Color(hex: 0x8338EC).opacity(colorScheme == .dark ? 0.18 : 0.08),
                     .clear
                 ],
                 center: .bottomTrailing,
                 startRadius: 0,
                 endRadius: 800
+            )
+
+            RadialGradient(
+                colors: [
+                    Color.white.opacity(colorScheme == .dark ? 0.05 : 0.08),
+                    .clear
+                ],
+                center: UnitPoint(x: 0.52, y: 0.16),
+                startRadius: 0,
+                endRadius: 360
             )
 
             // Middle-right subtle glow (Pink/Red)
@@ -219,33 +229,28 @@ struct CleanSweepWindowBackground: View {
 struct CleanSweepSurface<Content: View>: View {
     private let cornerRadius: CGFloat
     private let padding: CGFloat
+    private let variant: LiquidGlassVariant
     private let content: Content
-
-    @Environment(\.colorScheme) private var colorScheme
-    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
     init(
         cornerRadius: CGFloat = 16,
         padding: CGFloat = 24,
+        variant: LiquidGlassVariant = .card,
         @ViewBuilder content: () -> Content
     ) {
         self.cornerRadius = cornerRadius
         self.padding = padding
+        self.variant = variant
         self.content = content()
     }
 
     var body: some View {
-        CleanSweepLiquidGlassPanel(
-            cornerRadius: cornerRadius,
-            padding: padding,
-            material: .ultraThin,
-            tint: colorScheme == .dark
-                ? Color.white.opacity(0.08)
-                : Color.white.opacity(0.18),
-            shadowOpacity: reduceTransparency ? 0.08 : 0.18
-        ) {
-            content
-        }
+        let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+
+        content
+            .padding(padding)
+            .liquidGlass(shape, interactive: false, variant: variant)
+            .clipShape(shape)
     }
 }
 
@@ -253,9 +258,6 @@ struct CleanSweepSurface<Content: View>: View {
 struct CleanSweepSidebarPanel<Content: View>: View {
     private let padding: CGFloat
     private let content: Content
-
-    @Environment(\.colorScheme) private var colorScheme
-    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
     init(
         padding: CGFloat = 14,
@@ -266,17 +268,12 @@ struct CleanSweepSidebarPanel<Content: View>: View {
     }
 
     var body: some View {
-        CleanSweepLiquidGlassPanel(
-            cornerRadius: 44,
-            padding: padding,
-            material: .thin,
-            tint: colorScheme == .dark
-                ? Color(hex: 0x111827, opacity: 0.34)
-                : Color.white.opacity(0.22),
-            shadowOpacity: reduceTransparency ? 0.08 : 0.20
-        ) {
-            content
-        }
+        let shape = RoundedRectangle(cornerRadius: 28, style: .continuous)
+
+        content
+            .padding(padding)
+            .liquidGlass(shape, interactive: false, variant: .sidebar)
+            .clipShape(shape)
     }
 }
 
@@ -392,43 +389,41 @@ struct CleanSweepPrimaryButtonStyle: ButtonStyle {
 
 @available(macOS 26.0, *)
 struct CleanSweepSecondaryButtonStyle: ButtonStyle {
-    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.headline.weight(.medium))
-            .foregroundStyle(.primary)
+            .foregroundStyle(.white.opacity(0.86))
             .padding(.horizontal, 18)
             .padding(.vertical, 12)
-            .background(buttonBackground(isPressed: configuration.isPressed))
+            .background {
+                Capsule(style: .continuous)
+                    .fill(Color.clear)
+                    .liquidGlass(
+                        Capsule(style: .continuous),
+                        interactive: !configuration.isPressed,
+                        variant: .tag
+                    )
+            }
             .overlay {
                 Capsule(style: .continuous)
-                    .stroke(
-                        Color.white.opacity(configuration.isPressed ? 0.12 : 0.22),
-                        lineWidth: 1
+                    .strokeBorder(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(configuration.isPressed ? 0.16 : 0.24),
+                                Color.clear
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 0.8
                     )
             }
             .scaleEffect(configuration.isPressed ? 0.99 : 1)
             .animation(
                 reduceMotion ? nil : .spring(response: 0.24, dampingFraction: 0.78),
                 value: configuration.isPressed
-            )
-    }
-
-    private func buttonBackground(isPressed: Bool) -> some View {
-        Capsule(style: .continuous)
-            .fill(
-                LinearGradient(
-                    colors: [
-                        CleanSweepPalette.surfaceStart(for: colorScheme)
-                            .opacity(isPressed ? 0.82 : 1),
-                        CleanSweepPalette.surfaceEnd(for: colorScheme)
-                            .opacity(isPressed ? 0.86 : 1)
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
             )
     }
 }
@@ -438,36 +433,22 @@ struct CleanSweepTag: View {
     let title: String
     let systemImage: String
 
-    @Environment(\.colorScheme) private var colorScheme
-    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
-
     var body: some View {
         let shape = Capsule(style: .continuous)
 
         Label(title, systemImage: systemImage)
             .font(.subheadline.weight(.medium))
-            .foregroundStyle(.secondary)
+            .foregroundStyle(.white.opacity(0.78))
             .padding(.horizontal, 14)
             .padding(.vertical, 10)
-            .glassEffect(
-                .regular.interactive().tint(
-                    colorScheme == .dark
-                        ? Color.white.opacity(0.06)
-                        : Color.white.opacity(0.24)
-                ),
-                in: shape
-            )
-            .background {
-                if reduceTransparency {
-                    shape.fill(colorScheme == .dark ? Color.white.opacity(0.12) : Color.black.opacity(0.06))
-                }
-            }
+            .liquidGlass(shape, interactive: false, variant: .tag)
+            .clipShape(shape)
             .overlay {
                 shape
                     .strokeBorder(
                         LinearGradient(
                             colors: [
-                                Color.white.opacity(colorScheme == .dark ? 0.12 : 0.44),
+                                Color.white.opacity(0.16),
                                 Color.clear
                             ],
                             startPoint: .topLeading,
@@ -487,11 +468,15 @@ struct CleanSweepMetricTile: View {
     var accent: Color = CleanSweepPalette.iconBg
 
     var body: some View {
-        CleanSweepSurface(cornerRadius: 16, padding: 18) {
+        CleanSweepSurface(cornerRadius: 16, padding: 18, variant: .card) {
             VStack(alignment: .leading, spacing: 14) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(accent.opacity(0.14))
+                        .fill(accent.opacity(0.18))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .strokeBorder(Color.white.opacity(0.10), lineWidth: 0.6)
+                        )
                     Image(systemName: systemImage)
                         .font(.system(size: 18, weight: .semibold))
                         .foregroundStyle(accent)

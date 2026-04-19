@@ -114,7 +114,11 @@ private struct ScanResultRowView: View {
                 .foregroundStyle(.secondary)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 4)
-                .glassEffect(.regular, in: Capsule())
+                .background {
+                    Capsule(style: .continuous)
+                        .fill(Color.clear)
+                        .liquidGlass(Capsule(style: .continuous), interactive: false, variant: .tag)
+                }
         }
         .padding(.vertical, 4)
         .contentShape(Rectangle())
@@ -201,7 +205,7 @@ struct ModuleScanView: View {
             )
 
             if !highlights.isEmpty {
-                CleanSweepSurface(cornerRadius: 22, padding: 20) {
+                CleanSweepSurface(cornerRadius: 22, padding: 20, variant: .card) {
                     HStack(spacing: 12) {
                         ForEach(highlights, id: \.self) { highlight in
                             ModuleFeaturePill(title: highlight.title, systemImage: highlight.systemImage)
@@ -215,7 +219,7 @@ struct ModuleScanView: View {
 
     private var scanningView: some View {
         VStack(spacing: 24) {
-            CleanSweepSurface(cornerRadius: 26, padding: 28) {
+            CleanSweepSurface(cornerRadius: 26, padding: 28, variant: .panel) {
                 HStack(spacing: 28) {
                     ZStack {
                         Circle()
@@ -253,7 +257,7 @@ struct ModuleScanView: View {
                             accent: CleanSweepPalette.accentBlue
                         )
 
-                        CleanSweepSurface(cornerRadius: 18, padding: 16) {
+                        CleanSweepSurface(cornerRadius: 18, padding: 16, variant: .card) {
                             VStack(alignment: .leading, spacing: 8) {
                                 Label("Current File Path", systemImage: "folder.fill")
                                     .font(.headline)
@@ -387,15 +391,22 @@ struct ModuleScanView: View {
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
-                    .background(Capsule().strokeBorder(CleanSweepPalette.iconBg.opacity(0.3), lineWidth: 1))
-                    .glassEffect(.regular, in: Capsule())
+                    .background {
+                        Capsule(style: .continuous)
+                            .fill(Color.clear)
+                            .liquidGlass(Capsule(style: .continuous), interactive: false, variant: .tag)
+                    }
+                    .overlay {
+                        Capsule(style: .continuous)
+                            .strokeBorder(CleanSweepPalette.iconBg.opacity(0.24), lineWidth: 0.8)
+                    }
                 }
                 .menuStyle(.borderlessButton)
                 .fixedSize()
             }
             .padding(.horizontal, 12)
 
-            CleanSweepSurface(cornerRadius: 26, padding: 12) {
+            CleanSweepSurface(cornerRadius: 26, padding: 12, variant: .panel) {
                 VStack(spacing: 0) {
                     listHeader
 
@@ -491,7 +502,7 @@ struct ModuleScanView: View {
     }
 
     private func moduleHero(eyebrow: String, title: String, description: String) -> some View {
-        CleanSweepSurface(cornerRadius: 26, padding: 28) {
+        CleanSweepSurface(cornerRadius: 26, padding: 28, variant: .panel) {
             HStack(spacing: 24) {
                 CleanSweepHeroIcon(systemImage: systemImage, size: 104)
                     .background {
@@ -539,7 +550,7 @@ private struct ModuleMetricCard: View {
     let accent: Color
 
     var body: some View {
-        CleanSweepSurface(cornerRadius: 20, padding: 18) {
+        CleanSweepSurface(cornerRadius: 20, padding: 18, variant: .card) {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     ZStack {

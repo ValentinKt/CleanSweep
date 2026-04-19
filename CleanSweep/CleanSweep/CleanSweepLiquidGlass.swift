@@ -78,7 +78,7 @@ struct CleanSweepLiquidGlassModifier<S: InsettableShape>: ViewModifier {
             .clipShape(shape)
             .overlay {
                 shape
-                    .fill(Color.white.opacity(colorScheme == .dark ? 0.028 : 0.08))
+                    .fill(Color.white.opacity(colorScheme == .dark ? 0.020 : 0.06))
                     .blendMode(.screen)
             }
             .overlay {
@@ -86,9 +86,9 @@ struct CleanSweepLiquidGlassModifier<S: InsettableShape>: ViewModifier {
                     .fill(
                         LinearGradient(
                             colors: [
-                                tint.opacity(colorScheme == .dark ? 0.12 : 0.08),
+                                tint.opacity(colorScheme == .dark ? 0.18 : 0.10),
                                 .clear,
-                                tint.opacity(colorScheme == .dark ? 0.08 : 0.04)
+                                tint.opacity(colorScheme == .dark ? 0.12 : 0.05)
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
@@ -105,10 +105,10 @@ struct CleanSweepLiquidGlassModifier<S: InsettableShape>: ViewModifier {
             .fill(
                 LinearGradient(
                     colors: [
-                        Color.white.opacity(colorScheme == .dark ? 0.14 : 0.42),
-                        tint.opacity(colorScheme == .dark ? 0.92 : 0.46),
-                        Color.white.opacity(colorScheme == .dark ? 0.05 : 0.08),
-                        Color.black.opacity(colorScheme == .dark ? 0.10 : 0.04)
+                        Color.white.opacity(colorScheme == .dark ? 0.08 : 0.22),
+                        tint.opacity(colorScheme == .dark ? 0.98 : 0.52),
+                        Color.black.opacity(colorScheme == .dark ? 0.10 : 0.04),
+                        Color.black.opacity(colorScheme == .dark ? 0.18 : 0.08)
                     ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
@@ -119,8 +119,8 @@ struct CleanSweepLiquidGlassModifier<S: InsettableShape>: ViewModifier {
                     .fill(
                         LinearGradient(
                             colors: [
-                                Color.white.opacity(colorScheme == .dark ? 0.10 : 0.18),
-                                tint.opacity(colorScheme == .dark ? 0.26 : 0.12),
+                                Color.white.opacity(colorScheme == .dark ? 0.08 : 0.14),
+                                tint.opacity(colorScheme == .dark ? 0.18 : 0.08),
                                 .clear
                             ],
                             startPoint: .topLeading,
@@ -136,9 +136,9 @@ struct CleanSweepLiquidGlassModifier<S: InsettableShape>: ViewModifier {
             .fill(
                 LinearGradient(
                     stops: [
-                        .init(color: CleanSweepPalette.accentBlue.opacity(0.12), location: 0.0),
-                        .init(color: CleanSweepPalette.accentPurple.opacity(0.10), location: 0.45),
-                        .init(color: CleanSweepPalette.accentPink.opacity(0.06), location: 1.0)
+                        .init(color: CleanSweepPalette.accentBlue.opacity(0.10), location: 0.0),
+                        .init(color: CleanSweepPalette.accentPurple.opacity(0.08), location: 0.45),
+                        .init(color: CleanSweepPalette.accentPink.opacity(0.04), location: 1.0)
                     ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
@@ -153,8 +153,8 @@ struct CleanSweepLiquidGlassModifier<S: InsettableShape>: ViewModifier {
             .fill(
                 LinearGradient(
                     colors: [
-                        Color.white.opacity(colorScheme == .dark ? 0.24 : 0.34),
-                        Color.white.opacity(colorScheme == .dark ? 0.12 : 0.16),
+                        Color.white.opacity(colorScheme == .dark ? 0.20 : 0.28),
+                        Color.white.opacity(colorScheme == .dark ? 0.08 : 0.12),
                         .clear
                     ],
                     startPoint: .topLeading,
@@ -258,7 +258,7 @@ struct CleanSweepLiquidGlassPanel<Content: View>: View {
     }
 }
 
-@available(macOS 14.0, *)
+@available(macOS 26.0, *)
 struct CleanSweepLiquidDetailHeader: View {
     let selection: SidebarItem?
 
@@ -305,12 +305,7 @@ struct CleanSweepLiquidDetailHeader: View {
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
-            .cleanSweepLiquidGlass(
-                in: Capsule(style: .continuous),
-                material: .ultraThin,
-                tint: CleanSweepPalette.success.opacity(0.10),
-                shadowOpacity: 0.06
-            )
+            .liquidGlass(Capsule(style: .continuous), interactive: false, variant: .tag)
         }
         .padding(.horizontal, 28)
         .padding(.vertical, 24)

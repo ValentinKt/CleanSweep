@@ -4,22 +4,15 @@ import SwiftUI
 enum LiquidGlassVariant {
     case clear
     case sidebar
+    case panel
+    case card
+    case tag
+    case selection
     case accent
-
-    fileprivate var tint: Color {
-        switch self {
-        case .clear:
-            Color.white.opacity(0.08)
-        case .sidebar:
-            Color(hex: 0x111827, opacity: 0.30)
-        case .accent:
-            CleanSweepPalette.accentBlue.opacity(0.14)
-        }
-    }
 
     fileprivate var material: CleanSweepLiquidGlassMaterial {
         switch self {
-        case .clear, .accent:
+        case .clear, .panel, .card, .tag, .selection, .accent:
             .ultraThin
         case .sidebar:
             .thin
@@ -29,20 +22,85 @@ enum LiquidGlassVariant {
     fileprivate var shadowOpacity: Double {
         switch self {
         case .clear:
-            0.14
+            0.10
         case .sidebar:
-            0.26
+            0.28
+        case .panel:
+            0.24
+        case .card:
+            0.16
+        case .tag:
+            0.10
+        case .selection:
+            0.12
         case .accent:
-            0.18
+            0.16
         }
     }
 
     fileprivate var showIridescence: Bool {
         switch self {
-        case .clear:
+        case .clear, .card, .tag, .selection:
             false
-        case .sidebar, .accent:
+        case .sidebar, .panel, .accent:
             true
+        }
+    }
+
+    fileprivate func tint(for colorScheme: ColorScheme, interactive: Bool) -> Color {
+        switch self {
+        case .clear:
+            return colorScheme == .dark
+                ? Color.white.opacity(interactive ? 0.06 : 0.03)
+                : Color.white.opacity(interactive ? 0.22 : 0.12)
+        case .sidebar:
+            return colorScheme == .dark
+                ? Color(hex: 0x101827, opacity: interactive ? 0.54 : 0.46)
+                : Color.white.opacity(interactive ? 0.26 : 0.18)
+        case .panel:
+            return colorScheme == .dark
+                ? Color(hex: 0x1A2338, opacity: interactive ? 0.36 : 0.30)
+                : Color.white.opacity(interactive ? 0.24 : 0.18)
+        case .card:
+            return colorScheme == .dark
+                ? Color(hex: 0x152033, opacity: interactive ? 0.26 : 0.20)
+                : Color.white.opacity(interactive ? 0.20 : 0.14)
+        case .tag:
+            return colorScheme == .dark
+                ? Color(hex: 0x111B2E, opacity: interactive ? 0.24 : 0.18)
+                : Color.white.opacity(interactive ? 0.24 : 0.16)
+        case .selection:
+            return colorScheme == .dark
+                ? Color.white.opacity(interactive ? 0.16 : 0.11)
+                : Color.white.opacity(interactive ? 0.34 : 0.24)
+        case .accent:
+            return interactive
+                ? CleanSweepPalette.iconBg.opacity(0.22)
+                : CleanSweepPalette.iconBg.opacity(0.16)
+        }
+    }
+
+    fileprivate func borderColor(for colorScheme: ColorScheme, interactive: Bool) -> Color {
+        switch self {
+        case .selection:
+            return CleanSweepPalette.iconBg.opacity(interactive ? 0.46 : 0.34)
+        case .accent:
+            return CleanSweepPalette.iconBg.opacity(interactive ? 0.38 : 0.26)
+        case .sidebar:
+            return Color.white.opacity(colorScheme == .dark ? (interactive ? 0.22 : 0.14) : 0.24)
+        case .panel, .card, .tag, .clear:
+            return Color.white.opacity(colorScheme == .dark ? (interactive ? 0.18 : 0.10) : 0.22)
+        }
+    }
+
+    fileprivate var borderLineWidth: CGFloat {
+        switch self {
+        case .selection:
+            0.95
+        case .tag:
+            0.75
+        default:
+            0.85
         }
     }
 }
@@ -54,20 +112,24 @@ private struct LiquidGlassCompatibilityModifier<S: InsettableShape>: ViewModifie
     let variant: LiquidGlassVariant
 
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @Environment(\.colorScheme) private var colorScheme
 
     func body(content: Content) -> some View {
         content
             .cleanSweepLiquidGlass(
                 in: shape,
                 material: variant.material,
-                tint: interactive ? variant.tint.opacity(1.12) : variant.tint,
+                tint: variant.tint(for: colorScheme, interactive: interactive),
                 shadowOpacity: variant.shadowOpacity,
                 showIridescence: variant.showIridescence
             )
             .overlay {
-                if interactive && !reduceTransparency {
+                if !reduceTransparency && (interactive || variant == .selection) {
                     shape
-                        .strokeBorder(Color.white.opacity(0.18), lineWidth: 0.8)
+                        .strokeBorder(
+                            variant.borderColor(for: colorScheme, interactive: interactive),
+                            lineWidth: variant.borderLineWidth
+                        )
                 }
             }
     }

@@ -9,7 +9,7 @@ import SwiftUI
 struct SidebarView: View {
     @Binding var selection: SidebarItem?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    private let sidebarShape = RoundedRectangle(cornerRadius: 8, style: .continuous)
+    private let sidebarShape = RoundedRectangle(cornerRadius: 26, style: .continuous)
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
@@ -96,7 +96,7 @@ struct SidebarView: View {
     }
 
     private var sidebarHeader: some View {
-        let headerShape = RoundedRectangle(cornerRadius: 8, style: .continuous)
+        let headerShape = RoundedRectangle(cornerRadius: 16, style: .continuous)
 
         return HStack(spacing: 12) {
             Image(systemName: "bubbles.and.sparkles")
@@ -154,7 +154,8 @@ struct SidebarRow: View {
     @State private var isHovered = false
 
     var body: some View {
-        let rowShape = RoundedRectangle(cornerRadius: 8, style: .continuous)
+        let rowShape = RoundedRectangle(cornerRadius: 14, style: .continuous)
+        let isActive = isSelected || isHovered
 
         Button(action: action) {
             HStack(spacing: 12) {
@@ -186,8 +187,30 @@ struct SidebarRow: View {
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .liquidGlass(rowShape, interactive: isHovered, variant: isSelected ? .accent : .clear)
+            .background {
+                if isSelected {
+                    rowShape
+                        .fill(Color.white.opacity(0.08))
+                }
+            }
+            .liquidGlass(rowShape, interactive: isActive, variant: isSelected ? .selection : .clear)
             .clipShape(rowShape)
+            .overlay {
+                if isSelected {
+                    rowShape
+                        .strokeBorder(
+                            LinearGradient(
+                                colors: [
+                                    CleanSweepPalette.iconBg.opacity(0.42),
+                                    Color.white.opacity(0.08)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 0.9
+                        )
+                }
+            }
             .opacity(isSelected || isHovered ? 1 : 0.96)
         }
         .buttonStyle(.plain)

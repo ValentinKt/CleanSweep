@@ -26,7 +26,7 @@ struct DashboardView: View {
     }
 
     private var heroSection: some View {
-        CleanSweepSurface(cornerRadius: 24, padding: 28) {
+        CleanSweepSurface(cornerRadius: 24, padding: 28, variant: .panel) {
             HStack(spacing: 24) {
                 CleanSweepHeroIcon(systemImage: "sparkles", size: 108)
 
@@ -64,7 +64,7 @@ struct DashboardView: View {
 
     private var healthHighlights: some View {
         HStack(spacing: 18) {
-            CleanSweepSurface(cornerRadius: 20, padding: 20) {
+            CleanSweepSurface(cornerRadius: 20, padding: 20, variant: .card) {
                 VStack(alignment: .leading, spacing: 12) {
                     Label("Protection & Privacy", systemImage: "checkmark.shield.fill")
                         .font(.headline)
@@ -78,7 +78,7 @@ struct DashboardView: View {
                 }
             }
 
-            CleanSweepSurface(cornerRadius: 20, padding: 20) {
+            CleanSweepSurface(cornerRadius: 20, padding: 20, variant: .card) {
                 VStack(alignment: .leading, spacing: 12) {
                     Label("Performance Focus", systemImage: "bolt.heart.fill")
                         .font(.headline)
@@ -95,7 +95,7 @@ struct DashboardView: View {
     }
 
     private var quickActions: some View {
-        CleanSweepSurface(cornerRadius: 22, padding: 22) {
+        CleanSweepSurface(cornerRadius: 22, padding: 22, variant: .card) {
             VStack(alignment: .leading, spacing: 18) {
                 CleanSweepSectionEyebrow(title: "Recommended")
                 Text("Everything is set for a safe cleanup")
@@ -161,11 +161,15 @@ struct MetricCard: View {
 
     @State private var isHovered = false
     var body: some View {
-        CleanSweepSurface(cornerRadius: 20, padding: 18) {
+        CleanSweepSurface(cornerRadius: 20, padding: 18, variant: .card) {
             VStack(alignment: .leading, spacing: 14) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(tint.opacity(0.14))
+                        .fill(tint.opacity(0.18))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .strokeBorder(Color.white.opacity(0.10), lineWidth: 0.6)
+                        )
                     Image(systemName: symbol)
                         .foregroundStyle(tint)
                         .font(.title3.weight(.semibold))

@@ -57,7 +57,7 @@ struct SmartScanView: View {
                 )
             }
 
-            CleanSweepSurface(cornerRadius: 24, padding: 22) {
+            CleanSweepSurface(cornerRadius: 24, padding: 22, variant: .card) {
                 HStack(spacing: 12) {
                     CleanSweepTag(title: "Balanced Scan", systemImage: "sparkles")
                     CleanSweepTag(title: "Live Paths", systemImage: "folder")
@@ -74,7 +74,7 @@ struct SmartScanView: View {
 
     private var scanningView: some View {
         VStack(spacing: 24) {
-            CleanSweepSurface(cornerRadius: 32, padding: 32) {
+            CleanSweepSurface(cornerRadius: 32, padding: 32, variant: .panel) {
                 HStack(spacing: 32) {
                     ZStack {
                         Circle()
@@ -115,7 +115,7 @@ struct SmartScanView: View {
                             .font(.body)
                             .foregroundStyle(.secondary)
 
-                        CleanSweepSurface(cornerRadius: 20, padding: 16) {
+                        CleanSweepSurface(cornerRadius: 20, padding: 16, variant: .card) {
                             VStack(alignment: .leading, spacing: 10) {
                                 Label("Currently Inspecting", systemImage: "folder.fill")
                                     .font(.subheadline.weight(.bold))
@@ -191,7 +191,7 @@ struct SmartScanView: View {
     }
 
     private func categoryCard(category: FileCategory, size: Int64) -> some View {
-        CleanSweepSurface(cornerRadius: 22, padding: 22) {
+        CleanSweepSurface(cornerRadius: 22, padding: 22, variant: .card) {
             VStack(alignment: .leading, spacing: 16) {
                 HStack(alignment: .top) {
                     ZStack {
@@ -269,7 +269,7 @@ struct SmartScanView: View {
     }
 
     private func heroSection(eyebrow: String, title: String, description: String) -> some View {
-        CleanSweepSurface(cornerRadius: 26, padding: 28) {
+        CleanSweepSurface(cornerRadius: 26, padding: 28, variant: .panel) {
             HStack(spacing: 24) {
                 CleanSweepHeroIcon(systemImage: "wand.and.stars.inverse", size: 112)
 

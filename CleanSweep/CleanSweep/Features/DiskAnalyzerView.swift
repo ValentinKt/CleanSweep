@@ -46,7 +46,7 @@ struct DiskAnalyzerView: View {
     }
 
     private var heroSection: some View {
-        CleanSweepSurface(cornerRadius: 26, padding: 28) {
+        CleanSweepSurface(cornerRadius: 26, padding: 28, variant: .panel) {
             HStack(spacing: 24) {
                 CleanSweepHeroIcon(systemImage: "internaldrive.fill", size: 104)
 
@@ -74,7 +74,7 @@ struct DiskAnalyzerView: View {
     }
 
     private var chartSection: some View {
-        CleanSweepSurface(cornerRadius: 26, padding: 24) {
+        CleanSweepSurface(cornerRadius: 26, padding: 24, variant: .panel) {
             HStack(spacing: 24) {
                 Chart(diskUsage) { item in
                     SectorMark(
@@ -98,7 +98,7 @@ struct DiskAnalyzerView: View {
                         .font(.body)
                         .foregroundStyle(.secondary)
 
-                    CleanSweepSurface(cornerRadius: 18, padding: 16) {
+                    CleanSweepSurface(cornerRadius: 18, padding: 16, variant: .card) {
                         VStack(alignment: .leading, spacing: 8) {
                             Label("Free Space", systemImage: "internaldrive.fill.badge.checkmark")
                                 .font(.headline)
@@ -123,7 +123,7 @@ struct DiskAnalyzerView: View {
     }
 
     private var legendSection: some View {
-        CleanSweepSurface(cornerRadius: 24, padding: 22) {
+        CleanSweepSurface(cornerRadius: 24, padding: 22, variant: .card) {
             VStack(alignment: .leading, spacing: 14) {
                 CleanSweepSectionEyebrow(title: "Categories")
                 ForEach(nonFreeCategories) { item in
@@ -165,7 +165,7 @@ struct DiskAnalyzerView: View {
     }
 
     private func metricCard(title: String, value: String, systemImage: String, accent: Color) -> some View {
-        CleanSweepSurface(cornerRadius: 20, padding: 18) {
+        CleanSweepSurface(cornerRadius: 20, padding: 18, variant: .card) {
             VStack(alignment: .leading, spacing: 12) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 12, style: .continuous)

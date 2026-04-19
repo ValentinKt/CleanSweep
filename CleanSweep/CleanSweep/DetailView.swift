@@ -15,17 +15,17 @@ struct DetailView: View {
     var body: some View {
         if #available(macOS 26.0, *) {
             CleanSweepLiquidGlassPanel(
-                cornerRadius: 30,
+                cornerRadius: 32,
                 padding: 0,
                 material: .ultraThin,
-                tint: CleanSweepPalette.accentPurple.opacity(0.10),
-                shadowOpacity: 0.18
+                tint: Color(hex: 0x1A2338, opacity: 0.30),
+                shadowOpacity: 0.24
             ) {
                 VStack(spacing: 0) {
                     CleanSweepLiquidDetailHeader(selection: selection)
 
                     Divider()
-                        .overlay(Color.white.opacity(0.08))
+                        .overlay(Color.white.opacity(0.10))
                         .padding(.horizontal, 28)
 
                     contentView
